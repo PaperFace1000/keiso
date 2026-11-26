@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Layout</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+/* この見本だけで使う配置。部品の見た目は kit.css に寄せること */
+.sx { display: grid; gap: var(--space-4); min-width: 0; }
+.sx__lead { font-size: 13px; color: var(--color-muted); max-width: 48rem; }
+
+/* ダッシュボードの 2 列: 左は数字の欄を縦に、右は図と一覧 */
+.lx-dash { display: grid; grid-template-columns: minmax(0, 18rem) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+.lx-dash__side, .lx-dash__main { display: grid; gap: var(--space-4); min-width: 0; }
+.lx-dash__charts { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--space-4); }
+@media (max-width: 60rem) { .lx-dash__charts { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 44rem) { .lx-dash { grid-template-columns: minmax(0, 1fr); } }
+
+/* 結論の数字 */
+.lx-hero { display: grid; gap: var(--space-2); padding: var(--space-5) var(--space-4); }
+.lx-hero__value { font-size: 72px; color: var(--color-text); }
+.lx-hero__value small { font: 500 14px/1 var(--font-mono); letter-spacing: .1em; margin-left: 8px; color: var(--color-muted); }
+
+/* 図の枠 */
+.lx-chart { display: grid; gap: var(--space-3); padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); min-width: 0; }
+.lx-chart__head { display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
+.lx-chart__head h3 { font-size: 15px; }
+.lx-chart__head .k-label { margin-left: auto; }
+.lx-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.lx-grid-line { stroke: var(--color-border); stroke-width: 1; stroke-dasharray: 2 4; }
+.lx-axis { fill: var(--color-muted); font: 10px var(--font-mono); }
+.lx-series { fill: none; stroke: var(--color-text); stroke-width: 1.5; }
+.lx-series--prev { stroke: var(--color-border-strong); stroke-dasharray: 3 3; }
+.lx-point { fill: var(--color-base); stroke: var(--color-text); stroke-width: 1.5; }
+.lx-point--last { fill: var(--color-accent); stroke: var(--color-accent); }
+.lx-legend { display: flex; gap: var(--space-4); flex-wrap: wrap; font-size: 12px; color: var(--color-muted); }
+.lx-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.lx-legend i { width: 14px; height: 2px; background: var(--color-text); display: block; }
+.lx-legend i.is-prev { background: repeating-linear-gradient(90deg, var(--color-border-strong) 0 3px, transparent 3px 6px); }
+
+/* ドーナツ */
+.lx-donut { display: grid; grid-template-columns: 8.5rem 1fr; gap: var(--space-4); align-items: center; }
+.lx-donut svg { width: 8.5rem; height: 8.5rem; transform: rotate(-90deg); }
+.lx-donut circle { fill: none; stroke-width: 14; }
+.lx-donut__track { stroke: var(--color-sunken); }
+.lx-donut__center { position: relative; }
+.lx-donut__label { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.lx-donut__label .k-dot { font-size: 26px; }
+.lx-donut ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
+.lx-donut li { display: grid; grid-template-columns: 10px 1fr auto; gap: var(--space-2); align-items: center; }
+.lx-donut li i { width: 10px; height: 10px; display: block; }
+@media (max-width: 26rem) { .lx-donut { grid-template-columns: 1fr; justify-items: center; } .lx-donut ul { width: 100%; } }
+
+/* 余白の段階 */
+.lx-space { display: grid; gap: var(--space-2); }
+.lx-space__row { display: grid; grid-template-columns: 10ch 6ch 1fr; gap: var(--space-3); align-items: center; font-size: 12px; }
+.lx-space__bar { height: 12px; background: repeating-linear-gradient(90deg, var(--color-text) 0 2px, transparent 2px 4px); }
+
+/* 本文の幅 */
+.lx-widths { display: grid; gap: var(--space-2); }
+.lx-width { border: var(--line) dashed var(--color-border-strong); padding: var(--space-2) var(--space-3); display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; font-size: 13px; max-width: 100%; }
+
+/* 360px の枠 */
+.lx-phones { display: flex; gap: var(--space-5); flex-wrap: wrap; align-items: flex-start; }
+.lx-phone { width: 360px; max-width: 100%; border: var(--line) solid var(--color-border-strong); background: var(--color-base); display: grid; align-content: start; }
+.lx-phone__bar { display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--space-4); min-height: 48px; border-bottom: var(--line) solid var(--color-border); }
+.lx-phone__bar .k-logo { font-size: 14px; }
+.lx-phone__body { display: grid; gap: var(--space-3); padding: var(--space-4); }
+.lx-phone .k-stat__value { font-size: 36px; }
+.lx-phone__note { flex: 1; min-width: 16rem; display: grid; gap: var(--space-3); font-size: 14px; }
+.lx-phone__note ol { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+
+<div class="sx">
+  <span class="k-label k-bracket">Layout</span>
+  <h1 style="font-size: 28px;">画面の組み立て</h1>
+  <p class="sx__lead">ダッシュボード風の 2 列、余白の段階、本文の幅、スマホ幅（360px）での積み方の見本です。結論の数字を最初に大きく出し、詳しい図と一覧はその下や右に置きます。</p>
+</div>
+
+<!-- ダッシュボード -->
+<section class="sx" aria-labelledby="h-dash">
+  <div class="k-heading"><h2 id="h-dash">ダッシュボードの 2 列</h2><span class="k-label">Dashboard</span></div>
+  <p class="sx__lead">左の列は数字の欄を縦に並べ、一番上に結論（今月の点検の完了率）を置きます。右の列は推移の折れ線と、内訳のドーナツ、最近の記録。幅が 44rem より狭くなったら 1 列に積みます。</p>
+
+  <div class="lx-dash">
+    <div class="lx-dash__side">
+      <div class="k-stat k-frame lx-hero">
+        <span class="k-label">Completion / 2026-11</span>
+        <span class="k-dot lx-hero__value">86<small>%</small></span>
+        <span class="k-stat__delta k-role-success">▲ 4.0 pt　前月 82%</span>
+      </div>
+      <div class="k-stat">
+        <span class="k-label">Checks done</span>
+        <span class="k-dot k-stat__value">43<small>/ 50</small></span>
+        <span class="k-stat__delta">残り 7 件・期限 11-30</span>
+      </div>
+      <div class="k-stat">
+        <span class="k-label">Open alerts</span>
+        <span class="k-dot k-stat__value" style="color: var(--color-alert);">2</span>
+        <span class="k-stat__delta k-role-alert">▲ 1　前週 1 件</span>
+      </div>
+      <div class="k-stat">
+        <span class="k-label">Avg. time / check</span>
+        <span class="k-dot k-stat__value">18<small>min</small></span>
+        <div class="k-meter"><div class="k-meter__track"><div class="k-meter__fill k-role-info" style="width: 60%;"></div></div><span class="k-meter__value">60%</span></div>
+        <span class="k-stat__delta">目安の 30 分に対して</span>
+      </div>
+    </div>
+
+    <div class="lx-dash__main">
+      <div class="lx-dash__charts">
+        <figure class="lx-chart" style="margin: 0;">
+          <div class="lx-chart__head"><h3>週ごとの完了率</h3><span class="k-label">Last 8 weeks</span></div>
+          <svg viewBox="0 0 340 160" role="img" aria-label="週ごとの完了率の推移。8 週前の 64% から今週の 86% まで上がった">
+            <!-- 縦の目盛り: 50〜100%。y = 140 - (値 - 50) * 2.4 -->
+            <line class="lx-grid-line" x1="34" x2="334" y1="20" y2="20"/>
+            <line class="lx-grid-line" x1="34" x2="334" y1="68" y2="68"/>
+            <line class="lx-grid-line" x1="34" x2="334" y1="116" y2="116"/>
+            <line x1="34" x2="334" y1="140" y2="140" style="stroke: var(--color-border-strong); stroke-width: 1;"/>
+            <text class="lx-axis" x="28" y="23" text-anchor="end">100</text>
+            <text class="lx-axis" x="28" y="71" text-anchor="end">80</text>
+            <text class="lx-axis" x="28" y="119" text-anchor="end">60</text>
+            <text class="lx-axis" x="28" y="143" text-anchor="end">50</text>
+            <!-- 前の期間（点線） -->
+            <polyline class="lx-series lx-series--prev" points="44,116 84,111.2 124,106.4 164,109 204,101.6 244,99.2 284,96.8 324,94.4"/>
+            <!-- 今の期間: 64 68 72 70 77 80 82 86 -->
+            <polyline class="lx-series" points="44,106.4 84,96.8 124,87.2 164,92 204,75.2 244,68 284,63.2 324,53.6"/>
+            <circle class="lx-point" cx="44" cy="106.4" r="2.5"/>
+            <circle class="lx-point" cx="84" cy="96.8" r="2.5"/>
+            <circle class="lx-point" cx="124" cy="87.2" r="2.5"/>
+            <circle class="lx-point" cx="164" cy="92" r="2.5"/>
+            <circle class="lx-point" cx="204" cy="75.2" r="2.5"/>
+            <circle class="lx-point" cx="244" cy="68" r="2.5"/>
+            <circle class="lx-point" cx="284" cy="63.2" r="2.5"/>
+            <circle class="lx-point lx-point--last" cx="324" cy="53.6" r="3.5"/>
+            <text class="lx-axis" x="324" y="42" text-anchor="end" style="fill: var(--color-text); font-weight: 600;">86%</text>
+            <text class="lx-axis" x="44" y="156" text-anchor="middle">W40</text>
+            <text class="lx-axis" x="184" y="156" text-anchor="middle">W44</text>
+            <text class="lx-axis" x="324" y="156" text-anchor="middle">W47</text>
+          </svg>
+          <figcaption class="lx-legend"><span><i></i>今期</span><span><i class="is-prev"></i>前期</span></figcaption>
+        </figure>
+
+        <figure class="lx-chart" style="margin: 0;">
+          <div class="lx-chart__head"><h3>状態の内訳</h3><span class="k-label">50 checks</span></div>
+          <div class="lx-donut">
+            <div class="lx-donut__center">
+              <svg viewBox="0 0 42 42" role="img" aria-label="完了 86%、確認待ち 6%、進行中 4%、異常 4%">
+                <circle class="lx-donut__track" cx="21" cy="21" r="15.9" pathLength="100"/>
+                <circle cx="21" cy="21" r="15.9" pathLength="100" style="stroke: var(--color-success); stroke-dasharray: 85.4 100;"/>
+                <circle cx="21" cy="21" r="15.9" pathLength="100" style="stroke: var(--color-warning); stroke-dasharray: 5.4 100; stroke-dashoffset: -86;"/>
+                <circle cx="21" cy="21" r="15.9" pathLength="100" style="stroke: var(--color-info); stroke-dasharray: 3.4 100; stroke-dashoffset: -92;"/>
+                <circle cx="21" cy="21" r="15.9" pathLength="100" style="stroke: var(--color-alert); stroke-dasharray: 3.4 100; stroke-dashoffset: -96;"/>
+              </svg>
+              <div class="lx-donut__label"><span class="k-dot">86%</span><span class="k-label">Done</span></div>
+            </div>
+            <ul>
+              <li><i style="background: var(--color-success);"></i><span>完了</span><span class="k-num">43 · 86%</span></li>
+              <li><i style="background: var(--color-warning);"></i><span>確認待ち</span><span class="k-num">3 · 6%</span></li>
+              <li><i style="background: var(--color-info);"></i><span>進行中</span><span class="k-num">2 · 4%</span></li>
+              <li><i style="background: var(--color-alert);"></i><span>異常</span><span class="k-num">2 · 4%</span></li>
+            </ul>
+          </div>
+        </figure>
+      </div>
+
+      <div class="k-panel" style="display: grid; gap: var(--space-3);">
+        <div style="display: flex; align-items: center; gap: var(--space-2);"><span class="k-label">Recent</span><span class="k-muted" style="margin-left: auto; font-size: 12px;">3 分前に更新</span></div>
+        <ul class="k-list">
+          <li><div class="k-row"><span class="k-status k-role-alert">Alert</span><span class="k-row__main"><span class="k-row__title">空調 2 番の応答が無い</span><span class="k-row__meta">倉庫 B・09:44</span></span></div></li>
+          <li><div class="k-row"><span class="k-status k-role-warning">Review</span><span class="k-row__main"><span class="k-row__title">棚卸しの差が 2 件</span><span class="k-row__meta">倉庫 B・昨日 17:02</span></span></div></li>
+          <li><div class="k-row"><span class="k-status k-role-success">Done</span><span class="k-row__main"><span class="k-row__title">温度の確認</span><span class="k-row__meta">倉庫 A・昨日 15:30</span></span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 余白 -->
+<section class="sx" aria-labelledby="h-space">
+  <div class="k-heading"><h2 id="h-space">余白の段階</h2><span class="k-label">Spacing</span></div>
+  <p class="sx__lead">余白は 4px を元にした 7 段だけを使います。部品の中は 1〜3、部品どうしは 4〜5、章どうしは 6〜7。中間の値は作りません。</p>
+  <div class="k-panel lx-space">
+    <div class="lx-space__row"><code>--space-1</code><span class="k-num">4px</span><span class="lx-space__bar" style="width: 4px;"></span></div>
+    <div class="lx-space__row"><code>--space-2</code><span class="k-num">8px</span><span class="lx-space__bar" style="width: 8px;"></span></div>
+    <div class="lx-space__row"><code>--space-3</code><span class="k-num">12px</span><span class="lx-space__bar" style="width: 12px;"></span></div>
+    <div class="lx-space__row"><code>--space-4</code><span class="k-num">16px</span><span class="lx-space__bar" style="width: 16px;"></span></div>
+    <div class="lx-space__row"><code>--space-5</code><span class="k-num">24px</span><span class="lx-space__bar" style="width: 24px;"></span></div>
+    <div class="lx-space__row"><code>--space-6</code><span class="k-num">32px</span><span class="lx-space__bar" style="width: 32px;"></span></div>
+    <div class="lx-space__row"><code>--space-7</code><span class="k-num">48px</span><span class="lx-space__bar" style="width: 48px;"></span></div>
+  </div>
+</section>
+
+<!-- 本文の幅 -->
+<section class="sx" aria-labelledby="h-width">
+  <div class="k-heading"><h2 id="h-width">本文の幅</h2><span class="k-label">Width</span></div>
+  <p class="sx__lead">狭くするのは本文の枠（.k-page）で、欄ごとに max-width を付けて回りません。一覧をたくさん並べる画面は上限を付けません。</p>
+  <div class="lx-widths">
+    <div class="lx-width" style="width: 76rem;"><span>既定（一覧・図）</span><code>.k-page　76rem</code></div>
+    <div class="lx-width" style="width: 64rem;"><span>読み物</span><code>.k-page--reading　64rem</code></div>
+    <div class="lx-width" style="width: 48rem;"><span>入力が主役</span><code>.k-page--narrow　48rem</code></div>
+  </div>
+</section>
+
+<!-- 360px -->
+<section class="sx" aria-labelledby="h-phone">
+  <div class="k-heading"><h2 id="h-phone">スマホの幅（360px）</h2><span class="k-label">Mobile</span></div>
+  <p class="sx__lead">上のダッシュボードを 360px で見たときの並び方を、同じ部品で再現した見本です（iframe は使っていません）。</p>
+  <div class="lx-phones">
+    <div class="lx-phone" role="figure" aria-label="360px の幅での見え方">
+      <div class="lx-phone__bar"><span class="k-logo"><span data-icon="dot:keiso"></span>keiso</span><button class="k-btn k-btn--icon k-btn--sm k-btn--ghost" type="button" style="margin-left: auto;" aria-label="メニュー"><span data-icon="line:list"></span></button></div>
+      <div class="lx-phone__body">
+        <div class="k-stat k-frame">
+          <span class="k-label">Completion / 2026-11</span>
+          <span class="k-dot k-stat__value">86<small>%</small></span>
+          <span class="k-stat__delta k-role-success">▲ 4.0 pt　前月 82%</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+          <div class="k-stat"><span class="k-label">Done</span><span class="k-dot k-stat__value" style="font-size: 28px;">43</span></div>
+          <div class="k-stat"><span class="k-label">Alerts</span><span class="k-dot k-stat__value" style="font-size: 28px; color: var(--color-alert);">2</span></div>
+        </div>
+        <div class="k-notice k-role-alert"><span data-icon="line:warning"></span><span class="k-notice__title">Alert</span><span class="k-notice__body">空調 2 番の応答が無い。手で確かめること</span></div>
+        <ul class="k-list">
+          <li><div class="k-row"><span class="k-row__main"><span class="k-row__title">棚卸しの差が 2 件</span><span class="k-row__meta">倉庫 B・昨日</span></span><span class="k-status k-role-warning">Review</span></div></li>
+          <li><div class="k-row"><span class="k-row__main"><span class="k-row__title">温度の確認</span><span class="k-row__meta">倉庫 A・昨日</span></span><span class="k-status k-role-success">Done</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="lx-phone__note">
+      <span class="k-label">Rules at 360px</span>
+      <ol>
+        <li>2 列は 1 列に積む。順番は「結論の数字 → 異常の知らせ → 一覧 → 図」。</li>
+        <li>小さな数字の欄は 2 つずつ横に並べてよい。3 つ以上は並べない。</li>
+        <li>図は幅いっぱいにし、ドーナツは凡例を下に回す。</li>
+        <li>表は表の箱の中だけ横に動かし、画面全体は横に動かさない。</li>
+        <li>ヘッダーのナビゲーションはメニューのボタン 1 つにまとめる。</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+</main>
+</body>
+</html>

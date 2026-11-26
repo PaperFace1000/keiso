@@ -1,0 +1,342 @@
+/* 分類やタグを見分ける色。tools/build.py が tokens/extra-colors.json から作る。
+   要素に data-extra-color="blue" を付け、var(--extra-text) / var(--extra-bg) / var(--extra-border) で塗る */
+
+:root:not([data-theme]) [data-extra-color="red"],
+[data-theme="shiro"] [data-extra-color="red"] {
+  --extra-text: #96332c;
+  --extra-bg: #e8dad6;
+  --extra-border: #ca9e99;
+}
+:root:not([data-theme]) [data-extra-color="orange"],
+[data-theme="shiro"] [data-extra-color="orange"] {
+  --extra-text: #92542b;
+  --extra-bg: #e8dfd6;
+  --extra-border: #c8ad98;
+}
+:root:not([data-theme]) [data-extra-color="ochre"],
+[data-theme="shiro"] [data-extra-color="ochre"] {
+  --extra-text: #7c6224;
+  --extra-bg: #e7e3d6;
+  --extra-border: #bfb395;
+}
+:root:not([data-theme]) [data-extra-color="olive"],
+[data-theme="shiro"] [data-extra-color="olive"] {
+  --extra-text: #636a1f;
+  --extra-bg: #e3e4d5;
+  --extra-border: #b3b693;
+}
+:root:not([data-theme]) [data-extra-color="green"],
+[data-theme="shiro"] [data-extra-color="green"] {
+  --extra-text: #21722f;
+  --extra-bg: #d8e5d8;
+  --extra-border: #96ba9a;
+}
+:root:not([data-theme]) [data-extra-color="teal"],
+[data-theme="shiro"] [data-extra-color="teal"] {
+  --extra-text: #217066;
+  --extra-bg: #d8e5e1;
+  --extra-border: #96b9b3;
+}
+:root:not([data-theme]) [data-extra-color="cyan"],
+[data-theme="shiro"] [data-extra-color="cyan"] {
+  --extra-text: #266d82;
+  --extra-bg: #d9e4e5;
+  --extra-border: #98b8c0;
+}
+:root:not([data-theme]) [data-extra-color="blue"],
+[data-theme="shiro"] [data-extra-color="blue"] {
+  --extra-text: #2c5d96;
+  --extra-bg: #d9e0e5;
+  --extra-border: #9bb1c9;
+}
+:root:not([data-theme]) [data-extra-color="indigo"],
+[data-theme="shiro"] [data-extra-color="indigo"] {
+  --extra-text: #2c3a96;
+  --extra-bg: #d9dbe5;
+  --extra-border: #9ba1c9;
+}
+:root:not([data-theme]) [data-extra-color="violet"],
+[data-theme="shiro"] [data-extra-color="violet"] {
+  --extra-text: #5d2c96;
+  --extra-bg: #e0d9e5;
+  --extra-border: #b19bc9;
+}
+:root:not([data-theme]) [data-extra-color="magenta"],
+[data-theme="shiro"] [data-extra-color="magenta"] {
+  --extra-text: #962c81;
+  --extra-bg: #e8d9e2;
+  --extra-border: #ca9bbf;
+}
+:root:not([data-theme]) [data-extra-color="gray"],
+[data-theme="shiro"] [data-extra-color="gray"] {
+  --extra-text: #616161;
+  --extra-bg: #e0e0de;
+  --extra-border: #b2b2b1;
+}
+
+[data-theme="kaki"] [data-extra-color="red"] {
+  --extra-text: #7b3732;
+  --extra-bg: #cab9a3;
+  --extra-border: #ac8a7a;
+}
+[data-theme="kaki"] [data-extra-color="orange"] {
+  --extra-text: #69442a;
+  --extra-bg: #c8bca2;
+  --extra-border: #a48f76;
+}
+[data-theme="kaki"] [data-extra-color="ochre"] {
+  --extra-text: #5b4b25;
+  --extra-bg: #c6bda1;
+  --extra-border: #9e9374;
+}
+[data-theme="kaki"] [data-extra-color="olive"] {
+  --extra-text: #4b5021;
+  --extra-bg: #c3bea0;
+  --extra-border: #969572;
+}
+[data-theme="kaki"] [data-extra-color="green"] {
+  --extra-text: #22552b;
+  --extra-bg: #bcbfa2;
+  --extra-border: #849776;
+}
+[data-theme="kaki"] [data-extra-color="teal"] {
+  --extra-text: #22544d;
+  --extra-bg: #bcbfa8;
+  --extra-border: #849786;
+}
+[data-theme="kaki"] [data-extra-color="cyan"] {
+  --extra-text: #26515e;
+  --extra-bg: #bdbeab;
+  --extra-border: #86958d;
+}
+[data-theme="kaki"] [data-extra-color="blue"] {
+  --extra-text: #2e4e72;
+  --extra-bg: #bebdae;
+  --extra-border: #899496;
+}
+[data-theme="kaki"] [data-extra-color="indigo"] {
+  --extra-text: #38438a;
+  --extra-bg: #bebaae;
+  --extra-border: #8e8fa1;
+}
+[data-theme="kaki"] [data-extra-color="violet"] {
+  --extra-text: #5d3788;
+  --extra-bg: #c3b8ae;
+  --extra-border: #9e8aa0;
+}
+[data-theme="kaki"] [data-extra-color="magenta"] {
+  --extra-text: #763068;
+  --extra-bg: #cab8ac;
+  --extra-border: #aa8692;
+}
+[data-theme="kaki"] [data-extra-color="gray"] {
+  --extra-text: #4c4c4c;
+  --extra-bg: #c3bda8;
+  --extra-border: #979385;
+}
+
+[data-theme="ekisho"] [data-extra-color="red"] {
+  --extra-text: #6d2e29;
+  --extra-bg: #b2af83;
+  --extra-border: #967f62;
+}
+[data-theme="ekisho"] [data-extra-color="orange"] {
+  --extra-text: #5d3a23;
+  --extra-bg: #afb182;
+  --extra-border: #8f855f;
+}
+[data-theme="ekisho"] [data-extra-color="ochre"] {
+  --extra-text: #4e3f1e;
+  --extra-bg: #acb281;
+  --extra-border: #88875d;
+}
+[data-theme="ekisho"] [data-extra-color="olive"] {
+  --extra-text: #41451a;
+  --extra-bg: #aab380;
+  --extra-border: #828a5b;
+}
+[data-theme="ekisho"] [data-extra-color="green"] {
+  --extra-text: #1c4b24;
+  --extra-bg: #a3b482;
+  --extra-border: #728c5f;
+}
+[data-theme="ekisho"] [data-extra-color="teal"] {
+  --extra-text: #1b4942;
+  --extra-bg: #a3b488;
+  --extra-border: #718c6d;
+}
+[data-theme="ekisho"] [data-extra-color="cyan"] {
+  --extra-text: #1f4652;
+  --extra-bg: #a4b38b;
+  --extra-border: #738a74;
+}
+[data-theme="ekisho"] [data-extra-color="blue"] {
+  --extra-text: #264364;
+  --extra-bg: #a5b38e;
+  --extra-border: #76897c;
+}
+[data-theme="ekisho"] [data-extra-color="indigo"] {
+  --extra-text: #2f3a7e;
+  --extra-bg: #a6b090;
+  --extra-border: #7a8588;
+}
+[data-theme="ekisho"] [data-extra-color="violet"] {
+  --extra-text: #522e7a;
+  --extra-bg: #abae90;
+  --extra-border: #8a7f86;
+}
+[data-theme="ekisho"] [data-extra-color="magenta"] {
+  --extra-text: #69285c;
+  --extra-bg: #b1ae8c;
+  --extra-border: #947d79;
+}
+[data-theme="ekisho"] [data-extra-color="gray"] {
+  --extra-text: #424242;
+  --extra-bg: #aab388;
+  --extra-border: #83886d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="red"] {
+    --extra-text: #d37069;
+    --extra-bg: #331f1e;
+    --extra-border: #653835;
+  }
+}
+[data-theme="kuro"] [data-extra-color="red"] {
+  --extra-text: #d37069;
+  --extra-bg: #331f1e;
+  --extra-border: #653835;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="orange"] {
+    --extra-text: #d39369;
+    --extra-bg: #33261e;
+    --extra-border: #654835;
+  }
+}
+[data-theme="kuro"] [data-extra-color="orange"] {
+  --extra-text: #d39369;
+  --extra-bg: #33261e;
+  --extra-border: #654835;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="ochre"] {
+    --extra-text: #d3b369;
+    --extra-bg: #332d1e;
+    --extra-border: #655735;
+  }
+}
+[data-theme="kuro"] [data-extra-color="ochre"] {
+  --extra-text: #d3b369;
+  --extra-bg: #332d1e;
+  --extra-border: #655735;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="olive"] {
+    --extra-text: #c9d369;
+    --extra-bg: #31331e;
+    --extra-border: #606535;
+  }
+}
+[data-theme="kuro"] [data-extra-color="olive"] {
+  --extra-text: #c9d369;
+  --extra-bg: #31331e;
+  --extra-border: #606535;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="green"] {
+    --extra-text: #69d37b;
+    --extra-bg: #1e3321;
+    --extra-border: #35653d;
+  }
+}
+[data-theme="kuro"] [data-extra-color="green"] {
+  --extra-text: #69d37b;
+  --extra-bg: #1e3321;
+  --extra-border: #35653d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="teal"] {
+    --extra-text: #69d3c5;
+    --extra-bg: #1e3330;
+    --extra-border: #35655f;
+  }
+}
+[data-theme="kuro"] [data-extra-color="teal"] {
+  --extra-text: #69d3c5;
+  --extra-bg: #1e3330;
+  --extra-border: #35655f;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="cyan"] {
+    --extra-text: #69bbd3;
+    --extra-bg: #1e2e33;
+    --extra-border: #355a65;
+  }
+}
+[data-theme="kuro"] [data-extra-color="cyan"] {
+  --extra-text: #69bbd3;
+  --extra-bg: #1e2e33;
+  --extra-border: #355a65;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="blue"] {
+    --extra-text: #699bd3;
+    --extra-bg: #1e2833;
+    --extra-border: #354c65;
+  }
+}
+[data-theme="kuro"] [data-extra-color="blue"] {
+  --extra-text: #699bd3;
+  --extra-bg: #1e2833;
+  --extra-border: #354c65;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="indigo"] {
+    --extra-text: #7784d7;
+    --extra-bg: #1e2133;
+    --extra-border: #3c4167;
+  }
+}
+[data-theme="kuro"] [data-extra-color="indigo"] {
+  --extra-text: #7784d7;
+  --extra-bg: #1e2133;
+  --extra-border: #3c4167;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="violet"] {
+    --extra-text: #a273d6;
+    --extra-bg: #281e33;
+    --extra-border: #4f3a66;
+  }
+}
+[data-theme="kuro"] [data-extra-color="violet"] {
+  --extra-text: #a273d6;
+  --extra-bg: #281e33;
+  --extra-border: #4f3a66;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="magenta"] {
+    --extra-text: #d369be;
+    --extra-bg: #331e2f;
+    --extra-border: #65355c;
+  }
+}
+[data-theme="kuro"] [data-extra-color="magenta"] {
+  --extra-text: #d369be;
+  --extra-bg: #331e2f;
+  --extra-border: #65355c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) [data-extra-color="gray"] {
+    --extra-text: #9e9e9e;
+    --extra-bg: #282828;
+    --extra-border: #4d4d4d;
+  }
+}
+[data-theme="kuro"] [data-extra-color="gray"] {
+  --extra-text: #9e9e9e;
+  --extra-bg: #282828;
+  --extra-border: #4d4d4d;
+}

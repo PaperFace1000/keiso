@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Icons</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+.dot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); border-top: var(--line) solid var(--color-border); border-left: var(--line) solid var(--color-border); }
+.dot-cell { display: grid; justify-items: center; gap: var(--space-2); padding: var(--space-4) var(--space-2) var(--space-3); border-right: var(--line) solid var(--color-border); border-bottom: var(--line) solid var(--color-border); background: var(--color-surface); }
+.dot-cell code { font-size: 11px; color: var(--color-muted); }
+.line-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 0; border-top: var(--line) solid var(--color-border); border-left: var(--line) solid var(--color-border); }
+.line-cell { display: grid; justify-items: center; gap: 6px; padding: var(--space-3) 4px; border-right: var(--line) solid var(--color-border); border-bottom: var(--line) solid var(--color-border); background: var(--color-surface); min-width: 0; }
+.line-cell .k-icon { width: 24px; height: 24px; }
+.line-cell code { font-size: 10px; color: var(--color-muted); overflow-wrap: anywhere; text-align: center; }
+.sizes { display: flex; gap: var(--space-5); align-items: end; flex-wrap: wrap; padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); }
+.sizes figure { margin: 0; display: grid; justify-items: center; gap: var(--space-2); }
+.role-icons { display: flex; gap: var(--space-5); flex-wrap: wrap; }
+.role-icons figure { margin: 0; display: grid; justify-items: center; gap: var(--space-2); color: var(--k-role); }
+.zoom { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-4); }
+.zoom__box { padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); display: grid; justify-items: center; gap: var(--space-2); }
+.zoom__box .k-icon { width: min(100%, 256px); height: auto; aspect-ratio: 1; }
+.zoom__grid { background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: calc(100% / 32) calc(100% / 32); }
+@media (max-width: 560px) { .zoom { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Icons</span>
+    <h1>アイコン</h1>
+    <p>2 種類を使い分けます。ボタン・メニュー・入力欄などの普段の操作には細い線のアイコン（Phosphor Icons の Light、MIT）を 20px で使います。状態の印・空の表示・見出しなど目立たせたい所には、32 格子の丸ドットで描いた自作のアイコンを 64px で使います。ドットのアイコンは 48px より小さくしないこと（点がつながって線に見えるため）。</p>
+  </section>
+
+  <section class="sample-section" aria-labelledby="size-title">
+    <div class="k-heading"><h2 id="size-title">大きさ</h2><span class="k-label">48 / 64 / 96 / 128 px</span></div>
+    <div class="sizes">
+      <figure><span class="k-icon k-icon--dot48" data-icon="dot:inbox"></span><figcaption class="sample-caption">48 最小</figcaption></figure>
+      <figure><span class="k-icon k-icon--dot" data-icon="dot:inbox"></span><figcaption class="sample-caption">64 基本</figcaption></figure>
+      <figure><span class="k-icon k-icon--dot96" data-icon="dot:inbox"></span><figcaption class="sample-caption">96</figcaption></figure>
+      <figure><span class="k-icon" style="width: 128px; height: 128px;" data-icon="dot:inbox"></span><figcaption class="sample-caption">128</figcaption></figure>
+      <figure><span class="k-icon" data-icon="line:tray"></span><figcaption class="sample-caption">線 20</figcaption></figure>
+      <figure><span class="k-icon k-icon--16" data-icon="line:tray"></span><figcaption class="sample-caption">線 16</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sample-section" aria-labelledby="role-title">
+    <div class="k-heading"><h2 id="role-title">状態の印</h2><span class="k-label">role colors</span></div>
+    <p>役割の色で塗るときも、必ず名前を添えます。</p>
+    <div class="role-icons">
+      <figure class="k-role-success"><span class="k-icon k-icon--dot" data-icon="dot:success"></span><span class="k-status">Success</span></figure>
+      <figure class="k-role-info"><span class="k-icon k-icon--dot" data-icon="dot:info"></span><span class="k-status">Info</span></figure>
+      <figure class="k-role-warning"><span class="k-icon k-icon--dot" data-icon="dot:warning"></span><span class="k-status">Warning</span></figure>
+      <figure class="k-role-alert"><span class="k-icon k-icon--dot" data-icon="dot:alert"></span><span class="k-status">Alert</span></figure>
+    </div>
+  </section>
+
+  <section class="sample-section" aria-labelledby="dot-title">
+    <div class="k-heading"><h2 id="dot-title">ドットのアイコン</h2><span class="k-label" id="js-dot-count"></span></div>
+    <p>図形の定義（<code>tools/dot_icons.py</code>）から <code>tools/build.py</code> が描きます。足すときは図形を書いて作り直すだけで、手でドットを打たないこと。</p>
+    <div class="zoom">
+      <div class="zoom__box"><span class="k-icon zoom__grid" data-icon="dot:keiso"></span><span class="sample-caption">keiso の印（32 格子）</span></div>
+      <div class="zoom__box"><span class="k-icon zoom__grid" data-icon="dot:alert"></span><span class="sample-caption">alert（32 格子）</span></div>
+    </div>
+    <div id="js-dot-groups" class="sample-stack"></div>
+  </section>
+
+  <section class="sample-section" aria-labelledby="line-title">
+    <div class="k-heading"><h2 id="line-title">線のアイコン</h2><span class="k-label" id="js-line-count"></span></div>
+    <p>keiso に入れてあるものだけを並べています。足りないものは公式の配布物（npm の <code>@phosphor-icons/core</code>）の Light から写して足します（<code>docs/icons.md</code>）。</p>
+    <div class="line-grid" id="js-line"></div>
+  </section>
+</main>
+<script>
+(() => {
+  const GROUPS = {
+    状態: ['alert', 'warning', 'info', 'success', 'error', 'question'],
+    操作: ['check', 'close', 'plus', 'search', 'refresh', 'download', 'upload', 'power'],
+    もの: ['home', 'file', 'folder', 'inbox', 'image', 'mail', 'user', 'lock', 'bell', 'clock', 'calendar', 'gear', 'star', 'heart', 'wifi', 'wifi-off', 'battery', 'signal', 'terminal', 'empty'],
+    印: ['keiso'],
+  };
+  const icons = window.KEISO_ICONS;
+  const dot_total = Object.keys(icons.dot).length;
+  document.getElementById('js-dot-count').textContent = `${dot_total} icons`;
+  document.getElementById('js-dot-groups').innerHTML = Object.entries(GROUPS).map(([group, names]) => `
+    <span class="sample-caption">${group}</span>
+    <div class="dot-grid">${names.map((n) => `<div class="dot-cell"><span class="k-icon k-icon--dot" data-icon="dot:${n}"></span><code>${n}</code></div>`).join('')}</div>`).join('');
+  const line_names = Object.keys(icons.line);
+  document.getElementById('js-line-count').textContent = `${line_names.length} icons`;
+  document.getElementById('js-line').innerHTML = line_names.map((n) => `<div class="line-cell"><span data-icon="line:${n}"></span><code>${n}</code></div>`).join('');
+})();
+</script>
+</body>
+</html>

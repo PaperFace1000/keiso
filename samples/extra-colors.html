@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Extra colors</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+.chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); gap: var(--space-3); }
+.chip { display: grid; gap: var(--space-2); padding: var(--space-3); background: var(--extra-bg); border: var(--line) solid var(--extra-border); color: var(--extra-text); box-shadow: inset var(--bar) 0 0 var(--extra-text); }
+.chip strong { font-size: 15px; }
+.chip code { font-size: 11px; color: inherit; }
+.tag-demo { display: grid; gap: var(--space-3); padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); }
+.label-row { display: flex; gap: var(--space-3); align-items: center; font-size: 14px; }
+.label-row i { width: 8px; height: 8px; background: var(--extra-text); flex: none; }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Extra colors</span>
+    <h1>分類の色</h1>
+    <p>タグ・分類・グラフの系列など、意味の無い区別に使う 12 色です。役割の色（SUCCESS など）とは別に使い、状態の意味を持たせないこと。どの色も今のテーマのサーフェスと自分の地の上で、文字のコントラスト比が 4.5 以上あります。要素に <code>data-extra-color="blue"</code> を付けて <code>var(--extra-text)</code> などで塗ります。</p>
+  </section>
+
+  <section class="sample-section" aria-labelledby="chips-title">
+    <div class="k-heading"><h2 id="chips-title">12 色</h2><span class="k-label">tokens/extra-colors.json</span></div>
+    <div class="chips" id="js-chips"></div>
+  </section>
+
+  <section class="sample-section" aria-labelledby="usage-title">
+    <div class="k-heading"><h2 id="usage-title">使い方</h2></div>
+    <div class="tag-demo">
+      <span class="sample-caption">タグ</span>
+      <div class="sample-row" id="js-tags"></div>
+      <span class="sample-caption">一覧の分類の印（四角い点 + 名前）</span>
+      <div class="sample-stack">
+        <div class="label-row" data-extra-color="blue"><i></i>設計の見直し</div>
+        <div class="label-row" data-extra-color="ochre"><i></i>倉庫 B の棚卸し</div>
+        <div class="label-row" data-extra-color="teal"><i></i>週次の点検</div>
+        <div class="label-row" data-extra-color="violet"><i></i>読みかけの資料</div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  const COLORS = [['red', '赤'], ['orange', '橙'], ['ochre', '黄土'], ['olive', 'オリーブ'], ['green', '緑'], ['teal', '青緑'],
+    ['cyan', '水'], ['blue', '青'], ['indigo', '藍'], ['violet', '紫'], ['magenta', '赤紫'], ['gray', '灰']];
+  document.getElementById('js-chips').innerHTML = COLORS.map(([key, label]) => `
+    <div class="chip" data-extra-color="${key}"><strong>${label}</strong><code>${key}</code></div>`).join('');
+  document.getElementById('js-tags').innerHTML = COLORS.map(([key, label]) => `<span class="k-tag" data-extra-color="${key}">${key}</span>`).join('');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+/* keiso の部品の見本の CSS。アプリへはこのファイルを配らず、docs/ の決まりとこの見た目に合わせて各アプリで作ること。
+   色は tokens/themes.css の変数だけを使う。ここに色を直接書かない */
+
+/* ── 土台 ───────────────────────────── */
+:root {
+  --font-sans: "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, monospace;
+  --font-dot: "Doto", var(--font-mono);
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px; --space-7: 48px;
+  --line: 1px;
+  --radius: 0;
+  --bar: 2px;              /* 状態を示す帯・選択の印の太さ */
+  --ease: cubic-bezier(.2, 0, 0, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--color-base);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.7;
+  font-feature-settings: "palt" 0;
+}
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+::selection { background: var(--color-selection-bg); color: var(--color-selection-text); }
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.4; text-wrap: balance; }
+p { margin: 0; }
+code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
+
+/* 地の点の格子。画面の地だけに使い、欄の中には敷かない */
+.k-dotgrid {
+  background-image: radial-gradient(circle, var(--color-grid-dot) 1px, transparent 1.2px);
+  background-size: 16px 16px;
+  background-position: 8px 8px;
+}
+
+/* ── 文字の役割 ─────────────────────────── */
+/* 小さな英字の見出し。常に大文字・等幅・字間を開ける */
+.k-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+/* 角括弧で囲む印。[ ALERT ] のように状態・区分を示す */
+.k-bracket::before { content: "[\00a0"; }
+.k-bracket::after { content: "\00a0]"; }
+/* ドットの数字。画面の主役の数字・時刻・件数に使う（英数字だけ。日本語には使わない） */
+.k-dot {
+  font-family: var(--font-dot);
+  font-weight: 800;
+  font-variation-settings: "ROND" 100;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.k-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.k-muted { color: var(--color-muted); }
+
+/* ── アイコン ─────────────────────────── */
+.k-icon { display: inline-block; width: 20px; height: 20px; flex: none; vertical-align: -0.25em; color: inherit; }
+.k-icon svg { display: block; width: 100%; height: 100%; }
+.k-icon--16 { width: 16px; height: 16px; }
+.k-icon--dot { width: 64px; height: 64px; }
+.k-icon--dot48 { width: 48px; height: 48px; }
+.k-icon--dot96 { width: 96px; height: 96px; }
+
+/* ── 見出しの段 ───────────────────────── */
+/* 番号つきの章の見出し。番号は本当に順番があるときだけ付ける */
+.k-heading { display: flex; align-items: baseline; gap: var(--space-3); padding-bottom: var(--space-2); border-bottom: var(--line) solid var(--color-border); }
+.k-heading h2 { font-size: 18px; font-weight: 700; }
+.k-heading .k-label { margin-left: auto; }
+
+/* 区切りの線。真ん中に小さな四角を置く（機械の画面のメニューにある区切り） */
+.k-rule { display: flex; align-items: center; gap: var(--space-2); color: var(--color-border-strong); }
+.k-rule::before, .k-rule::after { content: ""; height: var(--line); background: var(--color-border); flex: 1; }
+.k-rule > i { width: 5px; height: 5px; background: currentColor; display: block; }
+
+/* ── 枠 ─────────────────────────────── */
+.k-panel { background: var(--color-surface); border: var(--line) solid var(--color-border); padding: var(--space-4); }
+/* 四隅だけに鉤を付けた枠。ページに 1〜2 か所、目立たせたい欄にだけ使う */
+.k-frame { position: relative; padding: var(--space-4); }
+.k-frame::before, .k-frame::after {
+  content: ""; position: absolute; width: 10px; height: 10px; pointer-events: none;
+  border-color: var(--color-border-strong); border-style: solid;
+}
+.k-frame::before { top: 0; left: 0; border-width: var(--line) 0 0 var(--line); }
+.k-frame::after { right: 0; bottom: 0; border-width: 0 var(--line) var(--line) 0; }
+
+/* ── ボタン ───────────────────────────── */
+.k-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 36px; padding: 0 var(--space-4);
+  font: 500 14px/1 var(--font-sans); letter-spacing: 0.02em;
+  border: var(--line) solid var(--color-border-strong); border-radius: var(--radius);
+  background: transparent; color: var(--color-text); cursor: pointer;
+  transition: background-color .12s var(--ease), color .12s var(--ease);
+}
+.k-btn:hover { background: var(--color-sunken); }
+.k-btn:disabled, .k-btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+/* 主な操作は文字の色で塗る（反転）。1 画面に 1 つだけ */
+.k-btn--primary { background: var(--color-text); border-color: var(--color-text); color: var(--color-base); }
+.k-btn--primary:hover { background: var(--color-text); color: var(--color-base); box-shadow: inset 0 0 0 2px var(--color-base); }
+/* 消す・取り消せない操作 */
+.k-btn--alert { background: var(--color-alert); border-color: var(--color-alert); color: var(--color-on-alert); }
+.k-btn--alert:hover { background: var(--color-alert); box-shadow: inset 0 0 0 2px var(--color-on-alert); }
+.k-btn--ghost { border-color: transparent; }
+.k-btn--sm { min-height: 28px; padding: 0 var(--space-3); font-size: 13px; }
+.k-btn--icon { width: 36px; padding: 0; }
+.k-btn--icon.k-btn--sm { width: 28px; }
+/* 処理中。押せなくし、先頭に点滅するカーソルを出す */
+.k-btn[aria-busy="true"] { pointer-events: none; }
+.k-btn[aria-busy="true"]::before { content: ""; width: 7px; height: 12px; background: currentColor; animation: k-blink 1s steps(1) infinite; }
+
+/* ── 入力欄 ──────────────────────────── */
+.k-field { display: grid; gap: var(--space-1); min-width: 0; }
+.k-field > label, .k-field > .k-field__label { font-size: 13px; font-weight: 500; }
+.k-field__hint { font-size: 12px; color: var(--color-muted); }
+.k-field__error { font-size: 12px; color: var(--color-alert); display: flex; gap: var(--space-1); align-items: center; }
+.k-input, .k-select, .k-textarea {
+  width: 100%; min-height: 36px; padding: 6px var(--space-3);
+  font: 15px/1.5 var(--font-sans); color: var(--color-text);
+  background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius);
+}
+.k-input::placeholder, .k-textarea::placeholder { color: var(--color-muted); opacity: .8; }
+.k-input:focus-visible, .k-select:focus-visible, .k-textarea:focus-visible { outline-offset: 0; }
+.k-input[aria-invalid="true"] { border-color: var(--color-alert); box-shadow: inset var(--bar) 0 0 var(--color-alert); }
+.k-textarea { min-height: 96px; resize: vertical; }
+.k-select { appearance: none; height: 36px; padding-block: 0; padding-right: 32px; background-image: linear-gradient(45deg, transparent 50%, var(--color-text) 50%), linear-gradient(-45deg, transparent 50%, var(--color-text) 50%); background-size: 5px 5px; background-position: right 16px center, right 11px center; background-repeat: no-repeat; }
+/* プロンプトの付いた入力欄（検索・コマンド） */
+.k-prompt { display: flex; align-items: center; gap: var(--space-2); border: var(--line) solid var(--color-border-strong); background: var(--color-surface); padding: 0 var(--space-3); }
+.k-prompt::before { content: ">"; font-family: var(--font-mono); color: var(--color-accent-strong); font-weight: 700; }
+.k-prompt input { flex: 1; min-width: 0; border: 0; background: transparent; color: inherit; font: 15px/1.5 var(--font-mono); padding: 7px 0; }
+.k-prompt input:focus-visible { outline: none; }
+.k-prompt:focus-within { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+/* チェックボックス・ラジオ: 四角とひし形。印は塗りの四角 */
+.k-check { display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer; font-size: 14px; }
+.k-check input { appearance: none; margin: 0; width: 16px; height: 16px; border: var(--line) solid var(--color-border-strong); background: var(--color-surface); display: grid; place-content: center; cursor: pointer; }
+.k-check input::before { content: ""; width: 8px; height: 8px; background: var(--color-text); transform: scale(0); transition: transform .1s var(--ease); }
+.k-check input:checked::before { transform: scale(1); }
+.k-check input[type="radio"] { transform: rotate(45deg); width: 14px; height: 14px; }
+.k-check input[type="radio"]::before { width: 6px; height: 6px; }
+.k-check input:disabled { opacity: .45; }
+
+/* 切り替え: 四角いつまみ。入のとき文字で ON を出す */
+.k-switch { display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer; font-size: 14px; }
+.k-switch input { appearance: none; margin: 0; width: 40px; height: 20px; border: var(--line) solid var(--color-border-strong); background: var(--color-surface); position: relative; cursor: pointer; }
+.k-switch input::before { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; background: var(--color-muted); transition: transform .15s var(--ease); }
+.k-switch input:checked { background: var(--color-text); border-color: var(--color-text); }
+.k-switch input:checked::before { transform: translateX(20px); background: var(--color-base); }
+.k-switch__state { font: 500 11px/1 var(--font-mono); letter-spacing: .14em; color: var(--color-muted); min-width: 3ch; }
+
+/* 区切りの選択（タブのように並べた選択肢） */
+.k-segment { display: inline-flex; border: var(--line) solid var(--color-border-strong); }
+.k-segment button { font: 500 12px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; padding: 8px 12px; border: 0; background: transparent; color: var(--color-muted); cursor: pointer; }
+.k-segment button + button { border-left: var(--line) solid var(--color-border); }
+.k-segment button[aria-pressed="true"] { background: var(--color-text); color: var(--color-base); }
+
+/* ── 印・タグ ─────────────────────────── */
+.k-tag {
+  display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px;
+  font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase;
+  border: var(--line) solid var(--extra-border, var(--color-border-strong)); color: var(--extra-text, var(--color-text)); background: var(--extra-bg, transparent);
+}
+/* 状態の印。四角い点 + 大文字の名前。色だけに頼らず必ず名前を書く */
+.k-status { display: inline-flex; align-items: center; gap: 6px; font: 500 11px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--k-role, var(--color-muted)); }
+.k-status::before { content: ""; width: 7px; height: 7px; background: currentColor; }
+.k-status--live::before { animation: k-blink 1.2s steps(1) infinite; }
+.k-role-success { --k-role: var(--color-success); --k-role-bg: var(--color-success-bg); --k-role-border: var(--color-success-border); }
+.k-role-info { --k-role: var(--color-info); --k-role-bg: var(--color-info-bg); --k-role-border: var(--color-info-border); }
+.k-role-warning { --k-role: var(--color-warning); --k-role-bg: var(--color-warning-bg); --k-role-border: var(--color-warning-border); }
+.k-role-alert { --k-role: var(--color-alert); --k-role-bg: var(--color-alert-bg); --k-role-border: var(--color-alert-border); }
+.k-count { font: 600 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; padding: 3px 6px; background: var(--color-text); color: var(--color-base); }
+
+/* ── 知らせの欄 ───────────────────────── */
+/* 左の帯 + 印 + 本文。役割は .k-role-* で選ぶ */
+.k-notice {
+  display: grid; grid-template-columns: auto 1fr auto; gap: var(--space-1) var(--space-3); align-items: start;
+  padding: var(--space-3) var(--space-4);
+  background: var(--k-role-bg, var(--color-surface)); border: var(--line) solid var(--k-role-border, var(--color-border));
+  box-shadow: inset var(--bar) 0 0 var(--k-role, var(--color-border-strong));
+}
+.k-notice > .k-icon { color: var(--k-role); margin-top: 2px; }
+.k-notice__title { font: 600 11px/1.6 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--k-role); }
+.k-notice__body { grid-column: 2; font-size: 14px; }
+.k-notice__close { grid-row: 1 / span 2; grid-column: 3; }
+
+/* トースト: 画面の下から出る短い知らせ。黒地（文字の色）に地の色の文字 */
+.k-toast { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); background: var(--color-text); color: var(--color-base); font-size: 14px; box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); max-width: 28rem; }
+.k-toast .k-status { color: inherit; }
+.k-toast__action { margin-left: auto; font: 600 12px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; background: transparent; border: 0; color: inherit; cursor: pointer; padding: 4px; text-decoration: underline; text-underline-offset: .3em; }
+
+/* ── 一覧 ───────────────────────────── */
+.k-list { list-style: none; margin: 0; padding: 0; border-top: var(--line) solid var(--color-border); }
+.k-list > li { border-bottom: var(--line) solid var(--color-border); }
+.k-row { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-3); min-height: 44px; position: relative; color: inherit; }
+.k-row:hover { background: var(--color-sunken); text-decoration: none; }
+.k-row__main { flex: 1; min-width: 0; }
+.k-row__title { display: block; font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.k-row__meta { display: block; font-size: 12px; color: var(--color-muted); }
+/* 選んでいる行は反転し、先頭に ▸ を出す（機械の画面のメニューのように） */
+.k-row[aria-current="true"], .k-row[aria-selected="true"] { background: var(--color-selection-bg); color: var(--color-selection-text); }
+.k-row[aria-current="true"] .k-row__meta, .k-row[aria-selected="true"] .k-row__meta { color: inherit; opacity: .75; }
+.k-row[aria-current="true"] .k-status, .k-row[aria-selected="true"] .k-status { color: inherit; }
+.k-row::before { content: "▸"; font-family: var(--font-mono); width: 1ch; flex: none; visibility: hidden; }
+.k-row[aria-current="true"]::before, .k-row[aria-selected="true"]::before { visibility: visible; }
+
+/* 表 */
+.k-table-wrap { overflow-x: auto; border: var(--line) solid var(--color-border); }
+.k-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.k-table th { font: 500 11px/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); text-align: left; padding: 10px var(--space-3); border-bottom: var(--line) solid var(--color-border-strong); background: var(--color-surface); white-space: nowrap; }
+.k-table td { padding: 10px var(--space-3); border-bottom: var(--line) solid var(--color-border); vertical-align: middle; }
+.k-table tr:last-child td { border-bottom: 0; }
+.k-table .is-num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.k-table tbody tr:hover { background: var(--color-sunken); }
+
+/* 値の一覧（見出しと値の組） */
+.k-kv { display: grid; grid-template-columns: max-content 1fr; gap: var(--space-2) var(--space-5); margin: 0; font-size: 14px; }
+.k-kv dt { font: 500 11px/1.9 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+.k-kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+
+/* ── 数字の欄 ─────────────────────────── */
+.k-stat { display: grid; gap: var(--space-2); padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); min-width: 0; }
+.k-stat__value { font-size: 44px; }
+.k-stat__value small { font: 500 13px/1 var(--font-mono); letter-spacing: .08em; margin-left: 6px; color: var(--color-muted); }
+.k-stat__delta { font: 500 12px/1 var(--font-mono); color: var(--k-role, var(--color-muted)); }
+
+/* 進み具合: 区切った目盛り。数字を必ず横に出す */
+.k-meter { display: grid; grid-template-columns: 1fr auto; gap: var(--space-2); align-items: center; }
+.k-meter__track { height: 8px; background-image: repeating-linear-gradient(90deg, var(--color-border) 0 6px, transparent 6px 8px); position: relative; }
+.k-meter__fill { position: absolute; inset: 0 auto 0 0; background-image: repeating-linear-gradient(90deg, var(--k-role, var(--color-text)) 0 6px, transparent 6px 8px); }
+.k-meter__value { font: 500 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; min-width: 4ch; text-align: right; }
+
+/* 読み込み中: 点が順に灯る */
+.k-loader { display: inline-flex; gap: 4px; }
+.k-loader i { width: 5px; height: 5px; background: currentColor; opacity: .2; animation: k-step 1.2s steps(1) infinite; }
+.k-loader i:nth-child(2) { animation-delay: .2s; }
+.k-loader i:nth-child(3) { animation-delay: .4s; }
+.k-loader i:nth-child(4) { animation-delay: .6s; }
+
+/* 空の表示: ドットのアイコン + 説明 + 次の操作 */
+.k-empty { display: grid; justify-items: center; text-align: center; gap: var(--space-3); padding: var(--space-7) var(--space-4); border: var(--line) dashed var(--color-border-strong); color: var(--color-muted); }
+.k-empty h3 { color: var(--color-text); font-size: 16px; }
+
+/* ── 画面の骨組み ──────────────────────── */
+.k-header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--color-base); border-bottom: var(--line) solid var(--color-border); }
+.k-header__inner { display: flex; align-items: center; gap: var(--space-4); min-height: 52px; max-width: 76rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.k-logo { display: inline-flex; align-items: center; gap: 8px; font: 700 16px/1 var(--font-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--color-text); }
+.k-logo .k-icon { width: 22px; height: 22px; color: var(--color-accent); }
+.k-logo:hover { text-decoration: none; }
+.k-nav { display: flex; gap: var(--space-1); flex-wrap: wrap; }
+.k-nav a { font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; padding: 8px 10px; color: var(--color-muted); }
+.k-nav a:hover { color: var(--color-text); text-decoration: none; }
+.k-nav a[aria-current="page"] { color: var(--color-text); box-shadow: inset 0 calc(-1 * var(--bar)) 0 var(--color-accent); }
+.k-page { max-width: 76rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: var(--space-6) var(--space-7); display: grid; gap: var(--space-7); }
+.k-page--narrow { max-width: 48rem; }
+.k-page--reading { max-width: 64rem; }
+
+/* タブ */
+.k-tabs { display: flex; gap: var(--space-4); border-bottom: var(--line) solid var(--color-border); overflow-x: auto; }
+.k-tabs button { font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; padding: 12px 0; border: 0; background: none; color: var(--color-muted); cursor: pointer; white-space: nowrap; box-shadow: inset 0 0 0 transparent; }
+.k-tabs button[aria-selected="true"] { color: var(--color-text); box-shadow: inset 0 calc(-1 * var(--bar)) 0 var(--color-text); }
+
+/* ダイアログ */
+.k-dialog { border: var(--line) solid var(--color-border-strong); background: var(--color-surface); color: var(--color-text); padding: 0; width: min(32rem, calc(100vw - 32px)); }
+.k-dialog::backdrop { background: rgba(0, 0, 0, .45); }
+.k-dialog__head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-bottom: var(--line) solid var(--color-border); }
+.k-dialog__head h3 { font-size: 16px; flex: 1; }
+.k-dialog__body { padding: var(--space-4); font-size: 14px; display: grid; gap: var(--space-3); }
+.k-dialog__foot { display: flex; justify-content: flex-end; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-top: var(--line) solid var(--color-border); background: var(--color-base); }
+
+/* キー */
+kbd, .k-kbd { display: inline-block; min-width: 1.8em; padding: 1px 6px; text-align: center; font: 500 11px/1.6 var(--font-mono); border: var(--line) solid var(--color-border-strong); border-bottom-width: 2px; background: var(--color-surface); }
+
+/* 動き */
+@keyframes k-blink { 50% { opacity: 0; } }
+@keyframes k-step { 0%, 24% { opacity: 1; } 25%, 100% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

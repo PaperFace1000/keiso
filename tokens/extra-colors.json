@@ -1,0 +1,358 @@
+[
+  {
+    "theme": "shiro",
+    "colors": [
+      {
+        "key": "red",
+        "label": "赤",
+        "text": "#96332c",
+        "bg": "#e8dad6",
+        "border": "#ca9e99"
+      },
+      {
+        "key": "orange",
+        "label": "橙",
+        "text": "#92542b",
+        "bg": "#e8dfd6",
+        "border": "#c8ad98"
+      },
+      {
+        "key": "ochre",
+        "label": "黄土",
+        "text": "#7c6224",
+        "bg": "#e7e3d6",
+        "border": "#bfb395"
+      },
+      {
+        "key": "olive",
+        "label": "オリーブ",
+        "text": "#636a1f",
+        "bg": "#e3e4d5",
+        "border": "#b3b693"
+      },
+      {
+        "key": "green",
+        "label": "緑",
+        "text": "#21722f",
+        "bg": "#d8e5d8",
+        "border": "#96ba9a"
+      },
+      {
+        "key": "teal",
+        "label": "青緑",
+        "text": "#217066",
+        "bg": "#d8e5e1",
+        "border": "#96b9b3"
+      },
+      {
+        "key": "cyan",
+        "label": "水",
+        "text": "#266d82",
+        "bg": "#d9e4e5",
+        "border": "#98b8c0"
+      },
+      {
+        "key": "blue",
+        "label": "青",
+        "text": "#2c5d96",
+        "bg": "#d9e0e5",
+        "border": "#9bb1c9"
+      },
+      {
+        "key": "indigo",
+        "label": "藍",
+        "text": "#2c3a96",
+        "bg": "#d9dbe5",
+        "border": "#9ba1c9"
+      },
+      {
+        "key": "violet",
+        "label": "紫",
+        "text": "#5d2c96",
+        "bg": "#e0d9e5",
+        "border": "#b19bc9"
+      },
+      {
+        "key": "magenta",
+        "label": "赤紫",
+        "text": "#962c81",
+        "bg": "#e8d9e2",
+        "border": "#ca9bbf"
+      },
+      {
+        "key": "gray",
+        "label": "灰",
+        "text": "#616161",
+        "bg": "#e0e0de",
+        "border": "#b2b2b1"
+      }
+    ]
+  },
+  {
+    "theme": "kaki",
+    "colors": [
+      {
+        "key": "red",
+        "label": "赤",
+        "text": "#7b3732",
+        "bg": "#cab9a3",
+        "border": "#ac8a7a"
+      },
+      {
+        "key": "orange",
+        "label": "橙",
+        "text": "#69442a",
+        "bg": "#c8bca2",
+        "border": "#a48f76"
+      },
+      {
+        "key": "ochre",
+        "label": "黄土",
+        "text": "#5b4b25",
+        "bg": "#c6bda1",
+        "border": "#9e9374"
+      },
+      {
+        "key": "olive",
+        "label": "オリーブ",
+        "text": "#4b5021",
+        "bg": "#c3bea0",
+        "border": "#969572"
+      },
+      {
+        "key": "green",
+        "label": "緑",
+        "text": "#22552b",
+        "bg": "#bcbfa2",
+        "border": "#849776"
+      },
+      {
+        "key": "teal",
+        "label": "青緑",
+        "text": "#22544d",
+        "bg": "#bcbfa8",
+        "border": "#849786"
+      },
+      {
+        "key": "cyan",
+        "label": "水",
+        "text": "#26515e",
+        "bg": "#bdbeab",
+        "border": "#86958d"
+      },
+      {
+        "key": "blue",
+        "label": "青",
+        "text": "#2e4e72",
+        "bg": "#bebdae",
+        "border": "#899496"
+      },
+      {
+        "key": "indigo",
+        "label": "藍",
+        "text": "#38438a",
+        "bg": "#bebaae",
+        "border": "#8e8fa1"
+      },
+      {
+        "key": "violet",
+        "label": "紫",
+        "text": "#5d3788",
+        "bg": "#c3b8ae",
+        "border": "#9e8aa0"
+      },
+      {
+        "key": "magenta",
+        "label": "赤紫",
+        "text": "#763068",
+        "bg": "#cab8ac",
+        "border": "#aa8692"
+      },
+      {
+        "key": "gray",
+        "label": "灰",
+        "text": "#4c4c4c",
+        "bg": "#c3bda8",
+        "border": "#979385"
+      }
+    ]
+  },
+  {
+    "theme": "ekisho",
+    "colors": [
+      {
+        "key": "red",
+        "label": "赤",
+        "text": "#6d2e29",
+        "bg": "#b2af83",
+        "border": "#967f62"
+      },
+      {
+        "key": "orange",
+        "label": "橙",
+        "text": "#5d3a23",
+        "bg": "#afb182",
+        "border": "#8f855f"
+      },
+      {
+        "key": "ochre",
+        "label": "黄土",
+        "text": "#4e3f1e",
+        "bg": "#acb281",
+        "border": "#88875d"
+      },
+      {
+        "key": "olive",
+        "label": "オリーブ",
+        "text": "#41451a",
+        "bg": "#aab380",
+        "border": "#828a5b"
+      },
+      {
+        "key": "green",
+        "label": "緑",
+        "text": "#1c4b24",
+        "bg": "#a3b482",
+        "border": "#728c5f"
+      },
+      {
+        "key": "teal",
+        "label": "青緑",
+        "text": "#1b4942",
+        "bg": "#a3b488",
+        "border": "#718c6d"
+      },
+      {
+        "key": "cyan",
+        "label": "水",
+        "text": "#1f4652",
+        "bg": "#a4b38b",
+        "border": "#738a74"
+      },
+      {
+        "key": "blue",
+        "label": "青",
+        "text": "#264364",
+        "bg": "#a5b38e",
+        "border": "#76897c"
+      },
+      {
+        "key": "indigo",
+        "label": "藍",
+        "text": "#2f3a7e",
+        "bg": "#a6b090",
+        "border": "#7a8588"
+      },
+      {
+        "key": "violet",
+        "label": "紫",
+        "text": "#522e7a",
+        "bg": "#abae90",
+        "border": "#8a7f86"
+      },
+      {
+        "key": "magenta",
+        "label": "赤紫",
+        "text": "#69285c",
+        "bg": "#b1ae8c",
+        "border": "#947d79"
+      },
+      {
+        "key": "gray",
+        "label": "灰",
+        "text": "#424242",
+        "bg": "#aab388",
+        "border": "#83886d"
+      }
+    ]
+  },
+  {
+    "theme": "kuro",
+    "colors": [
+      {
+        "key": "red",
+        "label": "赤",
+        "text": "#d37069",
+        "bg": "#331f1e",
+        "border": "#653835"
+      },
+      {
+        "key": "orange",
+        "label": "橙",
+        "text": "#d39369",
+        "bg": "#33261e",
+        "border": "#654835"
+      },
+      {
+        "key": "ochre",
+        "label": "黄土",
+        "text": "#d3b369",
+        "bg": "#332d1e",
+        "border": "#655735"
+      },
+      {
+        "key": "olive",
+        "label": "オリーブ",
+        "text": "#c9d369",
+        "bg": "#31331e",
+        "border": "#606535"
+      },
+      {
+        "key": "green",
+        "label": "緑",
+        "text": "#69d37b",
+        "bg": "#1e3321",
+        "border": "#35653d"
+      },
+      {
+        "key": "teal",
+        "label": "青緑",
+        "text": "#69d3c5",
+        "bg": "#1e3330",
+        "border": "#35655f"
+      },
+      {
+        "key": "cyan",
+        "label": "水",
+        "text": "#69bbd3",
+        "bg": "#1e2e33",
+        "border": "#355a65"
+      },
+      {
+        "key": "blue",
+        "label": "青",
+        "text": "#699bd3",
+        "bg": "#1e2833",
+        "border": "#354c65"
+      },
+      {
+        "key": "indigo",
+        "label": "藍",
+        "text": "#7784d7",
+        "bg": "#1e2133",
+        "border": "#3c4167"
+      },
+      {
+        "key": "violet",
+        "label": "紫",
+        "text": "#a273d6",
+        "bg": "#281e33",
+        "border": "#4f3a66"
+      },
+      {
+        "key": "magenta",
+        "label": "赤紫",
+        "text": "#d369be",
+        "bg": "#331e2f",
+        "border": "#65355c"
+      },
+      {
+        "key": "gray",
+        "label": "灰",
+        "text": "#9e9e9e",
+        "bg": "#282828",
+        "border": "#4d4d4d"
+      }
+    ]
+  }
+]

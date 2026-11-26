@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Patterns</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+/* この見本だけで使う配置。部品の見た目は kit.css に寄せること */
+.sx { display: grid; gap: var(--space-4); min-width: 0; }
+.sx__lead { font-size: 13px; color: var(--color-muted); max-width: 48rem; }
+.sx__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--space-4); align-items: start; }
+
+/* サイドバー＋一覧 */
+.px-split { display: grid; grid-template-columns: 14rem 1fr; border: var(--line) solid var(--color-border); background: var(--color-surface); min-height: 20rem; }
+.px-split__side { border-right: var(--line) solid var(--color-border); padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5); display: grid; align-content: start; gap: var(--space-2); }
+.px-split__main { padding: var(--space-3) var(--space-4) var(--space-3) var(--space-5); min-width: 0; display: grid; align-content: start; gap: var(--space-3); }
+@media (max-width: 40rem) { .px-split { grid-template-columns: 1fr; } .px-split__side { border-right: 0; border-bottom: var(--line) solid var(--color-border); } }
+
+/* ツリー */
+.px-tree { list-style: none; margin: 0; padding: 0; font: 13px/1.9 var(--font-mono); }
+.px-tree ul { list-style: none; margin: 0; padding-left: 18px; border-left: var(--line) solid var(--color-border); margin-left: 6px; }
+.px-tree li > span { display: inline-flex; align-items: center; gap: 6px; padding: 0 6px; }
+.px-tree li > span[aria-selected="true"] { background: var(--color-selection-bg); color: var(--color-selection-text); }
+.px-tree .k-icon { width: 16px; height: 16px; }
+
+/* 目次 */
+.px-toc { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: toc; }
+.px-toc a { display: grid; grid-template-columns: 3ch 1fr; gap: var(--space-2); font-size: 13px; padding: 4px 8px; color: var(--color-muted); counter-increment: toc; }
+.px-toc a::before { content: counter(toc, decimal-leading-zero); font-family: var(--font-mono); font-size: 11px; line-height: 1.9; }
+.px-toc a[aria-current="true"] { color: var(--color-text); box-shadow: inset var(--bar) 0 0 var(--color-accent); }
+.px-toc a:hover { text-decoration: none; color: var(--color-text); }
+
+/* コマンドパレット */
+.px-palette { border: var(--line) solid var(--color-border-strong); background: var(--color-surface); max-width: 36rem; }
+.px-palette .k-prompt { border-width: 0 0 var(--line) 0; }
+.px-palette__group { padding: var(--space-2) var(--space-3) 0 var(--space-5); }
+.px-palette .k-list { border-top: 0; padding: 0 var(--space-3) var(--space-2); }
+.px-palette .k-list > li { border-bottom: 0; }
+.px-palette .k-row { min-height: 36px; padding: 6px var(--space-2); }
+.px-palette__foot { display: flex; gap: var(--space-4); flex-wrap: wrap; padding: var(--space-2) var(--space-3); border-top: var(--line) solid var(--color-border); font-size: 12px; color: var(--color-muted); }
+
+/* カード */
+.px-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: var(--space-3); }
+.px-card { display: grid; gap: var(--space-2); padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); color: inherit; }
+.px-card:hover { border-color: var(--color-border-strong); text-decoration: none; }
+.px-card__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
+.px-card h3 { font-size: 15px; }
+.px-card p { font-size: 13px; color: var(--color-muted); }
+.px-card__foot { display: flex; justify-content: space-between; align-items: center; padding-top: var(--space-2); border-top: var(--line) solid var(--color-border); }
+
+/* ログイン */
+.px-login { display: grid; place-items: center; padding: var(--space-7) var(--space-4); border: var(--line) solid var(--color-border); }
+.px-login__box { width: min(100%, 22rem); display: grid; gap: var(--space-4); background: var(--color-surface); }
+.px-login__brand { display: grid; justify-items: center; gap: var(--space-2); text-align: center; }
+.px-login__brand .k-icon { color: var(--color-accent); }
+
+/* 表の並べ替えの印 */
+.px-sort { display: inline-flex; align-items: center; gap: 4px; background: none; border: 0; padding: 0; font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; cursor: pointer; }
+.px-sort[aria-sort="ascending"]::after { content: "▲"; font-size: 8px; color: var(--color-text); }
+.px-sort[aria-sort="descending"]::after { content: "▼"; font-size: 8px; color: var(--color-text); }
+.px-sort[aria-sort="none"]::after { content: "△"; font-size: 8px; opacity: .5; }
+
+/* 本文 */
+.px-prose { max-width: 40rem; font-size: 15px; line-height: 1.9; display: grid; gap: var(--space-4); }
+.px-prose h3 { font-size: 18px; padding-bottom: var(--space-1); border-bottom: var(--line) solid var(--color-border); }
+.px-prose a { text-decoration: underline; text-underline-offset: 0.2em; }
+.px-prose blockquote { margin: 0; padding: var(--space-2) var(--space-4); border-left: var(--bar) solid var(--color-border-strong); color: var(--color-muted); }
+.px-prose ul { margin: 0; padding-left: 1.2em; }
+.px-prose ul li::marker { content: "■  "; font-size: .6em; color: var(--color-muted); }
+
+/* コード */
+.px-code { overflow-x: auto; margin: 0; padding: var(--space-4); background: var(--shiki-background); color: var(--shiki-foreground); border: var(--line) solid var(--color-border); font: 13px/1.7 var(--font-mono); tab-size: 2; }
+.px-code__bar { display: flex; justify-content: space-between; align-items: center; padding: 6px var(--space-3); border: var(--line) solid var(--color-border); border-bottom: 0; background: var(--color-sunken); }
+.t-k { color: var(--shiki-token-keyword); } .t-s { color: var(--shiki-token-string); } .t-c { color: var(--shiki-token-comment); font-style: italic; }
+.t-f { color: var(--shiki-token-function); } .t-n { color: var(--shiki-token-constant); } .t-p { color: var(--shiki-token-punctuation); }
+
+/* 差分 */
+.px-diff { overflow-x: auto; border: var(--line) solid var(--color-border); background: var(--color-surface); font: 13px/1.7 var(--font-mono); }
+.px-diff__line { display: grid; grid-template-columns: 4ch 2ch 1fr; white-space: pre; padding-right: var(--space-3); min-width: max-content; }
+.px-diff__line > span:first-child { color: var(--color-muted); text-align: right; padding-right: 1ch; }
+.px-diff__line.is-add { background: var(--color-success-bg); color: var(--color-success); box-shadow: inset var(--bar) 0 0 var(--color-success); }
+.px-diff__line.is-del { background: var(--color-alert-bg); color: var(--color-alert); box-shadow: inset var(--bar) 0 0 var(--color-alert); }
+
+/* ログ */
+.px-log { overflow-x: auto; background: var(--color-sunken); border: var(--line) solid var(--color-border); padding: var(--space-3) var(--space-4); font: 12.5px/1.9 var(--font-mono); }
+.px-log__line { display: grid; grid-template-columns: 9ch 10ch 1fr; gap: var(--space-3); white-space: nowrap; min-width: max-content; }
+.px-log__line time { color: var(--color-muted); }
+.px-log__cursor::after { content: ""; display: inline-block; width: 7px; height: 13px; background: var(--color-text); vertical-align: -2px; animation: k-blink 1s steps(1) infinite; }
+
+/* ページ送り */
+.px-pager { display: flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; font: 500 12px/1 var(--font-mono); }
+.px-pager a, .px-pager span { min-width: 32px; height: 32px; display: inline-grid; place-items: center; padding: 0 8px; border: var(--line) solid transparent; }
+.px-pager a { border-color: var(--color-border); }
+.px-pager a:hover { border-color: var(--color-border-strong); text-decoration: none; }
+.px-pager [aria-current="page"] { background: var(--color-text); color: var(--color-base); border-color: var(--color-text); }
+.px-pager__info { margin-left: auto; color: var(--color-muted); }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+
+<div class="sx">
+  <span class="k-label k-bracket">Patterns</span>
+  <h1 style="font-size: 28px;">画面の組み立てと中身の見せ方</h1>
+  <p class="sx__lead">部品を組み合わせた画面のかたまりの見本です。選んでいるものは反転して先頭に ▸ を出し、小見出しは等幅の大文字にそろえます。四隅の鉤（.k-frame）は 1 ページに 1〜2 か所だけにします。</p>
+</div>
+
+<!-- タブ -->
+<section class="sx" aria-labelledby="h-tabs">
+  <div class="k-heading"><h2 id="h-tabs">タブ</h2><span class="k-label">Tabs</span></div>
+  <p class="sx__lead">選んでいるタブは文字の色の下線（2px）。名前は等幅の大文字か短い日本語にします。件数は名前の右に .k-count で出します。</p>
+  <div class="k-panel" style="display: grid; gap: var(--space-4);">
+    <div class="k-tabs" role="tablist" aria-label="点検の表示">
+      <button type="button" role="tab" aria-selected="true" id="js-tab-1">Overview</button>
+      <button type="button" role="tab" aria-selected="false" id="js-tab-2">Tasks <span class="k-count">12</span></button>
+      <button type="button" role="tab" aria-selected="false" id="js-tab-3">History</button>
+      <button type="button" role="tab" aria-selected="false" id="js-tab-4">Settings</button>
+    </div>
+    <p style="font-size: 14px;">週次の点検の概要。倉庫 B の在庫の確認は 3 件が残っています。</p>
+  </div>
+</section>
+
+<!-- サイドバー -->
+<section class="sx" aria-labelledby="h-side">
+  <div class="k-heading"><h2 id="h-side">サイドバーと一覧</h2><span class="k-label">Sidebar</span></div>
+  <p class="sx__lead">左に分類、右に一覧。今いる分類と選んでいる行は反転します。選んでいる行は先頭に ▸ を出します（印の幅は行の中に取ってあり、選んでも文字は動きません）。スマホ幅では分類を上に積みます。</p>
+  <div class="px-split">
+    <nav class="px-split__side" aria-label="分類">
+      <span class="k-label">Folders</span>
+      <ul class="k-list" style="border-top: 0;">
+        <li style="border-bottom: 0;"><a class="k-row" href="#h-side" aria-current="true"><span data-icon="line:tray"></span><span class="k-row__main"><span class="k-row__title">受け取り</span></span><span class="k-num" style="font-size: 12px;">8</span></a></li>
+        <li style="border-bottom: 0;"><a class="k-row" href="#h-side"><span data-icon="line:star"></span><span class="k-row__main"><span class="k-row__title">印つき</span></span><span class="k-num" style="font-size: 12px;">3</span></a></li>
+        <li style="border-bottom: 0;"><a class="k-row" href="#h-side"><span data-icon="line:archive"></span><span class="k-row__main"><span class="k-row__title">しまった</span></span></a></li>
+        <li style="border-bottom: 0;"><a class="k-row" href="#h-side"><span data-icon="line:trash"></span><span class="k-row__main"><span class="k-row__title">ごみ箱</span></span></a></li>
+      </ul>
+    </nav>
+    <div class="px-split__main">
+      <div style="display: flex; align-items: center; gap: var(--space-2);"><span class="k-label">Inbox</span><span class="k-count">8</span><span class="k-muted" style="margin-left: auto; font-size: 12px;">3 分前に更新</span></div>
+      <ul class="k-list">
+        <li><a class="k-row" href="#h-side" aria-selected="true"><span class="k-row__main"><span class="k-row__title">倉庫 B の棚卸しの結果</span><span class="k-row__meta">在庫の差は 2 件。確認をお願いします</span></span><span class="k-status k-role-warning">Review</span></a></li>
+        <li><a class="k-row" href="#h-side"><span class="k-row__main"><span class="k-row__title">週次の点検の予定</span><span class="k-row__meta">木曜 10:00 から 30 分</span></span><span class="k-status k-role-info">New</span></a></li>
+        <li><a class="k-row" href="#h-side"><span class="k-row__main"><span class="k-row__title">発注の控え（11 月分）</span><span class="k-row__meta">添付 1 件</span></span><span class="k-status k-role-success">Done</span></a></li>
+        <li><a class="k-row" href="#h-side"><span class="k-row__main"><span class="k-row__title">空調の止まった時間の記録</span><span class="k-row__meta">02:14 から 6 分</span></span><span class="k-status k-role-alert">Alert</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ツリーと目次 -->
+<section class="sx" aria-labelledby="h-tree">
+  <div class="k-heading"><h2 id="h-tree">ツリーと目次</h2><span class="k-label">Tree / TOC</span></div>
+  <p class="sx__lead">ツリーは等幅で、階層を細い縦線で示します。目次は本当に順番がある章なので番号を付け、今読んでいる章に赤い帯を出します。</p>
+  <div class="sx__cols">
+    <div class="k-panel">
+      <span class="k-label" style="display: block; margin-bottom: var(--space-2);">Files</span>
+      <ul class="px-tree" role="tree" aria-label="ファイル">
+        <li role="treeitem" aria-expanded="true"><span><span data-icon="line:folder-open"></span>notes</span>
+          <ul role="group">
+            <li role="treeitem" aria-expanded="true"><span><span data-icon="line:folder-open"></span>2026-11</span>
+              <ul role="group">
+                <li role="treeitem"><span aria-selected="true"><span data-icon="line:file-text"></span>weekly-check.md</span></li>
+                <li role="treeitem"><span><span data-icon="line:file-text"></span>stock-b.md</span></li>
+              </ul>
+            </li>
+            <li role="treeitem" aria-expanded="false"><span><span data-icon="line:folder"></span>2026-10</span></li>
+          </ul>
+        </li>
+        <li role="treeitem"><span><span data-icon="line:file"></span>README.md</span></li>
+      </ul>
+    </div>
+    <nav class="k-panel" aria-label="目次">
+      <span class="k-label" style="display: block; margin-bottom: var(--space-2);">Contents</span>
+      <ol class="px-toc">
+        <li><a href="#h-tree">点検の目的</a></li>
+        <li><a href="#h-tree" aria-current="true">見る場所と順番</a></li>
+        <li><a href="#h-tree">記録の付け方</a></li>
+        <li><a href="#h-tree">異常があったとき</a></li>
+      </ol>
+    </nav>
+  </div>
+</section>
+
+<!-- 検索 -->
+<section class="sx" aria-labelledby="h-search">
+  <div class="k-heading"><h2 id="h-search">検索とコマンドの候補</h2><span class="k-label">Command palette</span></div>
+  <p class="sx__lead">入力欄の先頭に &gt; を置き、等幅で打ちます。候補は種類ごとにまとめ、上下のキーで動かした行を反転します。下にキーの案内を出します（開いた状態の静的な見本）。</p>
+  <div class="px-palette" role="dialog" aria-label="検索">
+    <label class="k-prompt"><input type="text" value="tenk" aria-label="検索の言葉" id="js-palette-input"></label>
+    <div class="px-palette__group"><span class="k-label">Pages</span></div>
+    <ul class="k-list" role="listbox" aria-label="候補">
+      <li><div class="k-row" role="option" aria-selected="true"><span data-icon="line:file-text"></span><span class="k-row__main"><span class="k-row__title">週次の点検</span></span><kbd>↵</kbd></div></li>
+      <li><div class="k-row" role="option" aria-selected="false"><span data-icon="line:file-text"></span><span class="k-row__main"><span class="k-row__title">点検の記録の書き方</span></span></div></li>
+    </ul>
+    <div class="px-palette__group"><span class="k-label">Commands</span></div>
+    <ul class="k-list" role="listbox" aria-label="コマンド">
+      <li><div class="k-row" role="option" aria-selected="false"><span data-icon="line:plus"></span><span class="k-row__main"><span class="k-row__title">点検を新しく作る</span></span><span><kbd>Ctrl</kbd> <kbd>N</kbd></span></div></li>
+      <li><div class="k-row" role="option" aria-selected="false"><span data-icon="line:circle-half"></span><span class="k-row__main"><span class="k-row__title">テーマを切り替える</span></span></div></li>
+    </ul>
+    <div class="px-palette__foot"><span><kbd>↑</kbd> <kbd>↓</kbd> 選ぶ</span><span><kbd>↵</kbd> 開く</span><span><kbd>Esc</kbd> 閉じる</span><span class="k-num" style="margin-left: auto;">4 件</span></div>
+  </div>
+</section>
+
+<!-- カード -->
+<section class="sx" aria-labelledby="h-cards">
+  <div class="k-heading"><h2 id="h-cards">カード</h2><span class="k-label">Cards</span></div>
+  <p class="sx__lead">角は丸めず、影も付けません。なぞったときは枠を濃くするだけ。状態は右上、日付や件数は下の線の下にそろえます。</p>
+  <div class="px-cards">
+    <a class="px-card" href="#h-cards"><div class="px-card__head"><span class="k-label">Check / 047</span><span class="k-status k-role-success">Done</span></div><h3>倉庫 A の温度の確認</h3><p>午前と午後の 2 回。どちらも基準の内側でした。</p><div class="px-card__foot"><span class="k-num k-muted" style="font-size: 12px;">2026-11-24</span><span data-icon="line:caret-right"></span></div></a>
+    <a class="px-card" href="#h-cards"><div class="px-card__head"><span class="k-label">Check / 048</span><span class="k-status k-role-warning">Review</span></div><h3>倉庫 B の棚卸し</h3><p>帳簿との差が 2 件あります。担当の確認待ちです。</p><div class="px-card__foot"><span class="k-num k-muted" style="font-size: 12px;">2026-11-25</span><span data-icon="line:caret-right"></span></div></a>
+    <a class="px-card" href="#h-cards"><div class="px-card__head"><span class="k-label">Check / 049</span><span class="k-status k-role-info k-status--live">Running</span></div><h3>週次の点検</h3><p>12 項目のうち 7 項目まで記録しました。</p><div class="px-card__foot"><div class="k-meter" style="flex: 1;"><div class="k-meter__track"><div class="k-meter__fill k-role-info" style="width: 58%;"></div></div><span class="k-meter__value">58%</span></div></div></a>
+  </div>
+</section>
+
+<!-- ログイン -->
+<section class="sx" aria-labelledby="h-login">
+  <div class="k-heading"><h2 id="h-login">ログインの画面</h2><span class="k-label">Sign in</span></div>
+  <p class="sx__lead">真ん中に 1 つだけ箱を置き、四隅の鉤で囲みます。印は 64px のドットのアイコン。間違えたときは欄の下に ALERT の色で理由と直し方を書きます。</p>
+  <div class="px-login k-dotgrid">
+    <form class="px-login__box k-frame" id="js-login-form" novalidate>
+      <div class="px-login__brand"><span class="k-icon--dot" data-icon="dot:keiso"></span><span class="k-logo">keiso</span><span class="k-label">Sign in to continue</span></div>
+      <div class="k-field"><label for="js-login-id">ユーザー名</label><input class="k-input" id="js-login-id" autocomplete="username" value="test-user"></div>
+      <div class="k-field"><label for="js-login-pass">パスワード</label><input class="k-input" id="js-login-pass" type="password" autocomplete="current-password" value="xxxxxxxx" aria-invalid="true" aria-describedby="js-login-error"><span class="k-field__error" id="js-login-error"><span class="k-icon--16" data-icon="line:warning"></span>パスワードが違います。大文字と小文字を確かめてください</span></div>
+      <label class="k-check"><input type="checkbox" id="js-login-keep" checked>この端末では次から省く</label>
+      <button class="k-btn k-btn--primary" type="submit" id="js-login-submit">ログイン</button>
+    </form>
+  </div>
+</section>
+
+<!-- 表 -->
+<section class="sx" aria-labelledby="h-table">
+  <div class="k-heading"><h2 id="h-table">表</h2><span class="k-label">Table</span></div>
+  <p class="sx__lead">見出しは等幅の大文字。並べ替えている列に ▲ / ▼、並べ替えられる列に △。数字は右寄せの等幅。状態は .k-status で色と名前を両方出します。狭い画面では表の箱の中だけ横に動きます。</p>
+  <div class="k-table-wrap">
+    <table class="k-table">
+      <thead><tr>
+        <th scope="col"><button class="px-sort" type="button" aria-sort="none">ID</button></th>
+        <th scope="col"><button class="px-sort" type="button" aria-sort="none">Name</button></th>
+        <th scope="col">Status</th>
+        <th scope="col" class="is-num"><button class="px-sort" type="button" aria-sort="descending">Items</button></th>
+        <th scope="col" class="is-num"><button class="px-sort" type="button" aria-sort="none">Updated</button></th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="k-num">049</td><td>週次の点検</td><td><span class="k-status k-role-info k-status--live">Running</span></td><td class="is-num">12</td><td class="is-num">11-26 09:40</td></tr>
+        <tr><td class="k-num">048</td><td>倉庫 B の棚卸し</td><td><span class="k-status k-role-warning">Review</span></td><td class="is-num">8</td><td class="is-num">11-25 17:02</td></tr>
+        <tr><td class="k-num">047</td><td>倉庫 A の温度の確認</td><td><span class="k-status k-role-success">Done</span></td><td class="is-num">2</td><td class="is-num">11-24 15:30</td></tr>
+        <tr><td class="k-num">046</td><td>空調の止まった時間の記録</td><td><span class="k-status k-role-alert">Alert</span></td><td class="is-num">1</td><td class="is-num">11-24 02:20</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 本文 -->
+<section class="sx" aria-labelledby="h-prose">
+  <div class="k-heading"><h2 id="h-prose">本文</h2><span class="k-label">Prose</span></div>
+  <p class="sx__lead">長い文は幅を 40rem に収め、行間を 1.9 にします。本文の中のリンクだけ下線を残します。箇条書きの印は小さな四角です。</p>
+  <article class="k-panel">
+    <div class="px-prose">
+      <h3>点検の記録の付け方</h3>
+      <p>点検は、見る場所の順番を毎回そろえることが一番の近道です。順番が決まっていれば、見落としに気付きやすく、記録を後から読む人も迷いません。順番は<a href="#h-prose">見る場所の一覧</a>にまとめてあります。</p>
+      <ul>
+        <li>温度と湿度は、入口から一番遠い棚で測る</li>
+        <li>基準の外れは、数字と時刻を両方書く</li>
+        <li>写真は 1 か所につき 1 枚まで</li>
+      </ul>
+      <blockquote>迷ったら、次の人が読んで同じ場所に立てるかを考えて書く。</blockquote>
+      <p>記録を付け終えたら、状態を <code>Done</code> にします。直すことが残ったときは <code>Review</code> のまま担当に回します。</p>
+    </div>
+  </article>
+</section>
+
+<!-- コード -->
+<section class="sx" aria-labelledby="h-code">
+  <div class="k-heading"><h2 id="h-code">コード</h2><span class="k-label">Code</span></div>
+  <p class="sx__lead">色分けは Shiki の CSS 変数（--shiki-*）だけを使います。どのテーマでも、文字の色は背景の上で比 4.5 以上です。上の帯に言語とコピーのボタンを置きます。</p>
+  <div>
+    <div class="px-code__bar"><span class="k-label">TypeScript</span><button class="k-btn k-btn--sm k-btn--ghost" type="button" id="js-code-copy"><span data-icon="line:copy"></span>コピー</button></div>
+<pre class="px-code"><code><span class="t-c">// 点検の項目のうち、終わった割合を返す</span>
+<span class="t-k">export function</span> <span class="t-f">progress_of</span><span class="t-p">(</span>items<span class="t-p">:</span> <span class="t-k">readonly</span> Item<span class="t-p">[])</span><span class="t-p">:</span> <span class="t-k">number</span> <span class="t-p">{</span>
+  <span class="t-k">const</span> done_count <span class="t-p">=</span> items<span class="t-p">.</span><span class="t-f">filter</span><span class="t-p">((</span>item<span class="t-p">)</span> <span class="t-p">=&gt;</span> item<span class="t-p">.</span>status <span class="t-p">===</span> <span class="t-s">'done'</span><span class="t-p">).</span>length<span class="t-p">;</span>
+  <span class="t-k">return</span> items<span class="t-p">.</span>length <span class="t-p">===</span> <span class="t-n">0</span> <span class="t-p">?</span> <span class="t-n">0</span> <span class="t-p">:</span> done_count <span class="t-p">/</span> items<span class="t-p">.</span>length<span class="t-p">;</span>
+<span class="t-p">}</span></code></pre>
+  </div>
+</section>
+
+<!-- 差分 -->
+<section class="sx" aria-labelledby="h-diff">
+  <div class="k-heading"><h2 id="h-diff">差分</h2><span class="k-label">Diff</span></div>
+  <p class="sx__lead">足した行は SUCCESS、消した行は ALERT の色。行の左に帯と + / − を必ず出し、色だけに頼りません。</p>
+  <div class="px-diff" role="figure" aria-label="点検の記録の差分">
+    <div class="px-diff__line"><span>12</span><span> </span><span>温度: 18.2℃（基準 15〜25℃）</span></div>
+    <div class="px-diff__line is-del"><span>13</span><span>−</span><span>湿度: 記録なし</span></div>
+    <div class="px-diff__line is-add"><span>13</span><span>+</span><span>湿度: 46%（基準 40〜60%）</span></div>
+    <div class="px-diff__line is-add"><span>14</span><span>+</span><span>測った場所: 入口から一番遠い棚</span></div>
+    <div class="px-diff__line"><span>15</span><span> </span><span>写真: 1 枚</span></div>
+  </div>
+</section>
+
+<!-- ログ -->
+<section class="sx" aria-labelledby="h-log">
+  <div class="k-heading"><h2 id="h-log">ログ</h2><span class="k-label">Log</span></div>
+  <p class="sx__lead">ターミナル風の表示。時刻は等幅の薄い色、種類は役割の色の .k-status、本文は普通の文字の色です。最後の行に点滅するカーソルを置き、動いていることを示します。</p>
+  <div class="px-log k-frame" role="log" aria-label="処理の記録">
+    <div class="px-log__line"><time>09:40:02</time><span class="k-status k-role-info">Info</span><span>週次の点検を始めた（12 項目）</span></div>
+    <div class="px-log__line"><time>09:41:15</time><span class="k-status k-role-success">Success</span><span>倉庫 A の温度を記録した</span></div>
+    <div class="px-log__line"><time>09:43:48</time><span class="k-status k-role-warning">Warning</span><span>倉庫 B の湿度が基準の上限に近い（58%）</span></div>
+    <div class="px-log__line"><time>09:44:03</time><span class="k-status k-role-alert">Alert</span><span>空調 2 番の応答が無い。手で確かめること</span></div>
+    <div class="px-log__line"><time>09:44:10</time><span class="k-status">Wait</span><span class="px-log__cursor">担当の確認を待っている </span></div>
+  </div>
+</section>
+
+<!-- 空の表示 -->
+<section class="sx" aria-labelledby="h-empty">
+  <div class="k-heading"><h2 id="h-empty">空の表示</h2><span class="k-label">Empty</span></div>
+  <p class="sx__lead">データが無いときは 64px のドットのアイコン、何が無いか、次に何をすればいいかを出します。崩れた表や 0 の並んだ図は出しません。</p>
+  <div class="sx__cols">
+    <div class="k-empty"><span class="k-icon--dot" data-icon="dot:inbox"></span><h3>受け取ったものはありません</h3><p style="font-size: 13px;">新しい点検の記録が届くと、ここに並びます。</p><button class="k-btn" type="button" id="js-empty-refresh"><span data-icon="line:arrow-clockwise"></span>読み込み直す</button></div>
+    <div class="k-empty"><span class="k-icon--dot" data-icon="dot:search"></span><h3>「倉庫 C」に合うものはありません</h3><p style="font-size: 13px;">言葉を短くするか、絞り込みを外してください。</p><button class="k-btn" type="button" id="js-empty-clear"><span data-icon="line:x"></span>絞り込みを外す</button></div>
+  </div>
+</section>
+
+<!-- ページ送り -->
+<section class="sx" aria-labelledby="h-pager">
+  <div class="k-heading"><h2 id="h-pager">ページ送り</h2><span class="k-label">Pagination</span></div>
+  <p class="sx__lead">今のページは反転。番号は等幅で、右に全体の件数を出します。</p>
+  <nav class="px-pager" aria-label="ページ">
+    <a href="#h-pager" aria-label="前のページ"><span data-icon="line:caret-left"></span></a>
+    <a href="#h-pager">1</a>
+    <span aria-current="page">2</span>
+    <a href="#h-pager">3</a>
+    <span class="k-muted">…</span>
+    <a href="#h-pager">9</a>
+    <a href="#h-pager" aria-label="次のページ"><span data-icon="line:caret-right"></span></a>
+    <span class="px-pager__info">21–40 / 172</span>
+  </nav>
+</section>
+
+</main>
+<script>
+// 見本の操作: タブ・並べ替え・候補の選択を切り替えるだけ（送信はしない）
+document.addEventListener('DOMContentLoaded', () => {
+  const tabs = document.querySelectorAll('.k-tabs [role="tab"]');
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+    });
+  });
+
+  const order = { none: 'ascending', ascending: 'descending', descending: 'ascending' };
+  const sort_buttons = document.querySelectorAll('.px-sort');
+  sort_buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = order[btn.getAttribute('aria-sort')] || 'ascending';
+      sort_buttons.forEach((b) => b.setAttribute('aria-sort', 'none'));
+      btn.setAttribute('aria-sort', next);
+    });
+  });
+
+  const options = document.querySelectorAll('.px-palette [role="option"]');
+  options.forEach((opt) => {
+    opt.addEventListener('mouseenter', () => {
+      options.forEach((o) => o.setAttribute('aria-selected', String(o === opt)));
+    });
+  });
+
+  const login_form = document.getElementById('js-login-form');
+  login_form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const submit_button = document.getElementById('js-login-submit');
+    submit_button.setAttribute('aria-busy', 'true');
+    submit_button.disabled = true;
+    setTimeout(() => {
+      submit_button.removeAttribute('aria-busy');
+      submit_button.disabled = false;
+    }, 1200);
+  });
+
+  const copy_button = document.getElementById('js-code-copy');
+  copy_button.addEventListener('click', () => {
+    const code_text = document.querySelector('.px-code').innerText;
+    const done = () => { copy_button.lastChild.textContent = 'コピーした'; };
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(code_text).then(done).catch(() => {});
+    }
+  });
+});
+</script>
+</body>
+</html>
