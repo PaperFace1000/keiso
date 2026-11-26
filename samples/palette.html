@@ -13,18 +13,18 @@
 <script src="assets/sample.js"></script>
 <style>
 .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: var(--space-4); }
-.board__col { background: var(--color-base); color: var(--color-text); border: var(--line) solid var(--color-border); padding: var(--space-4); display: grid; gap: var(--space-4); align-content: start; }
+.board__col { background: var(--color-base); color: var(--color-text); border: var(--line) solid var(--color-border); padding: var(--space-4); display: grid; gap: var(--space-4); align-content: start; border-radius: var(--radius); }
 .board__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); }
 .board__head strong { font-size: 20px; }
 .swatches { display: grid; gap: 0; border-top: var(--line) solid var(--color-border); }
 .swatch { display: grid; grid-template-columns: 28px 1fr auto; gap: var(--space-2); align-items: center; padding: 6px 0; border-bottom: var(--line) solid var(--color-border); font-size: 12px; }
-.swatch i { width: 28px; height: 20px; border: var(--line) solid var(--color-border); }
+.swatch i { width: 28px; height: 20px; border: var(--line) solid var(--color-border); border-radius: 2px; }
 .swatch code { font-size: 11px; }
 .swatch__ratio { font: 500 11px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
 .swatch__ratio.is-low { color: var(--color-alert); }
 .swatch__ratio.is-na { color: var(--color-muted); }
 .roles { display: grid; gap: var(--space-2); }
-.specimen { display: grid; gap: var(--space-2); padding: var(--space-3); background: var(--color-surface); border: var(--line) solid var(--color-border); }
+.specimen { display: grid; gap: var(--space-2); padding: var(--space-3); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
 .specimen__big { font-size: 40px; }
 </style>
 </head>

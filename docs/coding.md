@@ -5,7 +5,7 @@
 - 色は `var(--color-*)`・`var(--extra-*)` だけを使う。色の値（`#fff` や `rgb()`）を直接書かない。例外は影と幕の黒の透明度だけ
 - テーマの色は `tokens/themes.css` を写した `styles/themes.css` に置き、入口で最初に読み込む。その次に全体の土台（`styles/base.css`）
 - 大きさ・余白の値は `docs/layout.md` の段階から選ぶ
-- 角は 0。`border-radius` を部品ごとに書かない
+- 角は `--radius`（6px、箱）と `--radius-sm`（4px、小さな部品と箱の中で塗る行）の 2 段だけを使う。ほかの値を部品ごとに作らない（例外: チェックボックス・キー・件数など 16px 前後の小さな四角は 2〜3px）
 - CSS のフレームワーク（Bootstrap・Tailwind など）は使わない。独自の配色と部品の見本があるため
 - 外部の CDN・Web フォントを読み込まない。Doto を使うアプリは `fonts/doto-latin.woff2` を同梱する
 - リンクの既定の下線は土台で外し、下線はなぞったときだけ（`text-underline-offset: 0.2em`）

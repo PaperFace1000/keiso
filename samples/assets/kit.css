@@ -8,7 +8,8 @@
   --font-dot: "Doto", var(--font-mono);
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px; --space-7: 48px;
   --line: 1px;
-  --radius: 0;
+  --radius: 6px;           /* 箱（欄・カード・知らせ・ダイアログ）の角。ターミナルの丸い罫線くらい */
+  --radius-sm: 4px;        /* 小さな部品（ボタン・入力欄・タグ）と、箱の中で塗る行の角 */
   --bar: 2px;              /* 状態を示す帯・選択の印の太さ */
   --ease: cubic-bezier(.2, 0, 0, 1);
 }
@@ -84,22 +85,22 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-rule > i { width: 5px; height: 5px; background: currentColor; display: block; }
 
 /* ── 枠 ─────────────────────────────── */
-.k-panel { background: var(--color-surface); border: var(--line) solid var(--color-border); padding: var(--space-4); }
+.k-panel { background: var(--color-surface); border: var(--line) solid var(--color-border); padding: var(--space-4); border-radius: var(--radius); }
 /* 四隅だけに鉤を付けた枠。ページに 1〜2 か所、目立たせたい欄にだけ使う */
-.k-frame { position: relative; padding: var(--space-4); }
+.k-frame { position: relative; padding: var(--space-4); border-radius: var(--radius); }
 .k-frame::before, .k-frame::after {
   content: ""; position: absolute; width: 10px; height: 10px; pointer-events: none;
   border-color: var(--color-border-strong); border-style: solid;
 }
-.k-frame::before { top: 0; left: 0; border-width: var(--line) 0 0 var(--line); }
-.k-frame::after { right: 0; bottom: 0; border-width: 0 var(--line) var(--line) 0; }
+.k-frame::before { top: 0; left: 0; border-width: var(--line) 0 0 var(--line); border-top-left-radius: var(--radius); }
+.k-frame::after { right: 0; bottom: 0; border-width: 0 var(--line) var(--line) 0; border-bottom-right-radius: var(--radius); }
 
 /* ── ボタン ───────────────────────────── */
 .k-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
   min-height: 36px; padding: 0 var(--space-4);
   font: 500 14px/1 var(--font-sans); letter-spacing: 0.02em;
-  border: var(--line) solid var(--color-border-strong); border-radius: var(--radius);
+  border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm);
   background: transparent; color: var(--color-text); cursor: pointer;
   transition: background-color .12s var(--ease), color .12s var(--ease);
 }
@@ -127,7 +128,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-input, .k-select, .k-textarea {
   width: 100%; min-height: 36px; padding: 6px var(--space-3);
   font: 15px/1.5 var(--font-sans); color: var(--color-text);
-  background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius);
+  background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm);
 }
 .k-input::placeholder, .k-textarea::placeholder { color: var(--color-muted); opacity: .8; }
 .k-input:focus-visible, .k-select:focus-visible, .k-textarea:focus-visible { outline-offset: 0; }
@@ -135,7 +136,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-textarea { min-height: 96px; resize: vertical; }
 .k-select { appearance: none; height: 36px; padding-block: 0; padding-right: 32px; background-image: linear-gradient(45deg, transparent 50%, var(--color-text) 50%), linear-gradient(-45deg, transparent 50%, var(--color-text) 50%); background-size: 5px 5px; background-position: right 16px center, right 11px center; background-repeat: no-repeat; }
 /* プロンプトの付いた入力欄（検索・コマンド） */
-.k-prompt { display: flex; align-items: center; gap: var(--space-2); border: var(--line) solid var(--color-border-strong); background: var(--color-surface); padding: 0 var(--space-3); }
+.k-prompt { display: flex; align-items: center; gap: var(--space-2); border: var(--line) solid var(--color-border-strong); background: var(--color-surface); padding: 0 var(--space-3); border-radius: var(--radius-sm); }
 .k-prompt::before { content: ">"; font-family: var(--font-mono); color: var(--color-accent-strong); font-weight: 700; }
 .k-prompt input { flex: 1; min-width: 0; border: 0; background: transparent; color: inherit; font: 15px/1.5 var(--font-mono); padding: 7px 0; }
 .k-prompt input:focus-visible { outline: none; }
@@ -143,23 +144,24 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 
 /* チェックボックス・ラジオ: 四角とひし形。印は塗りの四角 */
 .k-check { display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer; font-size: 14px; }
-.k-check input { appearance: none; margin: 0; width: 16px; height: 16px; border: var(--line) solid var(--color-border-strong); background: var(--color-surface); display: grid; place-content: center; cursor: pointer; }
+.k-check input { appearance: none; margin: 0; width: 16px; height: 16px; border: var(--line) solid var(--color-border-strong); background: var(--color-surface); display: grid; place-content: center; cursor: pointer; border-radius: 3px; }
 .k-check input::before { content: ""; width: 8px; height: 8px; background: var(--color-text); transform: scale(0); transition: transform .1s var(--ease); }
 .k-check input:checked::before { transform: scale(1); }
-.k-check input[type="radio"] { transform: rotate(45deg); width: 14px; height: 14px; }
+.k-check input[type="checkbox"]::before { border-radius: 1px; }
+.k-check input[type="radio"] { transform: rotate(45deg); width: 14px; height: 14px; border-radius: 2px; }
 .k-check input[type="radio"]::before { width: 6px; height: 6px; }
 .k-check input:disabled { opacity: .45; }
 
 /* 切り替え: 四角いつまみ。入のとき文字で ON を出す */
 .k-switch { display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer; font-size: 14px; }
-.k-switch input { appearance: none; margin: 0; width: 40px; height: 20px; border: var(--line) solid var(--color-border-strong); background: var(--color-surface); position: relative; cursor: pointer; }
-.k-switch input::before { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; background: var(--color-muted); transition: transform .15s var(--ease); }
+.k-switch input { appearance: none; margin: 0; width: 40px; height: 20px; border: var(--line) solid var(--color-border-strong); background: var(--color-surface); position: relative; cursor: pointer; border-radius: var(--radius-sm); }
+.k-switch input::before { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 2px; background: var(--color-muted); transition: transform .15s var(--ease); }
 .k-switch input:checked { background: var(--color-text); border-color: var(--color-text); }
 .k-switch input:checked::before { transform: translateX(20px); background: var(--color-base); }
 .k-switch__state { font: 500 11px/1 var(--font-mono); letter-spacing: .14em; color: var(--color-muted); min-width: 3ch; }
 
 /* 区切りの選択（タブのように並べた選択肢） */
-.k-segment { display: inline-flex; border: var(--line) solid var(--color-border-strong); }
+.k-segment { display: inline-flex; border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm); overflow: hidden; }
 .k-segment button { font: 500 12px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; padding: 8px 12px; border: 0; background: transparent; color: var(--color-muted); cursor: pointer; }
 .k-segment button + button { border-left: var(--line) solid var(--color-border); }
 .k-segment button[aria-pressed="true"] { background: var(--color-text); color: var(--color-base); }
@@ -169,16 +171,17 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
   display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px;
   font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase;
   border: var(--line) solid var(--extra-border, var(--color-border-strong)); color: var(--extra-text, var(--color-text)); background: var(--extra-bg, transparent);
+  border-radius: var(--radius-sm);
 }
 /* 状態の印。四角い点 + 大文字の名前。色だけに頼らず必ず名前を書く */
 .k-status { display: inline-flex; align-items: center; gap: 6px; font: 500 11px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--k-role, var(--color-muted)); }
-.k-status::before { content: ""; width: 7px; height: 7px; background: currentColor; }
+.k-status::before { content: ""; width: 7px; height: 7px; border-radius: 1px; background: currentColor; }
 .k-status--live::before { animation: k-blink 1.2s steps(1) infinite; }
 .k-role-success { --k-role: var(--color-success); --k-role-bg: var(--color-success-bg); --k-role-border: var(--color-success-border); }
 .k-role-info { --k-role: var(--color-info); --k-role-bg: var(--color-info-bg); --k-role-border: var(--color-info-border); }
 .k-role-warning { --k-role: var(--color-warning); --k-role-bg: var(--color-warning-bg); --k-role-border: var(--color-warning-border); }
 .k-role-alert { --k-role: var(--color-alert); --k-role-bg: var(--color-alert-bg); --k-role-border: var(--color-alert-border); }
-.k-count { font: 600 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; padding: 3px 6px; background: var(--color-text); color: var(--color-base); }
+.k-count { font: 600 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; padding: 3px 6px; background: var(--color-text); color: var(--color-base); border-radius: 3px; }
 
 /* ── 知らせの欄 ───────────────────────── */
 /* 左の帯 + 印 + 本文。役割は .k-role-* で選ぶ */
@@ -186,6 +189,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
   display: grid; grid-template-columns: auto 1fr auto; gap: var(--space-1) var(--space-3); align-items: start;
   padding: var(--space-3) var(--space-4);
   background: var(--k-role-bg, var(--color-surface)); border: var(--line) solid var(--k-role-border, var(--color-border));
+  border-radius: var(--radius);
   box-shadow: inset var(--bar) 0 0 var(--k-role, var(--color-border-strong));
 }
 .k-notice > .k-icon { color: var(--k-role); margin-top: 2px; }
@@ -194,14 +198,14 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-notice__close { grid-row: 1 / span 2; grid-column: 3; }
 
 /* トースト: 画面の下から出る短い知らせ。黒地（文字の色）に地の色の文字 */
-.k-toast { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); background: var(--color-text); color: var(--color-base); font-size: 14px; box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); max-width: 28rem; }
+.k-toast { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-4); background: var(--color-text); color: var(--color-base); font-size: 14px; border-radius: var(--radius); box-shadow: 0 8px 24px -12px rgba(0, 0, 0, .5); max-width: 28rem; }
 .k-toast .k-status { color: inherit; }
 .k-toast__action { margin-left: auto; font: 600 12px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; background: transparent; border: 0; color: inherit; cursor: pointer; padding: 4px; text-decoration: underline; text-underline-offset: .3em; }
 
 /* ── 一覧 ───────────────────────────── */
 .k-list { list-style: none; margin: 0; padding: 0; border-top: var(--line) solid var(--color-border); }
 .k-list > li { border-bottom: var(--line) solid var(--color-border); }
-.k-row { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-3); min-height: 44px; position: relative; color: inherit; }
+.k-row { display: flex; align-items: center; gap: var(--space-3); padding: 10px var(--space-3); min-height: 44px; position: relative; color: inherit; border-radius: var(--radius-sm); }
 .k-row:hover { background: var(--color-sunken); text-decoration: none; }
 .k-row__main { flex: 1; min-width: 0; }
 .k-row__title { display: block; font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -214,7 +218,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-row[aria-current="true"]::before, .k-row[aria-selected="true"]::before { visibility: visible; }
 
 /* 表 */
-.k-table-wrap { overflow-x: auto; border: var(--line) solid var(--color-border); }
+.k-table-wrap { overflow-x: auto; border: var(--line) solid var(--color-border); border-radius: var(--radius); }
 .k-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .k-table th { font: 500 11px/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); text-align: left; padding: 10px var(--space-3); border-bottom: var(--line) solid var(--color-border-strong); background: var(--color-surface); white-space: nowrap; }
 .k-table td { padding: 10px var(--space-3); border-bottom: var(--line) solid var(--color-border); vertical-align: middle; }
@@ -228,26 +232,26 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 
 /* ── 数字の欄 ─────────────────────────── */
-.k-stat { display: grid; gap: var(--space-2); padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); min-width: 0; }
+.k-stat { display: grid; gap: var(--space-2); padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); min-width: 0; border-radius: var(--radius); }
 .k-stat__value { font-size: 44px; }
 .k-stat__value small { font: 500 13px/1 var(--font-mono); letter-spacing: .08em; margin-left: 6px; color: var(--color-muted); }
 .k-stat__delta { font: 500 12px/1 var(--font-mono); color: var(--k-role, var(--color-muted)); }
 
 /* 進み具合: 区切った目盛り。数字を必ず横に出す */
 .k-meter { display: grid; grid-template-columns: 1fr auto; gap: var(--space-2); align-items: center; }
-.k-meter__track { height: 8px; background-image: repeating-linear-gradient(90deg, var(--color-border) 0 6px, transparent 6px 8px); position: relative; }
+.k-meter__track { height: 8px; border-radius: 1px; background-image: repeating-linear-gradient(90deg, var(--color-border) 0 6px, transparent 6px 8px); position: relative; }
 .k-meter__fill { position: absolute; inset: 0 auto 0 0; background-image: repeating-linear-gradient(90deg, var(--k-role, var(--color-text)) 0 6px, transparent 6px 8px); }
 .k-meter__value { font: 500 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; min-width: 4ch; text-align: right; }
 
 /* 読み込み中: 点が順に灯る */
 .k-loader { display: inline-flex; gap: 4px; }
-.k-loader i { width: 5px; height: 5px; background: currentColor; opacity: .2; animation: k-step 1.2s steps(1) infinite; }
+.k-loader i { width: 5px; height: 5px; border-radius: 1px; background: currentColor; opacity: .2; animation: k-step 1.2s steps(1) infinite; }
 .k-loader i:nth-child(2) { animation-delay: .2s; }
 .k-loader i:nth-child(3) { animation-delay: .4s; }
 .k-loader i:nth-child(4) { animation-delay: .6s; }
 
 /* 空の表示: ドットのアイコン + 説明 + 次の操作 */
-.k-empty { display: grid; justify-items: center; text-align: center; gap: var(--space-3); padding: var(--space-7) var(--space-4); border: var(--line) dashed var(--color-border-strong); color: var(--color-muted); }
+.k-empty { display: grid; justify-items: center; text-align: center; gap: var(--space-3); padding: var(--space-7) var(--space-4); border: var(--line) dashed var(--color-border-strong); color: var(--color-muted); border-radius: var(--radius); }
 .k-empty h3 { color: var(--color-text); font-size: 16px; }
 
 /* ── 画面の骨組み ──────────────────────── */
@@ -265,12 +269,12 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-page--reading { max-width: 64rem; }
 
 /* タブ */
-.k-tabs { display: flex; gap: var(--space-4); border-bottom: var(--line) solid var(--color-border); overflow-x: auto; }
+.k-tabs { display: flex; gap: var(--space-4); border-bottom: var(--line) solid var(--color-border); overflow-x: auto; scrollbar-width: none; }
 .k-tabs button { font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; padding: 12px 0; border: 0; background: none; color: var(--color-muted); cursor: pointer; white-space: nowrap; box-shadow: inset 0 0 0 transparent; }
 .k-tabs button[aria-selected="true"] { color: var(--color-text); box-shadow: inset 0 calc(-1 * var(--bar)) 0 var(--color-text); }
 
 /* ダイアログ */
-.k-dialog { border: var(--line) solid var(--color-border-strong); background: var(--color-surface); color: var(--color-text); padding: 0; width: min(32rem, calc(100vw - 32px)); }
+.k-dialog { border: var(--line) solid var(--color-border-strong); background: var(--color-surface); color: var(--color-text); padding: 0; width: min(32rem, calc(100vw - 32px)); border-radius: var(--radius); overflow: hidden; }
 .k-dialog::backdrop { background: rgba(0, 0, 0, .45); }
 .k-dialog__head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-bottom: var(--line) solid var(--color-border); }
 .k-dialog__head h3 { font-size: 16px; flex: 1; }
@@ -278,7 +282,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-dialog__foot { display: flex; justify-content: flex-end; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-top: var(--line) solid var(--color-border); background: var(--color-base); }
 
 /* キー */
-kbd, .k-kbd { display: inline-block; min-width: 1.8em; padding: 1px 6px; text-align: center; font: 500 11px/1.6 var(--font-mono); border: var(--line) solid var(--color-border-strong); border-bottom-width: 2px; background: var(--color-surface); }
+kbd, .k-kbd { display: inline-block; min-width: 1.8em; padding: 1px 6px; text-align: center; font: 500 11px/1.6 var(--font-mono); border: var(--line) solid var(--color-border-strong); border-bottom-width: 2px; background: var(--color-surface); border-radius: 3px; }
 
 /* 動き */
 @keyframes k-blink { 50% { opacity: 0; } }
