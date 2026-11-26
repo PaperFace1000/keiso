@@ -43,7 +43,7 @@ CSS 変数は `--color-<名前>`。
 | `-bg` / `-border` | 状態の欄の地と枠（`success-bg` など） |
 | `on-alert` | ALERT のボタンの文字 |
 | `selection-bg` / `selection-text` | 反転（選んでいる行、文字の選択）。地は `text`、文字は `base` と同じ値 |
-| `focus` | フォーカスの輪（`accent` と同じ値） |
+| `focus` | フォーカスの輪（`text` と同じ値。ALERT の赤と見分けるため差し色にしない） |
 | `grid-dot` | 画面の地に敷く点の格子 |
 
 コードの色分けは `--shiki-*`（Shiki の CSS 変数テーマの名前）。キーワードは紫、文字列は SUCCESS、関数は INFO、定数は WARNING、消した行は ALERT の色を使い、どれもサーフェスの上で比 4.5 以上。

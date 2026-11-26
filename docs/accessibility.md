@@ -23,11 +23,18 @@
 ## 🎯 フォーカスの見え方
 
 ```css
-:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: var(--k-focus-offset, 2px);
+  animation: k-lock-on .18s steps(3, end), k-focus-blink 1.2s steps(1, end) .18s infinite;
+}
 ```
 
 - フォーカスの輪は差し色の 2px。入力欄では欄に重ねる（`outline-offset: 0`）
 - プロンプトのように中の `input` を見せない部品は、外側の枠に輪を出す（`:focus-within`）
+- フォーカスの輪の色は本文の色（`--color-focus`）。**赤（差し色・ALERT）にしない。** 入力の誤り（赤い枠と左の帯）と見分けられなくなるため
+- 今フォーカスがある部品を見失わないよう、輪は動かす。当たった瞬間に外側から 3 段で吸い付き（0.18 秒）、その後は 1.2 秒おきに強い枠線の色と入れ替わって点滅する。キーボードで一覧を動かしている間は、選んでいる行の `▸` も同じ間隔で点滅させる
+- 動きはどれも段階的（`steps()`）にし、なめらかに動かさない。`prefers-reduced-motion: reduce` の人には動かさず、輪だけを出す
 - 輪を消さない（`outline: none` だけを書かない）
 
 ## 🏷️ aria と読み上げ

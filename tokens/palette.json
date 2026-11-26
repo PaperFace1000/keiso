@@ -30,7 +30,7 @@
       "on-alert": "#ffffff",
       "selection-bg": "#141414",
       "selection-text": "#f5f5f2",
-      "focus": "#d71921",
+      "focus": "#141414",
       "grid-dot": "#dededc"
     },
     "code": {
@@ -81,7 +81,7 @@
       "on-alert": "#f4f1e6",
       "selection-bg": "#221f19",
       "selection-text": "#dfd9c3",
-      "focus": "#a63b25",
+      "focus": "#221f19",
       "grid-dot": "#ccc6b2"
     },
     "code": {
@@ -132,7 +132,7 @@
       "on-alert": "#d0d7ae",
       "selection-bg": "#0d1806",
       "selection-text": "#c4cc9e",
-      "focus": "#24401a",
+      "focus": "#0d1806",
       "grid-dot": "#b2ba8f"
     },
     "code": {
@@ -183,7 +183,7 @@
       "on-alert": "#0b0b0b",
       "selection-bg": "#e8e8e5",
       "selection-text": "#0b0b0b",
-      "focus": "#e0262d",
+      "focus": "#e8e8e5",
       "grid-dot": "#2a2a2a"
     },
     "code": {

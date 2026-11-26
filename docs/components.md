@@ -34,7 +34,7 @@
 
 - ラベル 13px・太さ 500、欄との間は 4px。説明（`.k-field__hint`）は 12px の `muted`
 - 欄は高さ 36px 以上、余白 6px 12px、文字 15px、地は `surface`、枠は `border-strong`
-- フォーカス中は `focus` の 2px の輪（欄に重ねて出す）
+- フォーカス中は `focus`（本文の色）の 2px の輪を欄に重ねて出し、吸い付きと点滅の動きを付ける（`docs/accessibility.md`）。誤りのある欄の赤い枠とは色で見分けられる
 - エラーのときは `aria-invalid="true"` を付け、枠を `alert` にし、左に 2px の帯を出す。下に 12px の ALERT の文字（アイコン付き）を出す
 - プレースホルダーは `muted`。ラベルの代わりにしない
 - 複数行（`.k-textarea`）は最小 96px で、縦にだけ広げられる

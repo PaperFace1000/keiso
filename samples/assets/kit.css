@@ -28,7 +28,12 @@ body {
 a { color: inherit; text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
 ::selection { background: var(--color-selection-bg); color: var(--color-selection-text); }
-:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: var(--k-focus-offset, 2px);
+  /* フォーカスが当たったら外から吸い付き（ロックオン）、その後はカーソルのように点滅し続けて「今ここ」を示す */
+  animation: k-lock-on .18s steps(3, end), k-focus-blink 1.2s steps(1, end) .18s infinite;
+}
 h1, h2, h3, h4 { margin: 0; line-height: 1.4; text-wrap: balance; }
 p { margin: 0; }
 code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
@@ -148,7 +153,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
   background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm);
 }
 .k-input::placeholder, .k-textarea::placeholder { color: var(--color-muted); opacity: .8; }
-.k-input:focus-visible, .k-select:focus-visible, .k-textarea:focus-visible { outline-offset: 0; }
+.k-input, .k-select, .k-textarea { --k-focus-offset: 0px; }
 .k-input[aria-invalid="true"] { border-color: var(--color-alert); box-shadow: inset var(--bar) 0 0 var(--color-alert); }
 .k-textarea { min-height: 96px; resize: vertical; }
 .k-select { appearance: none; height: 36px; padding-block: 0; padding-right: 32px; background-image: linear-gradient(45deg, transparent 50%, var(--color-text) 50%), linear-gradient(-45deg, transparent 50%, var(--color-text) 50%); background-size: 5px 5px; background-position: right 16px center, right 11px center; background-repeat: no-repeat; }
@@ -157,7 +162,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-prompt::before { content: ">"; font-family: var(--font-mono); color: var(--color-accent-strong); font-weight: 700; }
 .k-prompt input { flex: 1; min-width: 0; border: 0; background: transparent; color: inherit; font: 15px/1.5 var(--font-mono); padding: 7px 0; }
 .k-prompt input:focus-visible { outline: none; }
-.k-prompt:focus-within { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.k-prompt:focus-within { outline: 2px solid var(--color-focus); outline-offset: 2px; animation: k-lock-on .18s steps(3, end), k-focus-blink 1.2s steps(1, end) .18s infinite; }
 
 /* チェックボックス・ラジオ: 四角とひし形。印は塗りの四角 */
 .k-check { display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer; font-size: 14px; }
@@ -236,6 +241,8 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-row[aria-current="true"] .k-count, .k-row[aria-selected="true"] .k-count { background: transparent; color: inherit; border: var(--line) solid currentColor; }
 .k-row::before { content: "▸"; font-family: var(--font-mono); width: 1ch; flex: none; visibility: hidden; }
 .k-row[aria-current="true"]::before, .k-row[aria-selected="true"]::before { visibility: visible; }
+/* キーボードで一覧を動かしている間（一覧にフォーカスがある間）は、選んでいる行の ▸ を点滅させる */
+.k-list:focus-within .k-row[aria-selected="true"]::before { animation: k-blink 1.2s steps(1, end) infinite; }
 
 /* 表 */
 .k-table-wrap { overflow-x: auto; border: var(--line) solid var(--color-border); border-radius: var(--radius); }
@@ -306,6 +313,8 @@ kbd, .k-kbd { color: var(--color-text); display: inline-block; min-width: 1.8em;
 
 /* 動き */
 @keyframes k-blink { 50% { opacity: 0; } }
+@keyframes k-lock-on { from { outline-offset: calc(var(--k-focus-offset, 2px) + 8px); outline-color: transparent; } }
+@keyframes k-focus-blink { 50% { outline-color: var(--color-border-strong); } }
 @keyframes k-step { 0%, 24% { opacity: 1; } 25%, 100% { opacity: .2; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

@@ -26,7 +26,11 @@ body {
 a { color: inherit; text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
 ::selection { background: var(--color-selection-bg); color: var(--color-selection-text); }
-:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: var(--k-focus-offset, 2px);
+  animation: k-lock-on .18s steps(3, end), k-focus-blink 1.2s steps(1, end) .18s infinite;
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
