@@ -4,7 +4,7 @@
 
   tokens/palette.json      → tokens/themes.css（正本は palette.json。CSS は手で直さない）
   tokens/extra-colors.json → tokens/extra-colors.css
-  tools/dot_icons.py       → icons/dot/*.svg
+  tools/solid_icons.py     → icons/solid/*.svg
   tokens/icons.json        （ドットと線のアイコンの一覧。線のアイコンは icons/line/ にある分を並べる）
 
 文字として使う色の組み合わせが、どれか 1 つでもコントラスト比 4.5 未満なら、何も書かずに exit 1 で止まる。
@@ -19,7 +19,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
-import dot_icons  # noqa: E402
+import solid_icons  # noqa: E402
 
 DEFAULT_LIGHT = "shiro"
 DEFAULT_DARK = "kuro"
@@ -113,17 +113,16 @@ def extra_css(extra: list[dict]) -> str:
 
 
 def build_icons() -> dict:
-    dot_dir = ROOT / "icons" / "dot"
-    dot_dir.mkdir(parents=True, exist_ok=True)
-    for old in dot_dir.glob("*.svg"):
+    solid_dir = ROOT / "icons" / "solid"
+    solid_dir.mkdir(parents=True, exist_ok=True)
+    for old in solid_dir.glob("*.svg"):
         old.unlink()
-    for name in dot_icons.ICONS:
-        (dot_dir / f"{name}.svg").write_text(dot_icons.svg(name), encoding="utf-8")
+    for name in solid_icons.ICONS:
+        (solid_dir / f"{name}.svg").write_text(solid_icons.svg(name), encoding="utf-8")
     line_dir = ROOT / "icons" / "line"
     line_names = sorted(p.stem for p in line_dir.glob("*.svg")) if line_dir.exists() else []
     return {
-        "dot": {"grid": dot_icons.GRID, "stroke": dot_icons.STROKE, "baseSize": 64, "minSize": 48,
-                "groups": dot_icons.GROUPS},
+        "solid": {"grid": 24, "baseSize": 24, "sizes": [16, 20, 24, 32, 48, 64], "groups": solid_icons.GROUPS},
         "line": {"source": "Phosphor Icons (Light)", "license": "MIT", "baseSize": 20, "names": line_names},
     }
 
@@ -137,11 +136,11 @@ def build_sample_assets() -> None:
         "/* tools/build.py が fonts/doto-latin.woff2 を埋め込んで作る。Doto は SIL Open Font License 1.1（fonts/Doto-OFL.txt） */\n"
         "@font-face {\n  font-family: \"Doto\";\n  font-style: normal;\n  font-weight: 100 900;\n  font-display: swap;\n"
         f"  src: url(data:font/woff2;base64,{font}) format(\"woff2\");\n}}\n", encoding="utf-8")
-    icons = {"dot": {n: dot_icons.svg(n).strip() for n in dot_icons.ICONS},
+    icons = {"solid": {n: solid_icons.svg(n).strip() for n in solid_icons.ICONS},
              "line": {p.stem: re.sub(r"\s+", " ", p.read_text(encoding="utf-8")).strip()
                       for p in sorted((ROOT / "icons" / "line").glob("*.svg"))}}
     (assets / "icons.js").write_text(
-        "// tools/build.py が icons/ から作る。線は Phosphor Icons（MIT）、ドットは keiso の自作\n"
+        "// tools/build.py が icons/ から作る。線は Phosphor Icons（MIT）、ソリッドは keiso の自作\n"
         f"window.KEISO_ICONS = {json.dumps(icons, ensure_ascii=False)};\n", encoding="utf-8")
 
 
@@ -149,8 +148,8 @@ def main() -> int:
     tokens = ROOT / "tokens"
     palette = json.loads((tokens / "palette.json").read_text(encoding="utf-8"))
     extra = json.loads((tokens / "extra-colors.json").read_text(encoding="utf-8"))
-    missing = [n for names in dot_icons.GROUPS.values() for n in names if n not in dot_icons.ICONS]
-    errors = check(palette, extra) + [f"dot_icons.GROUPS に定義の無いアイコン: {n}" for n in missing]
+    missing = [n for names in solid_icons.GROUPS.values() for n in names if n not in solid_icons.ICONS]
+    errors = check(palette, extra) + [f"solid_icons.GROUPS に定義の無いアイコン: {n}" for n in missing]
     if errors:
         sys.stderr.write("決まりに合わないものがあるため、何も書かずに止めた:\n  " + "\n  ".join(errors) + "\n")
         return 1
@@ -158,7 +157,7 @@ def main() -> int:
     (tokens / "extra-colors.css").write_text(extra_css(extra), encoding="utf-8")
     (tokens / "icons.json").write_text(json.dumps(build_icons(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     build_sample_assets()
-    print(f"ok: テーマ {len(palette)}、分類の色 {len(extra[0]['colors'])}、ドットのアイコン {len(dot_icons.ICONS)}")
+    print(f"ok: テーマ {len(palette)}、分類の色 {len(extra[0]['colors'])}、ソリッドのアイコン {len(solid_icons.ICONS)}")
     return 0
 
 

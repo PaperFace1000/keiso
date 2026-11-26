@@ -221,10 +221,10 @@
 <!-- ログイン -->
 <section class="sx" aria-labelledby="h-login">
   <div class="k-heading"><h2 id="h-login">ログインの画面</h2><span class="k-label">Sign in</span></div>
-  <p class="sx__lead">真ん中に 1 つだけ箱を置き、四隅の鉤で囲みます。印は 64px のドットのアイコン。間違えたときは欄の下に ALERT の色で理由と直し方を書きます。</p>
+  <p class="sx__lead">真ん中に 1 つだけ箱を置き、四隅の鉤で囲みます。印は 48px のソリッドのアイコン。間違えたときは欄の下に ALERT の色で理由と直し方を書きます。</p>
   <div class="px-login k-dotgrid">
     <form class="px-login__box k-frame" id="js-login-form" novalidate>
-      <div class="px-login__brand"><span class="k-icon--dot" data-icon="dot:keiso"></span><span class="k-logo">keiso</span><span class="k-label">Sign in to continue</span></div>
+      <div class="px-login__brand"><span class="k-icon--48" data-icon="solid:keiso"></span><span class="k-logo">keiso</span><span class="k-label">Sign in to continue</span></div>
       <div class="k-field"><label for="js-login-id">ユーザー名</label><input class="k-input" id="js-login-id" autocomplete="username" value="test-user"></div>
       <div class="k-field"><label for="js-login-pass">パスワード</label><input class="k-input" id="js-login-pass" type="password" autocomplete="current-password" value="xxxxxxxx" aria-invalid="true" aria-describedby="js-login-error"><span class="k-field__error" id="js-login-error"><span class="k-icon--16" data-icon="line:warning"></span>パスワードが違います。大文字と小文字を確かめてください</span></div>
       <label class="k-check"><input type="checkbox" id="js-login-keep" checked>この端末では次から省く</label>
@@ -318,10 +318,10 @@
 <!-- 空の表示 -->
 <section class="sx" aria-labelledby="h-empty">
   <div class="k-heading"><h2 id="h-empty">空の表示</h2><span class="k-label">Empty</span></div>
-  <p class="sx__lead">データが無いときは 64px のドットのアイコン、何が無いか、次に何をすればいいかを出します。崩れた表や 0 の並んだ図は出しません。</p>
+  <p class="sx__lead">データが無いときは 48px のソリッドのアイコン、何が無いか、次に何をすればいいかを出します。崩れた表や 0 の並んだ図は出しません。</p>
   <div class="sx__cols">
-    <div class="k-empty"><span class="k-icon--dot" data-icon="dot:inbox"></span><h3>受け取ったものはありません</h3><p style="font-size: 13px;">新しい点検の記録が届くと、ここに並びます。</p><button class="k-btn" type="button" id="js-empty-refresh"><span data-icon="line:arrow-clockwise"></span>読み込み直す</button></div>
-    <div class="k-empty"><span class="k-icon--dot" data-icon="dot:search"></span><h3>「倉庫 C」に合うものはありません</h3><p style="font-size: 13px;">言葉を短くするか、絞り込みを外してください。</p><button class="k-btn" type="button" id="js-empty-clear"><span data-icon="line:x"></span>絞り込みを外す</button></div>
+    <div class="k-empty"><span class="k-icon--48" data-icon="solid:inbox"></span><h3>受け取ったものはありません</h3><p style="font-size: 13px;">新しい点検の記録が届くと、ここに並びます。</p><button class="k-btn" type="button" id="js-empty-refresh"><span data-icon="line:arrow-clockwise"></span>読み込み直す</button></div>
+    <div class="k-empty"><span class="k-icon--48" data-icon="solid:search"></span><h3>「倉庫 C」に合うものはありません</h3><p style="font-size: 13px;">言葉を短くするか、絞り込みを外してください。</p><button class="k-btn" type="button" id="js-empty-clear"><span data-icon="line:x"></span>絞り込みを外す</button></div>
   </div>
 </section>
 

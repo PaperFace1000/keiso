@@ -18,19 +18,19 @@ keiso は**どのアプリからでも読んで使える汎用の決まり**を�
 
 ## ✏️ 直すときの順番
 
-1. 正本を直す: 色は `tokens/palette.json`・`tokens/extra-colors.json`、ドットのアイコンは `tools/dot_icons.py`、線のアイコンは `icons/line/`
+1. 正本を直す: 色は `tokens/palette.json`・`tokens/extra-colors.json`、ソリッドのアイコンは `tools/solid_icons.py`、線のアイコンは `icons/line/`
 2. `python3 tools/build.py` を実行する（生成物を作り直し、コントラスト比を確かめる）。止まったら値を直してやり直す
 3. `samples/` の見本を更新する
 4. 変えた決まりを `docs/` に書く
 
-生成物（`tokens/themes.css`・`tokens/extra-colors.css`・`tokens/icons.json`・`icons/dot/`・`samples/assets/fonts.css`・`samples/assets/icons.js`）は手で直さないこと。次に生成したときに消える。
+生成物（`tokens/themes.css`・`tokens/extra-colors.css`・`tokens/icons.json`・`icons/solid/`・`samples/assets/fonts.css`・`samples/assets/icons.js`）は手で直さないこと。次に生成したときに消える。
 
 ## 📐 守ること
 
 - 文字として使う色は、4 テーマすべてで背景に対しコントラスト比 **4.5 以上**（`tools/build.py` が検査する）
 - アクセント（`--color-accent`）を文字に使うのは、ベースとの比が 4.5 以上あるテーマだけ。迷ったら文字には `--color-accent-strong` を使う
 - 色だけで意味を伝えない。状態は必ず印と名前（`SUCCESS` など）を添える
-- **画面に絵文字を使わない。** アイコンは線（Phosphor Icons の Light）とドット（自作）にそろえる（`docs/icons.md`）
+- **画面に絵文字を使わない。** アイコンは線（Phosphor Icons の Light）とソリッド（自作）にそろえる（`docs/icons.md`）
 - `samples/` は外部の読み込みを持たない。サーバー無しでブラウザから直接開けること。見本の共通の CSS・JS は `samples/assets/` に置く
 - ビルドもパッケージ管理も持ち込まない。素の HTML / CSS / JSON と、標準ライブラリだけの Python で完結させる
 - 文書は日本語で、見出しの先頭に絵文字を 1 つ付ける（既存の `docs/` に合わせる）

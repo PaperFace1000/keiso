@@ -60,7 +60,7 @@ python3 tools/build.py
 |---|---|
 | `tokens/palette.json` | `tokens/themes.css` |
 | `tokens/extra-colors.json` | `tokens/extra-colors.css` |
-| `tools/dot_icons.py` | `icons/dot/*.svg` |
+| `tools/solid_icons.py` | `icons/solid/*.svg` |
 | `icons/line/*.svg`（Phosphor から写したもの） | `tokens/icons.json` |
 | `fonts/doto-latin.woff2` | `samples/assets/fonts.css`・`samples/assets/icons.js` |
 

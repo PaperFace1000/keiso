@@ -18,7 +18,7 @@ docs/
   principles.md          デザインの原則
   color.md               配色（4 テーマ、役割の色、反転、点の格子、分類の色 12 色、コントラスト）
   typography.md          フォント、文字の大きさ、ラベル、ドットの数字
-  icons.md               線のアイコンとドットのアイコンの使い分け・足し方
+  icons.md               線のアイコンとソリッドのアイコンの使い分け・足し方
   components.md          部品の決まり（ボタン、入力欄、選択、タグ、状態の印、知らせ、一覧、表、数字の欄など）
   patterns.md            画面の組み立て（ヘッダー、タブ、ダイアログ、空の表示、読み込み中、二重送信の防止）
   layout.md              本文の幅、列の組み方、スマホ幅、余白の段階
@@ -31,16 +31,16 @@ tokens/
   themes.css             そのまま読み込める CSS 変数（palette.json から生成）
   extra-colors.json      分類の色 12 色 × 4 テーマ（正本）
   extra-colors.css       data-extra-color 属性で色を出す CSS（生成）
-  icons.json             ドットと線のアイコンの一覧（生成）
+  icons.json             ソリッドと線のアイコンの一覧（生成）
 icons/
-  dot/                   自作のドットのアイコン（32 格子、生成）
+  solid/                 自作のソリッドのアイコン（24 格子、生成）
   line/                  線のアイコン（Phosphor Icons の Light から選んだもの）
 fonts/
   doto-latin.woff2       英数字だけに絞った Doto（ドットの数字用）
   Doto-OFL.txt           Doto のライセンス
 tools/
   build.py               生成物を作り直し、色の決まりを確かめる
-  dot_icons.py           ドットのアイコンの図形の定義
+  solid_icons.py         ソリッドのアイコンの図形の定義
 samples/                 ブラウザで直接開ける見本（サーバー不要、外部の読み込みなし）
   index.html             目次
   palette.html           4 テーマの色とコントラスト比
@@ -63,7 +63,7 @@ samples/                 ブラウザで直接開ける見本（サーバー不�
 
 ### 🔧 値を変える
 
-色やアイコンを変えるときは、正本（`tokens/palette.json`・`tokens/extra-colors.json`・`tools/dot_icons.py`）を直してから、生成スクリプトを実行する。
+色やアイコンを変えるときは、正本（`tokens/palette.json`・`tokens/extra-colors.json`・`tools/solid_icons.py`）を直してから、生成スクリプトを実行する。
 
 ```sh
 python3 tools/build.py
@@ -71,7 +71,7 @@ python3 tools/build.py
 
 - Python 3.9 以上の標準ライブラリだけで動く（追加のパッケージは要らない）
 - 文字として使う色の組み合わせが 1 つでもコントラスト比 4.5 未満だと、何も書かずに止まる。値を直してからやり直すこと
-- `themes.css`・`extra-colors.css`・`icons.json`・`icons/dot/`・`samples/assets/fonts.css`・`samples/assets/icons.js` は生成物。手で直さない
+- `themes.css`・`extra-colors.css`・`icons.json`・`icons/solid/`・`samples/assets/fonts.css`・`samples/assets/icons.js` は生成物。手で直さない
 
 ### 🧩 部品と決まりを取り込む
 

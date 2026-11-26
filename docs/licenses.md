@@ -13,7 +13,7 @@ keiso とアプリで使うフォント・アイコンは、どれも配布元�
 | Doto | ドットの数字 | SIL Open Font License 1.1 | GitHub の `google/fonts` の `ofl/doto` | `fonts/doto-latin.woff2` |
 | OS のゴシック体・等幅フォント | 本文・ラベル・コード | OS の使用許諾 | — | 配らない（名前で指すだけ） |
 
-ドットのアイコン（`icons/dot/`）は keiso の自作で、第三者の素材を含まない。
+ソリッドのアイコン（`icons/solid/`）は keiso の自作で、第三者の素材を含まない。
 
 ## 🧷 Phosphor Icons（MIT）
 

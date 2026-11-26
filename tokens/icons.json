@@ -1,9 +1,15 @@
 {
-  "dot": {
-    "grid": 32,
-    "stroke": 2.4,
-    "baseSize": 64,
-    "minSize": 48,
+  "solid": {
+    "grid": 24,
+    "baseSize": 24,
+    "sizes": [
+      16,
+      20,
+      24,
+      32,
+      48,
+      64
+    ],
     "groups": {
       "状態": [
         "alert",

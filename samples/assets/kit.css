@@ -69,9 +69,11 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-icon { display: inline-block; width: 20px; height: 20px; flex: none; vertical-align: -0.25em; color: inherit; }
 .k-icon svg { display: block; width: 100%; height: 100%; }
 .k-icon--16 { width: 16px; height: 16px; }
-.k-icon--dot { width: 64px; height: 64px; }
-.k-icon--dot48 { width: 48px; height: 48px; }
-.k-icon--dot96 { width: 96px; height: 96px; }
+.k-icon--24 { width: 24px; height: 24px; }
+.k-icon--32 { width: 32px; height: 32px; }
+.k-icon--48 { width: 48px; height: 48px; }
+.k-icon--64 { width: 64px; height: 64px; }
+.k-icon--96 { width: 96px; height: 96px; }
 
 /* ── 見出しの段 ───────────────────────── */
 /* 番号つきの章の見出し。番号は本当に順番があるときだけ付ける */
@@ -268,7 +270,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-loader i:nth-child(3) { animation-delay: .4s; }
 .k-loader i:nth-child(4) { animation-delay: .6s; }
 
-/* 空の表示: ドットのアイコン + 説明 + 次の操作 */
+/* 空の表示: ソリッドのアイコン（48px） + 説明 + 次の操作 */
 .k-empty { display: grid; justify-items: center; text-align: center; gap: var(--space-3); padding: var(--space-7) var(--space-4); border: var(--line) dashed var(--color-border-strong); color: var(--color-muted); border-radius: var(--radius); }
 .k-empty h3 { color: var(--color-text); font-size: 16px; }
 

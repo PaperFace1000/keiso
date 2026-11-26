@@ -67,7 +67,7 @@
     header.className = 'k-header';
     header.innerHTML = `
       <div class="k-header__inner sample-header">
-        <a class="k-logo" href="index.html"><span data-icon="dot:keiso"></span>keiso</a>
+        <a class="k-logo" href="index.html"><span data-icon="solid:keiso"></span>keiso</a>
         <nav class="k-nav" aria-label="見本">${nav_links}</nav>
         <div class="k-segment sample-themes" role="group" aria-label="テーマ">${theme_buttons}</div>
       </div>`;
