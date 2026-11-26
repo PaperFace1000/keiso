@@ -19,6 +19,10 @@
 .tag-demo { display: grid; gap: var(--space-3); padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
 .label-row { display: flex; gap: var(--space-3); align-items: center; font-size: 14px; }
 .label-row i { width: 8px; height: 8px; background: var(--extra-text); flex: none; }
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--space-4); }
+.compare__panel { display: grid; gap: var(--space-3); align-content: start; padding: var(--space-4); background: var(--color-base); color: var(--color-text); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius); }
+.compare__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: var(--space-2); }
+.compare__row { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
 </style>
 </head>
 <body class="k-dotgrid">
@@ -49,6 +53,15 @@
       </div>
     </div>
   </section>
+
+  <section class="sample-section" aria-labelledby="compare-title">
+    <div class="k-heading"><h2 id="compare-title">明るいテーマと暗いテーマを並べて</h2><span class="k-label">shiro / kuro</span></div>
+    <p>同じ <code>data-extra-color</code> でも、テーマで値が変わります。<code>data-theme</code> は要素にも付けられるので、白と黒の箱を並べて、分類のバッジとマスの塗りを見比べられます（上のボタンで選んだテーマには左右されません）。どの組も文字と地の比は 4.5 以上です。</p>
+    <div class="compare">
+      <section class="compare__panel" data-theme="shiro" aria-label="白のテーマ"><span class="k-label">shiro / 白</span><div class="compare__grid" data-compare></div></section>
+      <section class="compare__panel" data-theme="kuro" aria-label="黒のテーマ"><span class="k-label">kuro / 黒</span><div class="compare__grid" data-compare></div></section>
+    </div>
+  </section>
 </main>
 <script>
 (() => {
@@ -56,6 +69,9 @@
     ['cyan', '水'], ['blue', '青'], ['indigo', '藍'], ['violet', '紫'], ['magenta', '赤紫'], ['gray', '灰']];
   document.getElementById('js-chips').innerHTML = COLORS.map(([key, label]) => `
     <div class="chip" data-extra-color="${key}"><strong>${label}</strong><code>${key}</code></div>`).join('');
+  document.querySelectorAll('[data-compare]').forEach((grid) => {
+    grid.innerHTML = COLORS.map(([key, label]) => `<div class="compare__row" data-extra-color="${key}"><span class="k-cellrow__key" style="margin: 0; padding: 4px 8px; border-radius: var(--radius-sm); align-self: auto; min-width: 5.5em;">${key}</span><span class="k-catbadge"><span class="k-swatch-dot" aria-hidden="true"></span><span>${label}</span></span></div>`).join('');
+  });
   document.getElementById('js-tags').innerHTML = COLORS.map(([key, label]) => `<span class="k-tag" data-extra-color="${key}">${key}</span>`).join('');
 })();
 </script>

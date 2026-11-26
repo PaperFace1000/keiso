@@ -94,21 +94,26 @@ def themes_css(palette: list[dict]) -> str:
 
 
 def extra_css(extra: list[dict]) -> str:
+    """テーマの要素に色ごとの値（--extra-<色>-text など）を置き、data-extra-color の要素がそれを読む。
+    値は継承で一番近いテーマの要素から来るので、data-theme を入れ子にしても内側のテーマの色になる"""
     out = ["/* 分類やタグを見分ける色。tools/build.py が tokens/extra-colors.json から作る。",
-           '   要素に data-extra-color="blue" を付け、var(--extra-text) / var(--extra-bg) / var(--extra-border) で塗る */', ""]
+           '   要素に data-extra-color="blue" を付け、var(--extra-text) / var(--extra-bg) / var(--extra-border) で塗る。',
+           "   値はテーマの要素に色ごとに置いてあり、一番近い data-theme の値になる（テーマを入れ子にしてもよい） */", ""]
     for group in extra:
         theme = group["theme"]
         scopes = [f'[data-theme="{theme}"]']
         if theme == DEFAULT_LIGHT:
             scopes = [":root:not([data-theme])", *scopes]
-        for item in group["colors"]:
-            sel = ",\n".join(f'{s} [data-extra-color="{item["key"]}"]' for s in scopes)
-            body = f"  --extra-text: {item['text']};\n  --extra-bg: {item['bg']};\n  --extra-border: {item['border']};"
-            if theme == DEFAULT_DARK:
-                out.append(f"@media (prefers-color-scheme: dark) {{\n  :root:not([data-theme]) [data-extra-color=\"{item['key']}\"] {{\n"
-                           + "\n".join("  " + line for line in body.splitlines()) + "\n  }\n}")
-            out.append(f"{sel} {{\n{body}\n}}")
+        body = "\n".join(f"  --extra-{item['key']}-{part}: {item[part]};" for item in group["colors"] for part in ("text", "bg", "border"))
+        out.append(f"{', '.join(scopes)} {{\n{body}\n}}")
+        if theme == DEFAULT_DARK:
+            out.append("@media (prefers-color-scheme: dark) {\n  :root:not([data-theme]) {\n"
+                       + "\n".join("  " + line for line in body.splitlines()) + "\n  }\n}")
         out.append("")
+    keys = [item["key"] for item in extra[0]["colors"]]
+    for key in keys:
+        out.append(f'[data-extra-color="{key}"] {{ --extra-text: var(--extra-{key}-text); --extra-bg: var(--extra-{key}-bg); --extra-border: var(--extra-{key}-border); }}')
+    out.append("")
     return "\n".join(out)
 
 
