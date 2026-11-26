@@ -30,13 +30,14 @@
   <!-- ボタン -->
   <section class="sample-section" aria-labelledby="btn-title">
     <div class="k-heading"><h2 id="btn-title">ボタン</h2><span class="k-label">.k-btn</span></div>
-    <p>主な操作（反転）は 1 画面に 1 つだけ。消す操作は ALERT の色で塗ります。押したら処理が終わるまで押せなくし、先頭にカーソルを点滅させます（二重送信はサーバー側でも防ぐこと）。</p>
+    <p>主な操作（反転）は 1 画面に 1 つだけ。消す操作は ALERT の色で塗ります。押したら処理が終わるまで押せなくし、先頭にカーソルを点滅させます（二重送信はサーバー側でも防ぐこと）。文字だけのボタンは角括弧で囲み、押せないボタンは斜線の網掛けにします。</p>
     <div class="sample-row">
       <button class="k-btn k-btn--primary" type="button" id="js-save">保存する</button>
       <button class="k-btn" type="button"><span data-icon="line:download-simple"></span>書き出す</button>
       <button class="k-btn k-btn--ghost" type="button">取り消す</button>
       <button class="k-btn k-btn--alert" type="button"><span data-icon="line:trash"></span>削除する</button>
       <button class="k-btn" type="button" disabled>押せない</button>
+      <button class="k-btn k-btn--primary" type="button" disabled>保存する（入力待ち）</button>
       <button class="k-btn k-btn--icon" type="button" aria-label="設定"><span data-icon="line:gear-six"></span></button>
       <button class="k-btn k-btn--sm" type="button">小さいボタン</button>
     </div>

@@ -105,7 +105,6 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
   transition: background-color .12s var(--ease), color .12s var(--ease);
 }
 .k-btn:hover { background: var(--color-sunken); }
-.k-btn:disabled, .k-btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
 /* 主な操作は文字の色で塗る（反転）。1 画面に 1 つだけ */
 .k-btn--primary { background: var(--color-text); border-color: var(--color-text); color: var(--color-base); }
 .k-btn--primary:hover { background: var(--color-text); color: var(--color-base); box-shadow: inset 0 0 0 2px var(--color-base); }
@@ -113,6 +112,22 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-btn--alert { background: var(--color-alert); border-color: var(--color-alert); color: var(--color-on-alert); }
 .k-btn--alert:hover { background: var(--color-alert); box-shadow: inset 0 0 0 2px var(--color-on-alert); }
 .k-btn--ghost { border-color: transparent; }
+/* 文字だけのボタンは、ターミナルの画面のボタンのように角括弧で囲み、押せるものだと分かるようにする */
+.k-btn--ghost:not(.k-btn--icon) { gap: 6px; padding: 0 var(--space-2); }
+.k-btn--ghost:not(.k-btn--icon)::before { content: "["; order: -1; font-family: var(--font-mono); font-weight: 400; color: var(--color-muted); }
+.k-btn--ghost:not(.k-btn--icon)::after { content: "]"; font-family: var(--font-mono); font-weight: 400; color: var(--color-muted); }
+.k-btn--ghost:not(.k-btn--icon):hover::before, .k-btn--ghost:not(.k-btn--icon):hover::after { color: var(--color-text); }
+/* 押せないボタン: どの種類でも塗りをやめ、斜線の網掛けと薄い文字にして、押せないことをはっきり示す */
+.k-btn:disabled, .k-btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  color: var(--color-muted);
+  border: var(--line) dashed var(--color-border-strong);
+  background: repeating-linear-gradient(-45deg, var(--color-border-strong) 0 1px, transparent 1px 7px), var(--color-surface);
+  box-shadow: none;
+  /* 斜線の上でも文字が読めるよう、地の色のふちを付ける */
+  text-shadow: 0 0 2px var(--color-surface), 0 0 4px var(--color-surface), 0 0 6px var(--color-surface);
+}
+.k-btn:disabled::before, .k-btn:disabled::after, .k-btn[aria-disabled="true"]::before, .k-btn[aria-disabled="true"]::after { color: inherit; }
 .k-btn--sm { min-height: 28px; padding: 0 var(--space-3); font-size: 13px; }
 .k-btn--icon { width: 36px; padding: 0; }
 .k-btn--icon.k-btn--sm { width: 28px; }
