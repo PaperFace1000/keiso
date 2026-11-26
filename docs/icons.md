@@ -14,7 +14,7 @@
 
 ## 〰️ 線のアイコン（Phosphor Icons の Light）
 
-- Phosphor Icons の **Light**（線の細い太さ）から、よく使う 97 個を選んで `icons/line/` に置いている。名前は Phosphor の名前から `-light` を外したもの（`magnifying-glass.svg`）
+- Phosphor Icons の **Light**（線の細い太さ）から、よく使う 99 個を選んで `icons/line/` に置いている。名前は Phosphor の名前から `-light` を外したもの（`magnifying-glass.svg`）
 - ライセンスは MIT（`docs/licenses.md`）
 - 太さは Light にそろえる。Thin・Regular・Bold などを混ぜない
 

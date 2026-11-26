@@ -11,6 +11,8 @@ keiso に含まれる第三者の素材と、その許諾文の控えです。�
 
 ## 〰️ Phosphor Icons
 
+`icons/line/` の 99 個は、どれも同じ版（2.1.1）から写したもの。最後に足したのは 2026-11-26（`dots-six-vertical`・`clock-counter-clockwise`）で、そのときに取得した `.tgz` の sha1 が `npm view` の `dist.shasum`（`62a4cfbec9772f1a613a647da214fbb96f3ad39d`）と一致し、`package/LICENSE` が下の写しと同じことを確かめた。
+
 ```text
 MIT License
 

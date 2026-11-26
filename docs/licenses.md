@@ -23,6 +23,7 @@ keiso とアプリで使うフォント・アイコンは、どれも配布元�
 - SVG を HTML に直接書き写すときも、同じ版の許諾文を一覧に入れる
 - 形を変えて使うときも、MIT の条件はそのまま残る
 - 取得は公式の npm からだけ行い、`npm view @phosphor-icons/core dist.shasum` と取得した `.tgz` の `sha1sum` を照合する
+- アイコンを足すたびに、取得した版の `package/LICENSE` と `THIRD_PARTY_LICENSES.md` の写しを比べる。最後に確かめた日と版は `THIRD_PARTY_LICENSES.md` に書く
 
 ## 🖋️ Doto（OFL 1.1）
 
