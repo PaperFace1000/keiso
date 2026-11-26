@@ -117,14 +117,14 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-btn--ghost:not(.k-btn--icon)::before { content: "["; order: -1; font-family: var(--font-mono); font-weight: 400; color: var(--color-muted); }
 .k-btn--ghost:not(.k-btn--icon)::after { content: "]"; font-family: var(--font-mono); font-weight: 400; color: var(--color-muted); }
 .k-btn--ghost:not(.k-btn--icon):hover::before, .k-btn--ghost:not(.k-btn--icon):hover::after { color: var(--color-text); }
-/* 押せないボタン: どの種類でも塗りをやめ、斜線の網掛けと薄い文字にして、押せないことをはっきり示す */
+/* 押せないボタン: どの種類でも塗りをやめ、左下から右上へ斜線を 1 本引き、薄い文字にして、押せないことをはっきり示す */
 .k-btn:disabled, .k-btn[aria-disabled="true"] {
   cursor: not-allowed;
   color: var(--color-muted);
   border: var(--line) dashed var(--color-border-strong);
-  background: repeating-linear-gradient(-45deg, var(--color-border-strong) 0 1px, transparent 1px 7px), var(--color-surface);
+  background: linear-gradient(to bottom right, transparent calc(50% - 0.75px), var(--color-border-strong) calc(50% - 0.75px) calc(50% + 0.75px), transparent calc(50% + 0.75px)), var(--color-surface);
   box-shadow: none;
-  /* 斜線の上でも文字が読めるよう、地の色のふちを付ける */
+  /* 斜線と重なっても文字が読めるよう、地の色のふちを付ける */
   text-shadow: 0 0 2px var(--color-surface), 0 0 4px var(--color-surface), 0 0 6px var(--color-surface);
 }
 .k-btn:disabled::before, .k-btn:disabled::after, .k-btn[aria-disabled="true"]::before, .k-btn[aria-disabled="true"]::after { color: inherit; }
