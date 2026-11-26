@@ -229,6 +229,9 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-row[aria-current="true"], .k-row[aria-selected="true"] { background: var(--color-selection-bg); color: var(--color-selection-text); }
 .k-row[aria-current="true"] .k-row__meta, .k-row[aria-selected="true"] .k-row__meta { color: inherit; opacity: .75; }
 .k-row[aria-current="true"] .k-status, .k-row[aria-selected="true"] .k-status { color: inherit; }
+/* 反転した行の中のキーと件数は、地を塗らずに線と文字だけにする（地を塗ると反転の文字の色と重なって消える） */
+.k-row[aria-current="true"] kbd, .k-row[aria-selected="true"] kbd,
+.k-row[aria-current="true"] .k-count, .k-row[aria-selected="true"] .k-count { background: transparent; color: inherit; border: var(--line) solid currentColor; }
 .k-row::before { content: "▸"; font-family: var(--font-mono); width: 1ch; flex: none; visibility: hidden; }
 .k-row[aria-current="true"]::before, .k-row[aria-selected="true"]::before { visibility: visible; }
 
@@ -297,7 +300,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-dialog__foot { display: flex; justify-content: flex-end; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-top: var(--line) solid var(--color-border); background: var(--color-base); }
 
 /* キー */
-kbd, .k-kbd { display: inline-block; min-width: 1.8em; padding: 1px 6px; text-align: center; font: 500 11px/1.6 var(--font-mono); border: var(--line) solid var(--color-border-strong); border-bottom-width: 2px; background: var(--color-surface); border-radius: 3px; }
+kbd, .k-kbd { color: var(--color-text); display: inline-block; min-width: 1.8em; padding: 1px 6px; text-align: center; font: 500 11px/1.6 var(--font-mono); border: var(--line) solid var(--color-border-strong); border-bottom-width: 2px; background: var(--color-surface); border-radius: 3px; }
 
 /* 動き */
 @keyframes k-blink { 50% { opacity: 0; } }
