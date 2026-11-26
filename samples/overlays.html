@@ -20,6 +20,8 @@
 .filter-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--space-2); }
 .filter-add { display: flex; gap: var(--space-2); }
 .filter-add .k-input { flex: 1; min-width: 0; }
+.toast-dock { display: grid; gap: var(--space-2); justify-items: start; }
+.toast-dock .k-toast { width: min(24rem, 100%); max-width: none; }
 </style>
 </head>
 <body class="k-dotgrid">
@@ -28,7 +30,7 @@
   <section class="sample-intro">
     <span class="k-label k-bracket">Overlays</span>
     <h1>浮かぶ部品とダイアログ</h1>
-    <p>メニュー・ポップオーバーは、トーストと同じく浮かんでいるので影を付けます（影はこの 3 つだけ）。指している項目は反転して ▸ を出し、選んである値は右端に四角い印を出します。決まりは <code>docs/components.md</code> と <code>docs/patterns.md</code>。</p>
+    <p>メニュー・ポップオーバーは、トーストと同じく浮かんでいるので影を付けます（影は浮かぶものだけ）。指している項目は反転して ▸ を出し、選んである値は右端に四角い印を出します。決まりは <code>docs/components.md</code> と <code>docs/patterns.md</code>。</p>
   </section>
 
   <!-- メニュー -->
@@ -161,6 +163,72 @@
         <button class="k-btn" type="button"><span data-icon="line:arrow-square-out"></span>元のページで開く</button>
         <button class="k-btn k-btn--primary" type="button" data-close>閉じる</button>
       </div>
+    </dialog>
+  </section>
+
+  <!-- 入力フォームのダイアログ・中身の高いダイアログ -->
+  <section class="sample-section" aria-labelledby="form-dialog-title">
+    <div class="k-heading"><h2 id="form-dialog-title">入力フォームのダイアログ</h2><span class="k-label">.k-dialog</span></div>
+    <p>入力が 1〜3 項目のものだけダイアログにし、それより長い入力はページにします。取り消しにくい操作（削除）は足の左に離して置き、押すと確認のダイアログを重ねます。幅は普通（32rem）と広い版（55rem）の 2 つ。中身が画面より高いときは本文だけをスクロールし、頭と足のボタンはいつも見えるようにします。外側を押しても閉じません。</p>
+    <div class="sample-row">
+      <button class="k-btn" type="button" id="js-edit-open"><span data-icon="line:pencil-simple"></span>点検を編集する</button>
+      <button class="k-btn" type="button" id="js-tall-open"><span data-icon="line:clipboard-text"></span>中身の高いダイアログ</button>
+    </div>
+    <dialog class="k-dialog" id="js-edit" aria-labelledby="js-edit-title">
+      <div class="k-dialog__head"><span data-icon="line:pencil-simple"></span><h3 id="js-edit-title">点検の編集</h3><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-close aria-label="閉じる"><span data-icon="line:x"></span></button></div>
+      <form class="k-dialog__body" id="js-edit-form" novalidate>
+        <div class="k-field"><label for="js-edit-name">名前</label><input class="k-input" id="js-edit-name" value="倉庫 B の棚卸し" aria-describedby="js-edit-name-error"><span class="k-field__error" id="js-edit-name-error" hidden><span class="k-icon k-icon--16" data-icon="line:warning-octagon"></span>名前を入れてください。</span></div>
+        <div class="k-field"><label for="js-edit-due">期日</label><input class="k-input" id="js-edit-due" type="date" value="2026-11-28"></div>
+      </form>
+      <div class="k-dialog__foot">
+        <button class="k-btn k-btn--ghost k-btn--sm k-btn--ghost-alert k-dialog__aside" type="button" id="js-edit-delete">削除する</button>
+        <button class="k-btn" type="button" data-close>やめる</button>
+        <button class="k-btn k-btn--primary" type="submit" form="js-edit-form" id="js-edit-save"><span data-icon="line:floppy-disk"></span>保存する</button>
+      </div>
+    </dialog>
+    <dialog class="k-dialog" id="js-edit-confirm" role="alertdialog" aria-labelledby="js-edit-confirm-title" aria-describedby="js-edit-confirm-body">
+      <div class="k-dialog__head"><span class="k-role-alert" style="color: var(--k-role);" data-icon="line:warning-octagon"></span><h3 id="js-edit-confirm-title">点検を削除しますか</h3></div>
+      <div class="k-dialog__body"><p id="js-edit-confirm-body">「倉庫 B の棚卸し」と、その記録 24 件を削除します。元に戻せません。</p></div>
+      <div class="k-dialog__foot"><button class="k-btn" type="button" data-close>やめる</button><button class="k-btn k-btn--alert" type="button" id="js-edit-confirm-ok">削除する</button></div>
+    </dialog>
+    <dialog class="k-dialog" id="js-tall" aria-labelledby="js-tall-title">
+      <div class="k-dialog__head"><span data-icon="line:clipboard-text"></span><h3 id="js-tall-title">週次の点検の項目</h3><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-close aria-label="閉じる"><span data-icon="line:x"></span></button></div>
+      <div class="k-dialog__body" tabindex="0" aria-label="点検の項目の一覧"><ol id="js-tall-list" style="margin: 0; padding-left: 1.6em; display: grid; gap: var(--space-2);"></ol></div>
+      <div class="k-dialog__foot"><button class="k-btn" type="button" data-close>閉じる</button><button class="k-btn k-btn--primary" type="button" data-close>この順で点検を始める</button></div>
+    </dialog>
+  </section>
+
+  <!-- トースト・画面の上の知らせ -->
+  <section class="sample-section" aria-labelledby="toast-title">
+    <div class="k-heading"><h2 id="toast-title">トーストと画面の上の知らせ</h2><span class="k-label">.k-toast / .k-topnotice</span></div>
+    <p>トーストは操作の結果を右下に重ねて知らせます。種類は成功・お知らせ・注意の 3 つで、ソリッドのアイコンの形（✓ の円・i の円・! のひし形）と、読み上げの頭の言葉で見分けます。4 秒で消し、操作の付いたものは 8 秒。なぞっている間と、中にフォーカスがある間は消しません。失敗はトーストにせず、その場所の知らせの欄に出します。画面の上の知らせは、利用者の操作なしに画面を書き直したことだけを伝える、押せない帯です。</p>
+    <div class="toast-dock" aria-label="トーストの見た目（止めた見本）">
+      <div class="k-toast k-toast--card"><span class="k-icon" data-icon="solid:success"></span><span class="k-toast__title"><span class="k-visually-hidden">成功: </span>3 件を保存しました</span><span class="k-toast__tail"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-toast__close" type="button" aria-label="このトーストを閉じる"><span data-icon="line:x"></span></button></span></div>
+      <div class="k-toast k-toast--card"><span class="k-icon" data-icon="solid:info"></span><span class="k-toast__title"><span class="k-visually-hidden">お知らせ: </span>点検を複製しました</span><span class="k-toast__detail">元の点検はそのまま残っています。</span><span class="k-toast__tail"><button class="k-toast__action" type="button">Undo</button><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-toast__close" type="button" aria-label="このトーストを閉じる"><span data-icon="line:x"></span></button></span></div>
+      <div class="k-toast k-toast--card"><span class="k-icon" data-icon="solid:warning"></span><span class="k-toast__title"><span class="k-visually-hidden">注意: </span>写真の 1 枚を読み込めませんでした</span><span class="k-toast__detail">本文は保存しています。写真は後から足せます。</span><span class="k-toast__tail"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-toast__close" type="button" aria-label="このトーストを閉じる"><span data-icon="line:x"></span></button></span></div>
+    </div>
+    <div class="sample-row">
+      <button class="k-btn k-btn--sm" type="button" data-toast="success">成功のトーストを出す</button>
+      <button class="k-btn k-btn--sm" type="button" data-toast="info">お知らせ（元に戻す付き）</button>
+      <button class="k-btn k-btn--sm" type="button" data-toast="warning">注意のトーストを出す</button>
+      <button class="k-btn k-btn--sm" type="button" id="js-topnotice-btn">画面の上の知らせを出す</button>
+    </div>
+  </section>
+
+  <!-- 版の履歴: 選択肢の一覧と中身を左右に並べる -->
+  <section class="sample-section" aria-labelledby="history-title">
+    <div class="k-heading"><h2 id="history-title">選択肢の一覧と中身を左右に並べる</h2><span class="k-label">Versions</span></div>
+    <p>版の履歴のように、いくつかの中から 1 つを選んで中身を見比べます。左に一覧、右に選んだものの中身。選ぶまでは右に何が出るかを書き、読み込み中は順に灯る点。選んで中身を読み込むまで「この版に戻す」は押せません。640px 以下では一覧を上に重ねます。一覧は ↑↓ で選び直せます。</p>
+    <div><button class="k-btn" type="button" id="js-history-open"><span data-icon="line:clock-counter-clockwise"></span>書き直しの履歴を開く</button></div>
+    <dialog class="k-dialog k-dialog--wide" id="js-history" aria-labelledby="js-history-title">
+      <div class="k-dialog__head"><span data-icon="line:clock-counter-clockwise"></span><h3 id="js-history-title">点検の手順の書き直しの履歴</h3><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-close aria-label="閉じる"><span data-icon="line:x"></span></button></div>
+      <div class="k-dialog__body">
+        <div class="k-versions">
+          <div class="k-versions__list" id="js-history-list" role="listbox" tabindex="0" aria-label="版の一覧"></div>
+          <div class="k-versions__detail" id="js-history-detail" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="k-dialog__foot"><button class="k-btn" type="button" data-close>閉じる</button><button class="k-btn k-btn--primary" type="button" id="js-history-restore" disabled><span data-icon="line:clock-counter-clockwise"></span>この版に戻す</button></div>
     </dialog>
   </section>
 </main>
@@ -296,6 +364,145 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   detail.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => detail.close()));
   detail.addEventListener('close', () => { if (opener) opener.focus(); });
+
+  // ── 入力フォームのダイアログ ──
+  const dialog_with_return = (dialog, opener) => {
+    dialog.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => dialog.close()));
+    dialog.addEventListener('close', () => { if (opener.isConnected) opener.focus(); });
+  };
+  const edit = document.getElementById('js-edit');
+  const edit_open = document.getElementById('js-edit-open');
+  const edit_confirm = document.getElementById('js-edit-confirm');
+  const edit_delete = document.getElementById('js-edit-delete');
+  dialog_with_return(edit, edit_open);
+  dialog_with_return(edit_confirm, edit_delete);
+  edit_open.addEventListener('click', () => { edit.showModal(); document.getElementById('js-edit-name').focus(); });
+  edit_delete.addEventListener('click', () => { edit_confirm.showModal(); edit_confirm.querySelector('[data-close]').focus(); });
+  document.getElementById('js-edit-confirm-ok').addEventListener('click', () => { edit_confirm.close(); edit.close(); show_toast('success', '「倉庫 B の棚卸し」を削除しました', '見本なので、一覧からは消えていません。'); });
+  document.getElementById('js-edit-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const save = document.getElementById('js-edit-save');
+    if (save.getAttribute('aria-busy') === 'true') return;
+    const name = document.getElementById('js-edit-name');
+    const empty = name.value.trim() === '';
+    name.setAttribute('aria-invalid', String(empty));
+    document.getElementById('js-edit-name-error').hidden = !empty;
+    if (empty) { name.focus(); return; }
+    save.setAttribute('aria-busy', 'true');
+    setTimeout(() => { save.removeAttribute('aria-busy'); edit.close(); show_toast('success', `「${name.value.trim()}」を保存しました`); }, 900);
+  });
+  const tall = document.getElementById('js-tall');
+  const tall_open = document.getElementById('js-tall-open');
+  dialog_with_return(tall, tall_open);
+  const SPOTS = ['入口の扉', '1 番の棚', '2 番の棚', '3 番の棚', '空調 1 番', '空調 2 番', '照明の列 A', '照明の列 B', '消火器', '非常口', '荷受けの台', '台車の置き場', '奥の棚', '温度計', '湿度計', '窓の鍵', '床の排水口', '電源の盤', '掲示板', '出口の扉'];
+  document.getElementById('js-tall-list').innerHTML = SPOTS.map((s) => `<li>${s}を見て、気になったことを書く</li>`).join('');
+  tall_open.addEventListener('click', () => tall.showModal());
+
+  // ── トースト: 右下に積み、4 秒（操作付きは 8 秒）で消す。なぞる・フォーカスの間は止める ──
+  const toasts = document.createElement('div');
+  toasts.className = 'k-toasts';
+  toasts.setAttribute('aria-live', 'polite');
+  document.body.append(toasts);
+  const KINDS = { success: ['solid:success', '成功'], info: ['solid:info', 'お知らせ'], warning: ['solid:warning', '注意'] };
+  const show_toast = (kind, title, detail = '', action = null) => {
+    const [icon, word] = KINDS[kind];
+    const toast = document.createElement('div');
+    toast.className = 'k-toast k-toast--card is-in';
+    toast.innerHTML = `<span class="k-icon" aria-hidden="true">${icon_svg(icon)}</span><span class="k-toast__title"><span class="k-visually-hidden">${word}: </span>${escape_html(title)}</span>${detail ? `<span class="k-toast__detail">${escape_html(detail)}</span>` : ''}<span class="k-toast__tail">${action ? '<button class="k-toast__action" type="button">Undo</button>' : ''}<button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-toast__close" type="button" aria-label="このトーストを閉じる"><span class="k-icon" aria-hidden="true">${icon_svg('line:x')}</span></button></span>`;
+    let timer = 0;
+    let left = action ? 8000 : 4000;
+    let started = 0;
+    const remove = () => { clearTimeout(timer); toast.classList.add('is-out'); setTimeout(() => toast.remove(), 160); };
+    const run = () => { started = Date.now(); timer = setTimeout(remove, left); };
+    const pause = () => { if (timer) { clearTimeout(timer); timer = 0; left -= Date.now() - started; } };
+    const resume = () => { if (!timer && !toast.matches(':hover') && !toast.contains(document.activeElement)) run(); };
+    toast.addEventListener('pointerenter', pause);
+    toast.addEventListener('pointerleave', resume);
+    toast.addEventListener('focusin', pause);
+    toast.addEventListener('focusout', (e) => { if (!toast.contains(e.relatedTarget)) resume(); });
+    toast.querySelector('.k-toast__close').addEventListener('click', remove);
+    if (action) toast.querySelector('.k-toast__action').addEventListener('click', () => { remove(); action(); });
+    // 積むのは 3 つまで。古いものから消す
+    while (toasts.children.length >= 3) toasts.firstElementChild.remove();
+    toasts.append(toast);
+    run();
+  };
+  const TOASTS = {
+    success: () => show_toast('success', '3 件を保存しました'),
+    info: () => show_toast('info', '点検を複製しました', '元の点検はそのまま残っています。', () => show_toast('success', '複製を取り消しました')),
+    warning: () => show_toast('warning', '写真の 1 枚を読み込めませんでした', '本文は保存しています。写真は後から足せます。'),
+  };
+  document.querySelectorAll('[data-toast]').forEach((b) => b.addEventListener('click', () => TOASTS[b.dataset.toast]()));
+
+  // ── 画面の上の知らせ: 押せない帯を 4 秒だけ出す ──
+  const top_region = document.createElement('div');
+  top_region.className = 'k-topnotice-region';
+  top_region.setAttribute('role', 'status');
+  document.body.append(top_region);
+  let top_timer = 0;
+  document.getElementById('js-topnotice-btn').addEventListener('click', () => {
+    clearTimeout(top_timer);
+    top_region.innerHTML = `<p class="k-topnotice"><span class="k-icon" aria-hidden="true">${icon_svg('line:arrow-clockwise')}</span>ほかの画面で変わったので、一覧を読み直しました</p>`;
+    top_timer = setTimeout(() => { top_region.innerHTML = ''; }, 4000);
+  });
+
+  // ── 版の履歴 ──
+  const VERSIONS = [
+    { when: '2026-11-26 09:40', meta: '自動で保存・412 字', diff: [['', '入口の扉から見始める。'], ['del', '1 番の棚は<x>目で見るだけ</x>。'], ['add', '1 番の棚は<x>箱の数を数える</x>。']] },
+    { when: '2026-11-20 17:05', meta: '書き直す前・386 字', diff: [['skip', 3], ['del', '空調は<x>月に 1 回</x>見る。'], ['add', '空調は<x>週に 1 回</x>見る。'], ['add', '温度と湿度は、入口から一番遠い棚で測る。']] },
+    { when: '2026-11-12 10:12', meta: 'はじめて保存・240 字', diff: [['skip', 1], ['del', '点検の順番は決めない。'], ['add', '点検の順番は、見る場所の一覧のとおりにする。']] },
+  ];
+  const history = document.getElementById('js-history');
+  const history_open = document.getElementById('js-history-open');
+  const history_list = document.getElementById('js-history-list');
+  const history_detail = document.getElementById('js-history-detail');
+  const restore = document.getElementById('js-history-restore');
+  let picked = -1;
+  let load_timer = 0;
+  dialog_with_return(history, history_open);
+  const diff_html = (lines) => {
+    const added = lines.filter(([k]) => k === 'add').length;
+    const removed = lines.filter(([k]) => k === 'del').length;
+    const text = (t, kind) => escape_html(t).replace(/&lt;x&gt;(.*?)&lt;\/x&gt;/g, `<span class="k-diff__chars--${kind}">$1</span>`);
+    return `<div class="k-diff"><p class="k-visually-hidden">${added} 行追加・${removed} 行削除</p><p class="k-diff__summary" aria-hidden="true"><span class="k-diff__added">+${added} 行</span><span class="k-diff__removed">−${removed} 行</span></p><div class="k-diff__lines">${lines.map(([kind, t]) => {
+      if (kind === 'skip') return `<p class="k-diff__skip">（変わっていない ${t} 行）</p>`;
+      if (kind === 'add') return `<p class="k-diff__row is-add"><span class="k-diff__mark" aria-hidden="true">+</span><ins><span class="k-visually-hidden">追加: </span>${text(t, 'add')}</ins></p>`;
+      if (kind === 'del') return `<p class="k-diff__row is-del"><span class="k-diff__mark" aria-hidden="true">−</span><del><span class="k-visually-hidden">削除: </span>${text(t, 'del')}</del></p>`;
+      return `<p class="k-diff__row"><span class="k-diff__mark" aria-hidden="true"></span><span>${escape_html(t)}</span></p>`;
+    }).join('')}</div></div>`;
+  };
+  const render_history = () => {
+    history_list.innerHTML = VERSIONS.map((v, i) => `<div class="k-versions__item" role="option" id="js-ver-${i}" aria-selected="${i === picked}"><span class="k-versions__when">${v.when}</span><span class="k-versions__meta">${v.meta}</span></div>`).join('');
+    if (picked >= 0) history_list.setAttribute('aria-activedescendant', `js-ver-${picked}`);
+  };
+  const pick_version = (i) => {
+    picked = Math.max(0, Math.min(VERSIONS.length - 1, i));
+    render_history();
+    restore.disabled = true;
+    clearTimeout(load_timer);
+    history_detail.innerHTML = '<div class="k-section__state" role="status"><span class="k-loader" aria-hidden="true"><i></i><i></i><i></i><i></i></span>読み込んでいます</div>';
+    load_timer = setTimeout(() => {
+      history_detail.innerHTML = `<p class="k-versions__hint">${VERSIONS[picked].when} の版と今の文章の違い</p>${diff_html(VERSIONS[picked].diff)}`;
+      restore.disabled = false;
+    }, 700);
+  };
+  history_open.addEventListener('click', () => {
+    picked = -1;
+    restore.disabled = true;
+    history_list.removeAttribute('aria-activedescendant');
+    render_history();
+    history_detail.innerHTML = '<p class="k-versions__hint">左の一覧から版を選ぶと、今の文章との違いをここに出します。</p>';
+    history.showModal();
+    history_list.focus();
+  });
+  history_list.addEventListener('click', (e) => { const item = e.target.closest('[role="option"]'); if (item) pick_version([...history_list.children].indexOf(item)); });
+  history_list.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); pick_version(picked + 1); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); pick_version(picked < 0 ? 0 : picked - 1); }
+    if (e.key === 'Home') { e.preventDefault(); pick_version(0); }
+    if (e.key === 'End') { e.preventDefault(); pick_version(VERSIONS.length - 1); }
+  });
+  restore.addEventListener('click', () => { history.close(); show_toast('success', `${VERSIONS[picked].when} の版に戻しました`); });
 });
 </script>
 </body>

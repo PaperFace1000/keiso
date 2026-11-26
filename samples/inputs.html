@@ -23,7 +23,7 @@
   <section class="sample-intro">
     <span class="k-label k-bracket">Inputs</span>
     <h1>選ぶ・入れる部品</h1>
-    <p>フォームの値を選ぶボタン、日付と時刻の欄、色とアイコンの選び手、分類から段階的に絞る選択、開け閉めする欄です。選んだものは文字の色で塗って反転させ、先頭や右端に四角・ひし形の印を出します。決まりは <code>docs/components.md</code>。</p>
+    <p>フォームの値を選ぶボタン、日付と時刻の欄、色とアイコンの選び手、セレクト、探して選ぶ欄、タグ、分類から段階的に絞る選択、開け閉めする欄です。選んだものは文字の色で塗って反転させ、先頭や右端に四角・ひし形の印を出します。決まりは <code>docs/components.md</code>。</p>
   </section>
 
   <!-- 選択肢のボタン -->
@@ -89,6 +89,82 @@
           <div class="k-cells k-cells--icons" id="js-icon-cells"></div>
           <span class="k-cascade__note" id="js-icon-note" aria-live="polite"></span>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 独自のセレクト -->
+  <section class="sample-section" aria-labelledby="select-title">
+    <div class="k-heading"><h2 id="select-title">セレクト</h2><span class="k-label">.k-picker-btn + .k-listbox</span></div>
+    <p>5 個以上から 1 つを選ぶ欄です（4 個までなら選択肢のボタン）。押すボタンは入力欄と同じ 36px で、選んだ値は 1 行で省略します。開いた箱の幅はボタンに合わせ、高さ 320px を超えたら箱の中だけスクロールします。指している行は反転して ▸、選んである値は右端に四角い点、押せない項目は薄い文字で、理由を文言に入れます。↑↓・Home・End で動き、頭の文字を打つとその行へ移り、Enter で選び、Esc で閉じます。</p>
+    <div class="form-demo">
+      <div class="k-field">
+        <span class="k-field__label" id="js-sel-label">前の日に知らせる時刻</span>
+        <div class="k-pop" style="display: grid;">
+          <button class="k-picker-btn" type="button" id="js-sel-btn" aria-haspopup="listbox" aria-labelledby="js-sel-label js-sel-value"><span class="k-picker-btn__value" id="js-sel-value">20:00</span></button>
+          <div class="k-popover k-listbox" id="js-sel-list" role="listbox" tabindex="-1" aria-labelledby="js-sel-label" hidden></div>
+        </div>
+        <span class="k-field__hint">選択肢が 5 個以上のときに使います。</span>
+      </div>
+      <div class="k-field">
+        <span class="k-field__label" id="js-sel2-label">書き出す形式（押せない）</span>
+        <button class="k-picker-btn" type="button" disabled aria-labelledby="js-sel2-label js-sel2-value" aria-describedby="js-sel2-why"><span class="k-picker-btn__value" id="js-sel2-value">とても長い選択肢の文言は、ボタンの幅で 1 行に省略して出す（CSV・区切りはカンマ）</span></button>
+        <span class="k-field__hint" id="js-sel2-why">書き出しの途中は形式を変えられません。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 探して選ぶ欄 -->
+  <section class="sample-section" aria-labelledby="combo-title">
+    <div class="k-heading"><h2 id="combo-title">探して選ぶ欄</h2><span class="k-label">Combobox</span></div>
+    <p>対象が多く、名前で絞ってから選ぶ欄です（分類から選ぶほうが早いときは下の「段階的に絞る選択」）。開くと探す欄にフォーカスを置き、「選ばない」→ <code>RECENT</code> → <code>ALL</code> の順に並べます。打つたびに問い合わせず 300ms 待ってから探し、その間は前の結果を薄い文字で残して「探しています」を出します。見つからない・失敗したときは一覧の下に 1 行で出し、失敗は <code>role="alert"</code> にします。</p>
+    <div class="form-demo">
+      <div class="sample-stack">
+        <div class="k-field">
+          <span class="k-field__label" id="js-combo-label">記録を付ける作業</span>
+          <div class="k-pop" style="display: grid;">
+            <button class="k-picker-btn is-empty" type="button" id="js-combo-btn" aria-haspopup="dialog" aria-label="記録を付ける作業: 選んでいません"><span class="k-icon k-icon--16" data-icon="line:folder"></span><span id="js-combo-badge"></span><span class="k-picker-btn__value" id="js-combo-value">選んでいません</span></button>
+            <div class="k-popover k-combo" id="js-combo-pop" role="dialog" aria-label="作業を選ぶ" hidden>
+              <label class="k-prompt k-prompt--sm"><input type="text" id="js-combo-input" role="combobox" aria-expanded="true" aria-controls="js-combo-list" aria-autocomplete="list" placeholder="名前で絞り込む" aria-label="作業を名前で絞り込む" autocomplete="off"></label>
+              <div class="k-combo__list" id="js-combo-list" role="listbox" aria-label="作業"></div>
+              <div class="k-combo__note" id="js-combo-note" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+        <label class="k-check"><input type="checkbox" id="js-combo-fail">見本: 探すのに失敗させる</label>
+      </div>
+      <div class="k-field">
+        <span class="k-field__label" id="js-combo2-label">選んだ後の見た目</span>
+        <button class="k-picker-btn" type="button" aria-label="作業: 倉庫 B の棚卸しと、帳簿の数え直し" aria-describedby="js-combo2-label"><span class="k-icon k-icon--16" data-icon="line:folder"></span><span class="k-catbadge" data-extra-color="ochre"><span class="k-swatch-dot" aria-hidden="true"></span><span>倉庫</span></span><span class="k-picker-btn__value">倉庫 B の棚卸しと、帳簿の数え直し</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- タグ -->
+  <section class="sample-section" aria-labelledby="tag-title">
+    <div class="k-heading"><h2 id="tag-title">タグで絞り込む・タグを付ける</h2><span class="k-label">.k-tagfilter / .k-tagpick</span></div>
+    <p>絞り込みの札はいくつでも選べます。先頭の四角はチェックボックスと同じ印で、選ぶと札ごと反転します（本物のチェックボックスなので Tab と Space で選べます）。付けたタグは右の × か、× にフォーカスして Backspace・Delete で外し、←→ で隣のタグへ移ります。候補を押すか、新しい名前を入れて Enter か「足す」で付けます。上限まで付けたら、候補と入力欄を隠します。</p>
+    <div class="form-demo">
+      <div class="sample-stack">
+        <fieldset class="k-tagfilter" id="js-tagfilter">
+          <legend>タグで絞り込む（いくつでも選べる）</legend>
+          <label><input type="checkbox" value="倉庫" checked>倉庫</label>
+          <label><input type="checkbox" value="月末">月末</label>
+          <label><input type="checkbox" value="設備" checked>設備</label>
+          <label><input type="checkbox" value="確認待ち">確認待ち</label>
+          <label><input type="checkbox" value="下書き">下書き</label>
+        </fieldset>
+        <span class="k-field__hint" id="js-tagfilter-result" aria-live="polite"></span>
+      </div>
+      <div class="k-field" style="gap: var(--space-2);">
+        <span class="k-field__label" id="js-tagpick-label" style="display: flex; align-items: center; gap: var(--space-1);"><span class="k-icon--16" data-icon="line:tag"></span>タグ（5 個まで）</span>
+        <ul class="k-tagpick" id="js-tagpick" aria-labelledby="js-tagpick-label"></ul>
+        <div class="sample-stack" id="js-tagpick-add" style="gap: var(--space-2);">
+          <ul class="k-tagcands" id="js-tagcands" aria-label="タグの候補"></ul>
+          <label class="k-field__label" for="js-tagpick-input">新しいタグ</label>
+          <div class="k-field__row"><input class="k-input" id="js-tagpick-input" placeholder="例: 年末"><button class="k-btn" type="button" id="js-tagpick-btn"><span data-icon="line:plus"></span>足す</button></div>
+        </div>
+        <span class="k-field__hint" id="js-tagpick-note" aria-live="polite"></span>
       </div>
     </div>
   </section>
@@ -375,6 +451,209 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById(btn.getAttribute('aria-controls')).hidden = !open;
     });
   });
+
+  // ── セレクト: 箱にフォーカスを置き、aria-activedescendant で行を指す ──
+  const TIMES = [['18:00'], ['19:00'], ['20:00'], ['21:00'], ['22:00（夜間は送れません）', true], ['朝 7:00 にまとめて'], ['知らせない']];
+  let time_value = '20:00';
+  const sel_btn = document.getElementById('js-sel-btn');
+  const sel_list = document.getElementById('js-sel-list');
+  let sel_active = 0;
+  sel_list.innerHTML = TIMES.map(([label, off], i) => `<div class="k-option" role="option" id="js-sel-opt-${i}" aria-selected="${label === time_value}"${off ? ' aria-disabled="true"' : ''}><span class="k-option__main">${label}</span></div>`).join('');
+  const sel_options = [...sel_list.children];
+  const sel_point = (i) => {
+    sel_active = i;
+    sel_options.forEach((o, j) => o.classList.toggle('is-active', j === i));
+    sel_list.setAttribute('aria-activedescendant', sel_options[i].id);
+    sel_options[i].scrollIntoView({ block: 'nearest' });
+  };
+  const usable = (i) => sel_options[i] && sel_options[i].getAttribute('aria-disabled') !== 'true';
+  const sel_pop = popover(sel_btn, sel_list, {
+    close_on_blur: true,
+    on_open: () => { const now = sel_options.findIndex((o) => o.getAttribute('aria-selected') === 'true'); sel_point(now < 0 ? 0 : now); sel_list.focus(); },
+  });
+  const sel_pick = (i) => {
+    if (!usable(i)) return;
+    time_value = TIMES[i][0];
+    sel_options.forEach((o, j) => o.setAttribute('aria-selected', String(j === i)));
+    document.getElementById('js-sel-value').textContent = time_value;
+    sel_pop.close();
+  };
+  sel_btn.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); sel_pop.open(); }
+  });
+  let typed = '';
+  let typed_timer = 0;
+  sel_list.addEventListener('keydown', (e) => {
+    const step = (from, dir) => { let i = from + dir; while (i >= 0 && i < sel_options.length && !usable(i)) i += dir; return i >= 0 && i < sel_options.length ? i : from; };
+    if (e.key === 'ArrowDown') { e.preventDefault(); sel_point(step(sel_active, 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); sel_point(step(sel_active, -1)); }
+    else if (e.key === 'Home') { e.preventDefault(); sel_point(step(-1, 1)); }
+    else if (e.key === 'End') { e.preventDefault(); sel_point(step(sel_options.length, -1)); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); sel_pick(sel_active); }
+    else if (e.key === 'Tab') { sel_pop.close(false); }
+    else if (e.key.length === 1 && !e.isComposing) {
+      // 頭の文字: 続けて打った文字を 0.5 秒だけつなげて探す
+      clearTimeout(typed_timer);
+      typed += e.key;
+      typed_timer = setTimeout(() => { typed = ''; }, 500);
+      const hit = sel_options.findIndex((o, i) => usable(i) && o.textContent.startsWith(typed));
+      if (hit >= 0) sel_point(hit);
+    }
+  });
+  sel_list.addEventListener('click', (e) => {
+    const opt = e.target.closest('.k-option');
+    if (opt) sel_pick(sel_options.indexOf(opt));
+  });
+  sel_list.addEventListener('pointermove', (e) => {
+    const opt = e.target.closest('.k-option');
+    if (opt && usable(sel_options.indexOf(opt))) sel_point(sel_options.indexOf(opt));
+  });
+
+  // ── 探して選ぶ欄 ──
+  const TASKS = [
+    { name: '倉庫 A の棚卸し', cat: ['倉庫', 'ochre'], recent: true },
+    { name: '倉庫 B の棚卸しと、帳簿の数え直し', cat: ['倉庫', 'ochre'], recent: true },
+    { name: '空調の点検', cat: ['設備', 'blue'] },
+    { name: '照明の交換の手順を書く', cat: ['設備', 'blue'] },
+    { name: '発注の控えの整理', cat: null },
+    { name: '週次の点検', cat: ['点検', 'teal'] },
+  ];
+  let task = null;
+  const combo_btn = document.getElementById('js-combo-btn');
+  const combo_input = document.getElementById('js-combo-input');
+  const combo_list = document.getElementById('js-combo-list');
+  const combo_note = document.getElementById('js-combo-note');
+  let combo_active = 0;
+  let combo_timer = 0;
+  let shown_query = '';
+  const badge = (cat) => (cat ? `<span class="k-catbadge" data-extra-color="${cat[1]}"><span class="k-swatch-dot" aria-hidden="true"></span><span>${cat[0]}</span></span>` : '<span class="k-catbadge"><span>分類なし</span></span>');
+  const combo_options = () => [...combo_list.querySelectorAll('.k-option')];
+  const combo_point = (i) => {
+    const opts = combo_options();
+    if (opts.length === 0) { combo_input.removeAttribute('aria-activedescendant'); return; }
+    combo_active = Math.max(0, Math.min(opts.length - 1, i));
+    opts.forEach((o, j) => o.classList.toggle('is-active', j === combo_active));
+    combo_input.setAttribute('aria-activedescendant', opts[combo_active].id);
+    opts[combo_active].scrollIntoView({ block: 'nearest' });
+  };
+  const combo_row = (t, i) => `<div class="k-option" role="option" id="js-combo-opt-${i}" data-task="${TASKS.indexOf(t)}" aria-selected="${t === task}"><span class="k-option__main">${t.name}<span class="k-option__meta" style="display: flex; gap: var(--space-2); align-items: center; margin-top: 2px;">${badge(t.cat)}</span></span></div>`;
+  const render_combo = (query) => {
+    shown_query = query;
+    const hit = TASKS.filter((t) => t.name.normalize('NFKC').toUpperCase().includes(query));
+    let n = 0;
+    const none = query === '' ? `<div class="k-option k-option--quiet" role="option" id="js-combo-opt-${n++}" data-task="-1" aria-selected="${task === null}"><span class="k-option__main">選ばない</span></div>` : '';
+    const groups = query === '' ? [['Recent', hit.filter((t) => t.recent)], ['All', hit.filter((t) => !t.recent)]] : [['Results', hit]];
+    combo_list.innerHTML = none + groups.filter(([, list]) => list.length > 0).map(([label, list]) => `<div role="group" aria-label="${label}"><div class="k-combo__head k-label" role="presentation">${label}</div>${list.map((t) => combo_row(t, n++)).join('')}</div>`).join('');
+    combo_list.removeAttribute('aria-busy');
+    combo_note.classList.remove('is-error');
+    combo_note.removeAttribute('role');
+    combo_note.textContent = hit.length === 0 ? '見つかりません。言葉を短くしてください。' : (query === '' ? '' : `${hit.length} 件`);
+    const now = combo_options().findIndex((o) => o.getAttribute('aria-selected') === 'true');
+    combo_point(now < 0 ? 0 : now);
+  };
+  const combo_search = () => {
+    clearTimeout(combo_timer);
+    const query = combo_input.value.normalize('NFKC').trim().toUpperCase();
+    if (query === shown_query && combo_list.getAttribute('aria-busy') !== 'true') return;
+    // 300ms 待ってから問い合わせる。その間は前の結果を残す
+    combo_timer = setTimeout(() => {
+      combo_list.setAttribute('aria-busy', 'true');
+      combo_note.classList.remove('is-error');
+      combo_note.innerHTML = '<span class="k-loader" aria-hidden="true"><i></i><i></i><i></i><i></i></span>探しています';
+      combo_timer = setTimeout(() => {
+        if (document.getElementById('js-combo-fail').checked) {
+          combo_list.removeAttribute('aria-busy');
+          combo_note.classList.add('is-error');
+          combo_note.setAttribute('role', 'alert');
+          combo_note.textContent = '探せませんでした。接続を確かめてから、もう一度入れてください。';
+          return;
+        }
+        render_combo(query);
+      }, 700);
+    }, 300);
+  };
+  const combo_pop = popover(combo_btn, document.getElementById('js-combo-pop'), {
+    close_on_blur: true,
+    on_open: () => { combo_input.value = ''; render_combo(''); combo_input.focus(); },
+  });
+  const combo_pick = (opt) => {
+    const i = Number(opt.dataset.task);
+    task = i < 0 ? null : TASKS[i];
+    document.getElementById('js-combo-value').textContent = task ? task.name : '選んでいません';
+    document.getElementById('js-combo-badge').innerHTML = task ? badge(task.cat) : '';
+    combo_btn.classList.toggle('is-empty', task === null);
+    combo_btn.setAttribute('aria-label', `記録を付ける作業: ${task ? task.name : '選んでいません'}`);
+    combo_pop.close();
+  };
+  combo_input.addEventListener('input', combo_search);
+  combo_input.addEventListener('keydown', (e) => {
+    if (e.isComposing) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); combo_point(combo_active + 1); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); combo_point(combo_active - 1); }
+    if (e.key === 'Enter') { e.preventDefault(); const opt = combo_options()[combo_active]; if (opt) combo_pick(opt); }
+    if (e.key === 'Tab') combo_pop.close(false);
+  });
+  combo_list.addEventListener('click', (e) => { const opt = e.target.closest('.k-option'); if (opt) combo_pick(opt); });
+
+  // ── タグで絞り込む ──
+  const tagfilter = document.getElementById('js-tagfilter');
+  const show_filter = () => {
+    const on = [...tagfilter.querySelectorAll('input:checked')].map((i) => `「${i.value}」`);
+    document.getElementById('js-tagfilter-result').textContent = on.length === 0 ? 'タグで絞り込んでいません。' : `${on.join('')}のどれかが付いたものに絞り込んでいます。`;
+  };
+  tagfilter.addEventListener('change', show_filter);
+  show_filter();
+
+  // ── タグを付ける ──
+  const MAX_TAGS = 5;
+  let tags = ['倉庫', '月末'];
+  const CANDIDATES = ['設備', '確認待ち', '下書き', '週次'];
+  const tag_list = document.getElementById('js-tagpick');
+  const tag_input = document.getElementById('js-tagpick-input');
+  const tag_note = document.getElementById('js-tagpick-note');
+  const render_tags = (focus_index = null) => {
+    tag_list.innerHTML = tags.map((t, i) => `<li>${escape_text(t)}<button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-remove="${i}" aria-label="${escape_text(t)}を外す" title="${escape_text(t)}を外す"><span class="k-icon" aria-hidden="true">${icon_svg('line:x')}</span></button></li>`).join('');
+    document.getElementById('js-tagcands').innerHTML = CANDIDATES.filter((c) => !tags.includes(c)).map((c) => `<li><button class="k-btn k-btn--sm" type="button" data-add="${c}"><span class="k-icon k-icon--16" aria-hidden="true">${icon_svg('line:plus')}</span>${c}</button></li>`).join('');
+    const full = tags.length >= MAX_TAGS;
+    document.getElementById('js-tagpick-add').hidden = full;
+    if (focus_index !== null) {
+      const buttons = tag_list.querySelectorAll('[data-remove]');
+      (buttons[Math.min(focus_index, buttons.length - 1)] || tag_input).focus();
+      if (full) tag_list.querySelector('[data-remove]').focus();
+    }
+  };
+  const escape_text = (text) => text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const add_tag = (name) => {
+    const tag = name.normalize('NFKC').trim();
+    if (tag === '') { tag_note.textContent = 'タグの名前を入れてください。'; return; }
+    if (tags.includes(tag)) { tag_note.textContent = `「${tag}」はもう付いています。`; return; }
+    tags = [...tags, tag];
+    tag_note.textContent = tags.length >= MAX_TAGS ? `「${tag}」を付けました。上限の ${MAX_TAGS} 個に達したので、外すまで足せません。` : `「${tag}」を付けました。`;
+    tag_input.value = '';
+    render_tags();
+    if (tags.length < MAX_TAGS) tag_input.focus(); else tag_list.querySelector('[data-remove]').focus();
+  };
+  const remove_tag = (i) => {
+    const [gone] = tags.splice(i, 1);
+    tags = [...tags];
+    tag_note.textContent = `「${gone}」を外しました。`;
+    render_tags(i);
+  };
+  tag_list.addEventListener('click', (e) => { const b = e.target.closest('[data-remove]'); if (b) remove_tag(Number(b.dataset.remove)); });
+  tag_list.addEventListener('keydown', (e) => {
+    const b = e.target.closest('[data-remove]');
+    if (!b) return;
+    const i = Number(b.dataset.remove);
+    const buttons = tag_list.querySelectorAll('[data-remove]');
+    if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); remove_tag(i); }
+    if (e.key === 'ArrowRight' && buttons[i + 1]) { e.preventDefault(); buttons[i + 1].focus(); }
+    if (e.key === 'ArrowLeft' && buttons[i - 1]) { e.preventDefault(); buttons[i - 1].focus(); }
+  });
+  document.getElementById('js-tagcands').addEventListener('click', (e) => { const b = e.target.closest('[data-add]'); if (b) add_tag(b.dataset.add); });
+  document.getElementById('js-tagpick-btn').addEventListener('click', () => add_tag(tag_input.value));
+  // 変換中の Enter は確定の操作なので、タグを足さない。外側のフォームも送らない
+  tag_input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); add_tag(tag_input.value); } });
+  render_tags();
 });
 </script>
 </body>

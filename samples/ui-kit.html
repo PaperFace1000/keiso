@@ -43,6 +43,31 @@
     </div>
   </section>
 
+  <!-- ボタンの変種 -->
+  <section class="sample-section" aria-labelledby="btnx-title">
+    <div class="k-heading"><h2 id="btnx-title">ボタンの変種</h2><span class="k-label">sm / block / busy / steady / toggle</span></div>
+    <p>どの種類にも小さい版（高さ 28px・13px）があります。括弧のボタンの処理中は、括弧を残して [ の右にカーソルを点滅させます。状態で文言が変わるボタンは、すべての文言を同じマスに重ねて置き、幅を一番長い文言で決めます（押しても右の「止める」が動きません）。押すたびに文言とアイコンが入れ替わる切り替えは、押すとどうなるかを書き、目立たせない色にします。</p>
+    <div class="sample-row">
+      <button class="k-btn k-btn--primary k-btn--sm" type="button">保存する</button>
+      <button class="k-btn k-btn--sm" type="button"><span class="k-icon--16" data-icon="line:download-simple"></span>書き出す</button>
+      <button class="k-btn k-btn--ghost k-btn--sm" type="button">取り消す</button>
+      <button class="k-btn k-btn--alert k-btn--sm" type="button"><span class="k-icon--16" data-icon="line:trash"></span>削除する</button>
+      <button class="k-btn k-btn--sm" type="button" disabled>押せない</button>
+      <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" aria-label="設定"><span class="k-icon--16" data-icon="line:gear-six"></span></button>
+      <button class="k-btn k-btn--ghost k-btn--sm" type="button" id="js-ghost-busy">更新する</button>
+    </div>
+    <div class="sample-row">
+      <button class="k-btn k-btn--sm" type="button" id="js-steady-start"><span class="k-icon--16" data-icon="line:play" id="js-steady-icon"></span><span class="k-steady"><span class="is-current">開始</span><span aria-hidden="true">実行中</span></span></button>
+      <button class="k-btn k-btn--ghost k-btn--sm" type="button" id="js-steady-stop" disabled>止める</button>
+      <span class="k-muted" style="font-size: 12px;">「開始」を押すと「実行中」になり、押せなくなります。「止める」の位置は変わりません。</span>
+    </div>
+    <div class="sample-row">
+      <button class="k-btn k-btn--ghost k-btn--sm k-btn--quiet" type="button" id="js-toggle-meta" title="一覧の行の 2 段目（担当と日時）を隠す"><span class="k-icon--16" data-icon="line:eye-slash"></span><span>補足を隠す</span></button>
+      <span class="k-muted" style="font-size: 12px;" id="js-toggle-note">行の 2 段目を出しています。</span>
+    </div>
+    <div style="max-width: 22rem;"><button class="k-btn k-btn--primary k-btn--block" type="button"><span data-icon="line:sign-in"></span>ログイン</button></div>
+  </section>
+
   <!-- 入力欄 -->
   <section class="sample-section" aria-labelledby="form-title">
     <div class="k-heading"><h2 id="form-title">入力欄</h2><span class="k-label">.k-field</span></div>
@@ -65,6 +90,11 @@
         <label for="js-search">コマンド</label>
         <div class="k-prompt"><input id="js-search" placeholder="search or run…" value="sync --all"></div>
         <span class="k-field__hint">検索やコマンドの入力には、先頭に &gt; の付いた等幅の欄を使います。</span>
+      </div>
+      <div class="k-field">
+        <label for="js-url">元のページ</label>
+        <div class="k-field__row"><input class="k-input" id="js-url" value="https://example.com/notes/48" aria-describedby="js-url-hint"><button class="k-btn" type="button" id="js-url-check">確かめる</button></div>
+        <span class="k-field__hint" id="js-url-hint" aria-live="polite">入力欄の横のボタンは、高さを 36px でそろえます。</span>
       </div>
       <div class="k-field" style="grid-column: 1 / -1;">
         <label for="js-memo">メモ</label>
@@ -93,6 +123,8 @@
       <div class="k-panel sample-stack">
         <label class="k-switch"><input type="checkbox" role="switch" checked data-switch><span class="k-switch__state">ON</span>自動で同期する</label>
         <label class="k-switch"><input type="checkbox" role="switch" data-switch><span class="k-switch__state">OFF</span>通知を音で知らせる</label>
+        <label class="k-switch"><input type="checkbox" role="switch" checked disabled aria-describedby="js-switch-why"><span class="k-switch__state">ON</span>端末の時刻に合わせる</label>
+        <span class="k-field__hint" id="js-switch-why">上の項目は管理者が固定しているため変えられません。</span>
         <div class="k-segment" role="group" aria-label="表示">
           <button type="button" aria-pressed="true" data-segment>List</button><button type="button" aria-pressed="false" data-segment>Grid</button><button type="button" aria-pressed="false" data-segment>Log</button>
         </div>
@@ -116,6 +148,18 @@
       <span class="k-count">12</span>
       <span><kbd>Ctrl</kbd> + <kbd>K</kbd></span>
     </div>
+    <span class="sample-caption">状態のバッジ・分類のバッジ・チップ</span>
+    <div class="sample-row">
+      <span class="k-badge k-role-success">Done</span>
+      <span class="k-badge k-role-warning">Review</span>
+      <span class="k-badge k-role-alert">Down</span>
+      <span class="k-badge">Draft</span>
+      <span class="k-catbadge" data-extra-color="ochre" title="倉庫"><span class="k-swatch-dot" aria-hidden="true"></span><span>倉庫</span></span>
+      <span class="k-catbadge" data-extra-color="blue" title="設備"><span data-icon="line:gear-six"></span><span>設備</span></span>
+      <span class="k-catbadge" title="分類なし"><span>分類なし</span></span>
+      <span class="k-chips" style="max-width: 18rem;" aria-label="タグ: 月末、棚卸し、とても長いタグの名前は省略する、ほか 2 個"><span class="k-chip" title="月末"><span>月末</span></span><span class="k-chip" title="棚卸し"><span>棚卸し</span></span><span class="k-chip" title="とても長いタグの名前は省略する"><span>とても長いタグの名前は省略する</span></span><span class="k-chip k-chip--rest" title="ほかに 2 個: 倉庫 B、確認待ち">+2</span></span>
+    </div>
+    <p style="font-size: 13px; color: var(--color-muted);">行や表の中の状態は <code>.k-status</code>（点と名前だけ）。カードの頭など目を留めさせたい所だけ、地を塗った状態のバッジ <code>.k-badge</code>。短い英字の区分は <code>.k-tag</code>、分類の名前は分類のバッジ <code>.k-catbadge</code>（四角い点かアイコンを添える）、利用者が付けたタグはチップ <code>.k-chip</code> を 1 行に並べ、入りきらない分を +N にまとめます。</p>
   </section>
 
   <!-- 知らせ -->
@@ -252,6 +296,50 @@
   const dialog = document.getElementById('js-dialog');
   document.getElementById('js-open-dialog').addEventListener('click', () => dialog.showModal());
   dialog.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => dialog.close()));
+
+  // 括弧のボタンの処理中
+  const ghost_busy = document.getElementById('js-ghost-busy');
+  ghost_busy.addEventListener('click', () => {
+    if (ghost_busy.getAttribute('aria-busy') === 'true') return;
+    ghost_busy.setAttribute('aria-busy', 'true');
+    ghost_busy.textContent = '更新しています';
+    setTimeout(() => { ghost_busy.removeAttribute('aria-busy'); ghost_busy.textContent = '更新する'; }, 1500);
+  });
+
+  // 文言が変わっても幅が変わらないボタン
+  const steady = document.getElementById('js-steady-start');
+  const steady_stop = document.getElementById('js-steady-stop');
+  const set_running = (running) => {
+    const [idle, busy] = steady.querySelectorAll('.k-steady > span');
+    idle.classList.toggle('is-current', !running);
+    busy.classList.toggle('is-current', running);
+    idle.setAttribute('aria-hidden', String(running));
+    busy.setAttribute('aria-hidden', String(!running));
+    steady.disabled = running;
+    steady_stop.disabled = !running;
+    document.getElementById('js-steady-icon').innerHTML = window.keiso_sample.icon_svg(running ? 'line:hourglass' : 'line:play');
+    (running ? steady_stop : steady).focus();
+  };
+  steady.addEventListener('click', () => set_running(true));
+  steady_stop.addEventListener('click', () => set_running(false));
+
+  // 押すたびに文言とアイコンが入れ替わる切り替え
+  const toggle = document.getElementById('js-toggle-meta');
+  let meta_shown = true;
+  toggle.addEventListener('click', () => {
+    meta_shown = !meta_shown;
+    toggle.querySelector('span:last-child').textContent = meta_shown ? '補足を隠す' : '補足を出す';
+    toggle.title = meta_shown ? '一覧の行の 2 段目（担当と日時）を隠す' : '一覧の行の 2 段目（担当と日時）を出す';
+    toggle.querySelector('[data-icon]').innerHTML = window.keiso_sample.icon_svg(meta_shown ? 'line:eye-slash' : 'line:eye');
+    document.querySelectorAll('#js-list .k-row__meta').forEach((m) => { m.hidden = !meta_shown; });
+    document.getElementById('js-toggle-note').textContent = meta_shown ? '行の 2 段目を出しています。' : '行の 2 段目を隠しています。';
+  });
+
+  // 入力欄の横のボタン
+  document.getElementById('js-url-check').addEventListener('click', () => {
+    const ok = /^https?:\/\//.test(document.getElementById('js-url').value.trim());
+    document.getElementById('js-url-hint').textContent = ok ? '開ける形の URL です（見本なので中身は確かめません）。' : 'http:// か https:// で始めてください。';
+  });
 
   const clock = document.getElementById('js-clock');
   const tick = () => {
