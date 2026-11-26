@@ -9,6 +9,8 @@
 - CSS のフレームワーク（Bootstrap・Tailwind など）は使わない。独自の配色と部品の見本があるため
 - 外部の CDN・Web フォントを読み込まない。Doto を使うアプリは `fonts/doto-latin.woff2` を同梱する
 - リンクの既定の下線は土台で外し、下線はなぞったときだけ（`text-underline-offset: 0.2em`）
+- 影は浮かぶもの（トースト・メニュー・ポップオーバー）にだけ、1 つの値（`--shadow-float`）で付ける。欄・カード・ダイアログには付けない
+- スクロールバーは土台（`base.css`）でテーマの色にそろえ、部品ごとに上書きしない
 
 ### 🧱 base.css
 
@@ -25,6 +27,14 @@ body {
 }
 a { color: inherit; text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+/* hidden を付けたものは、display を持つ部品でも必ず隠す */
+[hidden] { display: none !important; }
+/* スクロールバー: 細く、つまみは四角。色は強い線の色、なぞると補足の文字の色 */
+* { scrollbar-width: thin; scrollbar-color: var(--color-border-strong) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border-strong); border: 3px solid transparent; border-radius: 1px; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted); background-clip: padding-box; }
 ::selection { background: var(--color-selection-bg); color: var(--color-selection-text); }
 :focus-visible {
   outline: 2px solid var(--color-focus);

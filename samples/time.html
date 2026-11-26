@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   document.getElementById('js-day-prev').addEventListener('click', () => { day.setDate(day.getDate() - 1); render_day(); });
   document.getElementById('js-day-next').addEventListener('click', () => { day.setDate(day.getDate() + 1); render_day(); });
-  document.getElementById('js-day-today').addEventListener('click', () => { day = new Date(today.getFullYear(), today.getMonth(), today.getDate()); render_day(); });
+  document.getElementById('js-day-today').addEventListener('click', (e) => { if (e.currentTarget.getAttribute('aria-disabled') === 'true') return; day = new Date(today.getFullYear(), today.getMonth(), today.getDate()); render_day(); });
   render_day();
 
   // 月のカレンダー（見本の祝日は 2026 年の分だけ持つ）

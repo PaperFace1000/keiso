@@ -19,6 +19,10 @@
 - すべての操作を Tab と Enter / Space で行えること。メニューとタブは矢印キーで動き、Esc で閉じる
 - ダイアログが開いたらフォーカスを中に移し、閉じたら開いたボタンに戻す。開いている間は後ろの画面を操作できない
 - キーボードで動かす前提の画面（`docs/patterns.md` の「キーボードで動かす」）でも、マウスと指で同じことができること
+- メニューは ↑↓・Home・End で動き、Enter で選び、Esc と Tab で閉じる。ポップオーバーは Esc で閉じてボタンにフォーカスを戻す（`docs/components.md`）
+- 探す欄と一覧を組み合わせる部品（段階的に絞る選択など）は、フォーカスを欄に置いたまま `aria-activedescendant` で行を指す。日本語の変換中のキー（`isComposing`）は選ぶ操作にしない
+- マスを並べる選び手（色・アイコン）は、矢印キーで上下左右に動ける
+- 並べ替えの「上へ」「下へ」のように、押したあともフォーカスを残したいボタンは、端で `disabled` にせず `aria-disabled="true"` にする（`disabled` にするとフォーカスが外れる）
 
 ## 🎯 フォーカスの見え方
 
@@ -46,6 +50,11 @@
 - ALERT の知らせは `role="alert"`、それ以外の知らせは `role="status"`
 - 選んでいる行は `aria-selected="true"`（選ぶ一覧）か `aria-current="true"`（今開いているもの）。区切りの選択は `aria-pressed`
 - 今いるページのリンクは `aria-current="page"`。ナビには `aria-label` で名前を付ける
+- 開け閉めするボタン（メニュー・ポップオーバー・開け閉めする欄）は `aria-expanded` と `aria-controls`。メニューを開くボタンは `aria-haspopup="menu"`
+- 入と切が変わるボタン（行のピン・除外の切り替え）は `aria-pressed`。`aria-label` は押すとどうなるかを書き、状態と一緒に替える
+- カレンダーの今日のマスは `aria-current="date"`
+- 件数・月・並び順など、操作の結果で変わる文は `aria-live="polite"` で読み上げる
+- 見せずに読み上げだけさせる文は `.k-visually-hidden` で隠す（`display: none` にしない）
 - 大文字のラベルは `text-transform` で大文字にし、元の文字は普通に書く（読み上げが 1 文字ずつ読まないように）
 - `<html lang="ja">`
 
