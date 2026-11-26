@@ -45,16 +45,16 @@
 .lx-legend i.is-prev { background: repeating-linear-gradient(90deg, var(--color-border-strong) 0 3px, transparent 3px 6px); }
 
 /* ドーナツ */
-.lx-donut { display: grid; grid-template-columns: 8.5rem 1fr; gap: var(--space-4); align-items: center; }
-.lx-donut svg { width: 8.5rem; height: 8.5rem; transform: rotate(-90deg); }
-.lx-donut circle { fill: none; stroke-width: 14; }
-.lx-donut__track { stroke: var(--color-sunken); }
+.lx-donut { display: grid; grid-template-columns: 10rem 1fr; gap: var(--space-4); align-items: center; }
+.lx-donut svg { width: 10rem; height: 10rem; display: block; }
+/* 割合は点を円周に並べて見せる。点 1 つが 1 件で、項目の境目は 1 点分空ける。内側の細い点線の輪は目盛りの代わり */
+.lx-donut__track { fill: none; stroke: var(--color-border); stroke-width: 0.4; stroke-dasharray: 0.4 1.3; }
 .lx-donut__center { position: relative; }
 .lx-donut__label { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
-.lx-donut__label .k-dot { font-size: 26px; }
+.lx-donut__label .k-dot { font-size: 34px; }
 .lx-donut ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
 .lx-donut li { display: grid; grid-template-columns: 10px 1fr auto; gap: var(--space-2); align-items: center; }
-.lx-donut li i { width: 10px; height: 10px; display: block; }
+.lx-donut li i { width: 8px; height: 8px; display: block; border-radius: 50%; }
 @media (max-width: 26rem) { .lx-donut { grid-template-columns: 1fr; justify-items: center; } .lx-donut ul { width: 100%; } }
 
 /* 余白の段階 */
@@ -155,14 +155,14 @@
           <div class="lx-chart__head"><h3>状態の内訳</h3><span class="k-label">50 checks</span></div>
           <div class="lx-donut">
             <div class="lx-donut__center">
-              <svg viewBox="0 0 42 42" role="img" aria-label="完了 86%、確認待ち 6%、進行中 4%、異常 4%">
-                <circle class="lx-donut__track" cx="21" cy="21" r="15.9" pathLength="100"/>
-                <circle cx="21" cy="21" r="15.9" pathLength="100" style="stroke: var(--color-success); stroke-dasharray: 85.4 100;"/>
-                <circle cx="21" cy="21" r="15.9" pathLength="100" style="stroke: var(--color-warning); stroke-dasharray: 5.4 100; stroke-dashoffset: -86;"/>
-                <circle cx="21" cy="21" r="15.9" pathLength="100" style="stroke: var(--color-info); stroke-dasharray: 3.4 100; stroke-dashoffset: -92;"/>
-                <circle cx="21" cy="21" r="15.9" pathLength="100" style="stroke: var(--color-alert); stroke-dasharray: 3.4 100; stroke-dashoffset: -96;"/>
+              <svg viewBox="0 0 42 42" role="img" aria-label="50 件のうち 完了 43 件（86%）、確認待ち 3 件（6%）、進行中 2 件（4%）、異常 2 件（4%）。点 1 つが 1 件">
+                <circle class="lx-donut__track" cx="21" cy="21" r="13.5"/>
+                <g style="fill: var(--color-success);"><circle cx="22.02" cy="3.53" r="0.85"/><circle cx="24.04" cy="3.77" r="0.85"/><circle cx="26.02" cy="4.24" r="0.85"/><circle cx="27.93" cy="4.93" r="0.85"/><circle cx="29.75" cy="5.84" r="0.85"/><circle cx="31.45" cy="6.96" r="0.85"/><circle cx="33.01" cy="8.27" r="0.85"/><circle cx="34.41" cy="9.75" r="0.85"/><circle cx="35.62" cy="11.38" r="0.85"/><circle cx="36.64" cy="13.15" r="0.85"/><circle cx="37.44" cy="15.01" r="0.85"/><circle cx="38.03" cy="16.96" r="0.85"/><circle cx="38.38" cy="18.97" r="0.85"/><circle cx="38.50" cy="21.00" r="0.85"/><circle cx="38.38" cy="23.03" r="0.85"/><circle cx="38.03" cy="25.04" r="0.85"/><circle cx="37.44" cy="26.99" r="0.85"/><circle cx="36.64" cy="28.85" r="0.85"/><circle cx="35.62" cy="30.62" r="0.85"/><circle cx="34.41" cy="32.25" r="0.85"/><circle cx="33.01" cy="33.73" r="0.85"/><circle cx="31.45" cy="35.04" r="0.85"/><circle cx="29.75" cy="36.16" r="0.85"/><circle cx="27.93" cy="37.07" r="0.85"/><circle cx="26.02" cy="37.76" r="0.85"/><circle cx="24.04" cy="38.23" r="0.85"/><circle cx="22.02" cy="38.47" r="0.85"/><circle cx="19.98" cy="38.47" r="0.85"/><circle cx="17.96" cy="38.23" r="0.85"/><circle cx="15.98" cy="37.76" r="0.85"/><circle cx="14.07" cy="37.07" r="0.85"/><circle cx="12.25" cy="36.16" r="0.85"/><circle cx="10.55" cy="35.04" r="0.85"/><circle cx="8.99" cy="33.73" r="0.85"/><circle cx="7.59" cy="32.25" r="0.85"/><circle cx="6.38" cy="30.62" r="0.85"/><circle cx="5.36" cy="28.85" r="0.85"/><circle cx="4.56" cy="26.99" r="0.85"/><circle cx="3.97" cy="25.04" r="0.85"/><circle cx="3.62" cy="23.03" r="0.85"/><circle cx="3.50" cy="21.00" r="0.85"/><circle cx="3.62" cy="18.97" r="0.85"/><circle cx="3.97" cy="16.96" r="0.85"/></g>
+                <g style="fill: var(--color-warning);"><circle cx="5.36" cy="13.15" r="0.85"/><circle cx="6.38" cy="11.38" r="0.85"/><circle cx="7.59" cy="9.75" r="0.85"/></g>
+                <g style="fill: var(--color-info);"><circle cx="10.55" cy="6.96" r="0.85"/><circle cx="12.25" cy="5.84" r="0.85"/></g>
+                <g style="fill: var(--color-alert);"><circle cx="15.98" cy="4.24" r="0.85"/><circle cx="17.96" cy="3.77" r="0.85"/></g>
               </svg>
-              <div class="lx-donut__label"><span class="k-dot">86%</span><span class="k-label">Done</span></div>
+              <div class="lx-donut__label"><span class="k-dot">86<small style="font-size: 13px;">%</small></span><span class="k-label">Done</span></div>
             </div>
             <ul>
               <li><i style="background: var(--color-success);"></i><span>完了</span><span class="k-num">43 · 86%</span></li>
