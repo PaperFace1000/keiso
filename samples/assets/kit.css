@@ -511,6 +511,38 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-cellrow.is-excluded { border-style: dashed; color: var(--color-muted); background: transparent; }
 .k-cellrow.is-excluded .k-cellrow__key { background: transparent; color: var(--color-muted); border-right: var(--line) dashed var(--color-border-strong); }
 
+/* 下書きの行: 枠を点線にし、[ DRAFT ] を添える（文字は薄めない） */
+.k-cellrow.is-draft { border-style: dashed; background: transparent; }
+.k-cellrow.is-draft .k-cellrow__key { background: transparent; color: var(--color-text); border-right: var(--line) dashed var(--color-border-strong); }
+/* 同じものをまとめた行: 題名の前の件数のボタンで、個別の行を 24px 下げて開く */
+.k-cellrow__title-row { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.k-cellrow__group { flex: none; gap: 2px; padding: 0 6px 0 2px; min-height: 22px; font-size: 12px; }
+.k-cellrow__group .k-icon { transition: transform .12s steps(2, end); }
+.k-cellrow__group[aria-expanded="true"] .k-icon { transform: rotate(90deg); }
+.k-gridlist > li.is-child { margin-left: 24px; }
+.k-gridlist > li.is-child .k-cellrow { border-style: dashed solid solid; }
+
+/* ── 並べ替え（ドラッグ） ─────────────────── */
+.k-reorder { position: relative; margin: 0; padding: 0; list-style: none; background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+.k-reorder > li { display: flex; align-items: center; gap: var(--space-2); min-height: 52px; padding: 6px var(--space-2) 6px var(--space-1); }
+.k-reorder > li + li { border-top: var(--line) solid var(--color-border); }
+.k-reorder > li:first-child { border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0; }
+.k-reorder > li:last-child { border-radius: 0 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px); }
+.k-reorder__grip { cursor: grab; touch-action: none; color: var(--color-muted); }
+.k-reorder__name { flex: 1; min-width: 0; font-size: 14px; overflow-wrap: anywhere; }
+.k-reorder__meta { font: 12px/1 var(--font-mono); color: var(--color-muted); white-space: nowrap; }
+/* 引っ張っている行は点線の跡にし、持ち上げた行（キーボード）は反転する */
+.k-reorder > li.is-dragging { background: var(--color-sunken); color: var(--color-muted); outline: 1px dashed var(--color-border-strong); outline-offset: -1px; }
+.k-reorder > li.is-grabbed { background: var(--color-selection-bg); color: var(--color-selection-text); }
+.k-reorder > li.is-grabbed .k-reorder__meta, .k-reorder > li.is-grabbed .k-reorder__grip { color: inherit; }
+.k-reorder > li.is-grabbed .k-btn[aria-pressed="true"] { background: transparent; border-color: transparent; color: inherit; }
+/* 落とす位置の線: 文字の色の 2px に、両端の小さな四角 */
+.k-reorder__drop { position: absolute; left: var(--space-1); right: var(--space-1); height: 2px; background: var(--color-text); pointer-events: none; z-index: 2; }
+.k-reorder__drop::before, .k-reorder__drop::after { content: ""; position: absolute; top: -2px; width: 6px; height: 6px; background: var(--color-text); border-radius: 1px; }
+.k-reorder__drop::before { left: 0; }
+.k-reorder__drop::after { right: 0; }
+body.is-reordering, body.is-reordering * { cursor: grabbing !important; user-select: none; }
+
 /* ── 目標に対する横棒 ─────────────────── */
 .k-goals { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
 .k-goal { display: grid; gap: var(--space-2); font-size: 13px; }

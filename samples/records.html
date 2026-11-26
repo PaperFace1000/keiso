@@ -63,6 +63,10 @@
         <div class="k-section__head"><span data-icon="line:archive"></span><h3>しまった記録</h3><span class="k-count">0</span></div>
         <div class="k-empty k-empty--sm"><span class="k-icon" data-icon="solid:inbox"></span><p>しまった記録はありません。終わった点検は、ここに移せます。</p></div>
       </div>
+      <div class="k-panel k-section">
+        <div class="k-section__head"><span data-icon="line:magnifying-glass"></span><h3>探した結果</h3><span class="k-count">0</span><span class="k-section__time">「倉庫 C」で絞り込み中</span></div>
+        <div class="k-empty k-empty--sm" role="status"><span class="k-icon" data-icon="solid:search"></span><p>「倉庫 C」に合う作業はありません。言葉を短くするか、見出しの絞り込みを外してください。</p></div>
+      </div>
     </div>
   </section>
 
@@ -70,7 +74,15 @@
   <section class="sample-section" aria-labelledby="grid-title">
     <div class="k-heading"><h2 id="grid-title">分類の色のマスの行・列をそろえる一覧</h2><span class="k-label">.k-cellrow / .k-gridlist</span></div>
     <p>行の左のマスだけを分類の色で塗ります（分類の色を反転させ、地を文字の色、数字を地の色に）。色の無い分類はマスを塗らず、右に線を引きます。一覧が列を決め、行は subgrid でその列を共有するので、期日・時間・操作の縦の位置が行の間でそろいます。599px 以下ではカードに崩します。右端の星は行のピンの切り替えで、押すと反転し、下の「よく使う作業」に加わります。</p>
+    <p>下書きの行は枠を点線にして <code>[ DRAFT ]</code> を添えます。同じ作業を何度も記録した行は 1 行にまとめ、先頭の件数のボタンで個別の行を 24px 下げて開きます。行ごとの <code>…</code> は「その他の操作」のメニューです。</p>
     <ul class="k-gridlist" id="js-gridlist" aria-label="今週の作業"></ul>
+    <div class="k-popover k-popover--end k-menu" id="js-row-menu" role="menu" hidden>
+      <button class="k-option" type="button" role="menuitem" tabindex="-1" data-row-act="編集"><span data-icon="line:pencil-simple"></span><span class="k-option__main">編集する</span></button>
+      <button class="k-option" type="button" role="menuitem" tabindex="-1" data-row-act="複製"><span data-icon="line:copy"></span><span class="k-option__main">複製する</span></button>
+      <hr class="k-menu__sep">
+      <button class="k-option k-option--alert" type="button" role="menuitem" tabindex="-1" data-row-act="削除"><span data-icon="line:trash"></span><span class="k-option__main">削除する</span></button>
+    </div>
+    <span class="k-muted" id="js-row-result" role="status" style="font-size: 13px;"></span>
   </section>
 
   <!-- 並べ替えるカード -->
@@ -83,6 +95,19 @@
       <div class="k-empty k-empty--sm" id="js-fav-empty" hidden><span class="k-icon" data-icon="solid:star"></span><p>よく使う作業はまだありません。一覧の行の星から置けます。</p></div>
       <span class="k-visually-hidden" id="js-fav-live" aria-live="polite"></span>
     </div>
+  </section>
+
+  <!-- 並べ替え（ドラッグ） -->
+  <section class="sample-section" aria-labelledby="drag-title">
+    <div class="k-heading"><h2 id="drag-title">並べ替え（ドラッグ）</h2><span class="k-label">.k-reorder</span></div>
+    <p>手順の順番を利用者が決める一覧です。行の左のつかむ所をドラッグすると、元の行は点線の跡になり、落とす先に線が出ます。キーボードでは、つかむ所で Enter か Space を押して持ち上げ（行が反転）、↑↓ で動かし、Enter か Space で置き、Esc で元の位置に戻します。ドラッグできない人のために、行の <code>…</code> のメニューにも「上へ」「下へ」を置きます。</p>
+    <ol class="k-reorder" id="js-reorder" aria-label="点検の手順" aria-describedby="js-reorder-help"></ol>
+    <span class="k-visually-hidden" id="js-reorder-help">つかむ所で Enter を押すと持ち上げ、上下の矢印で動かし、Enter で置きます。Esc で元に戻します。</span>
+    <div class="k-popover k-popover--end k-menu" id="js-reorder-menu" role="menu" hidden>
+      <button class="k-option" type="button" role="menuitem" tabindex="-1" data-step="-1"><span data-icon="line:arrow-up"></span><span class="k-option__main">上へ</span></button>
+      <button class="k-option" type="button" role="menuitem" tabindex="-1" data-step="1"><span data-icon="line:arrow-down"></span><span class="k-option__main">下へ</span></button>
+    </div>
+    <span class="k-visually-hidden" id="js-reorder-live" aria-live="assertive"></span>
   </section>
 
   <!-- 目標に対する横棒 -->
@@ -160,6 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
     { id: 'b', no: '042', title: '倉庫 B の棚卸しと、帳簿の数え直し', cat: ['倉庫', 'ochre', 'archive'], due: ['warning', 'warning', '11-26', '今日'], time: '0:45' },
     { id: 'c', no: '044', title: '空調の点検', cat: ['設備', 'blue', 'gear-six'], due: ['', 'calendar', '12-03', 'あと 7 日'], time: '2:05' },
     { id: 'd', no: '046', title: '発注の控えの整理', cat: null, due: null, time: '0:10' },
+    { id: 'e', no: '047', title: '照明の交換の手順を書く', cat: ['設備', 'blue', 'gear-six'], due: null, time: '0:30', draft: true },
+    { id: 'g', no: '049', title: '週次の点検', cat: ['点検', 'teal', 'clipboard-text'], due: ['', 'calendar', '12-03', 'あと 7 日'], time: '1:45',
+      children: [['11-12', '0:35'], ['11-19', '0:40'], ['11-26', '0:30']] },
   ];
   let favorites = ['b', 'c'];
   const due_html = (due) => {
@@ -168,14 +196,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return `<span class="k-due${role ? ` k-role-${role}` : ''}"><span class="k-due__date">${svg(icon)}${date}</span><span class="k-due__rest">${rest}</span></span>`;
   };
   const key_html = (item) => `<span class="k-cellrow__key">${item.cat ? svg(item.cat[2]) : ''}${item.no}</span>`;
-  const meta_html = (item) => `<span class="k-cellrow__meta">${item.cat ? `<span class="k-tag" data-extra-color="${item.cat[1]}">${item.cat[0]}</span>` : '<span>分類なし</span>'}</span>`;
+  const cat_html = (item) => (item.cat ? `<span class="k-tag" data-extra-color="${item.cat[1]}">${item.cat[0]}</span>` : '<span>分類なし</span>');
+  const meta_html = (item) => `<span class="k-cellrow__meta">${cat_html(item)}</span>`;
   const color_attr = (item) => (item.cat ? ` data-extra-color="${item.cat[1]}"` : '');
 
+  const more_html = (title) => `<span class="k-pop"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-more data-title="${title}" aria-haspopup="menu" aria-expanded="false" aria-label="「${title}」のその他の操作" title="その他の操作">${svg('dots-three')}</button></span>`;
   const render_grid = () => {
     document.getElementById('js-gridlist').innerHTML = ITEMS.map((item) => {
       const on = favorites.includes(item.id);
       const label = on ? `${item.title}をよく使う作業から外す` : `${item.title}をよく使う作業に加える`;
-      return `<li><div class="k-cellrow"${color_attr(item)}>${key_html(item)}<span class="k-cellrow__main"><span class="k-cellrow__title" title="${item.title}">${item.title}</span>${meta_html(item)}</span>${due_html(item.due)}<span class="k-gridlist__time">${item.time}</span><span class="k-cellrow__actions"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-pin="${item.id}" aria-pressed="${on}" aria-label="${label}" title="${label}">${svg('star')}</button><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" aria-label="その他の操作">${svg('dots-three')}</button></span></div></li>`;
+      const group = item.children ? `<button class="k-btn k-btn--sm k-cellrow__group" type="button" data-group="${item.id}" aria-expanded="false" aria-label="${item.title}の ${item.children.length} 回分を開く">${svg('caret-right')}<span class="k-num">${item.children.length}</span></button>` : '';
+      const draft = item.draft ? '<span class="k-label k-bracket">Draft</span>' : '';
+      const row = `<li><div class="k-cellrow${item.draft ? ' is-draft' : ''}"${color_attr(item)}>${key_html(item)}<span class="k-cellrow__main"><span class="k-cellrow__title-row">${group}<span class="k-cellrow__title" title="${item.title}">${item.title}</span></span><span class="k-cellrow__meta">${draft}${cat_html(item)}</span></span>${due_html(item.due)}<span class="k-gridlist__time">${item.time}</span><span class="k-cellrow__actions"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-pin="${item.id}" aria-pressed="${on}" aria-label="${label}" title="${label}">${svg('star')}</button>${more_html(item.title)}</span></div></li>`;
+      const children = (item.children || []).map(([date, time]) => `<li class="is-child" data-child-of="${item.id}" hidden><div class="k-cellrow"${color_attr(item)}><span class="k-cellrow__key">${date}</span><span class="k-cellrow__main"><span class="k-cellrow__title">${item.title}（${date} の回）</span></span><span class="k-due" aria-hidden="true"></span><span class="k-gridlist__time">${time}</span><span class="k-cellrow__actions">${more_html(`${item.title}（${date} の回）`)}</span></div></li>`).join('');
+      return row + children;
     }).join('');
   };
 
@@ -218,6 +252,150 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   render_grid();
   render_fav();
+
+  // ── 行の「その他の操作」と、つかむ所のメニュー: 1 つのメニューを押したボタンの横へ動かして開く ──
+  const row_menu = (panel, on_pick, can_pick = () => true) => {
+    let opener = null;
+    const items = () => [...panel.querySelectorAll('[role="menuitem"]:not([aria-disabled="true"])')];
+    const close = (focus = true) => {
+      if (panel.hidden) return;
+      panel.hidden = true;
+      if (opener) { opener.setAttribute('aria-expanded', 'false'); if (focus && opener.isConnected) opener.focus(); }
+    };
+    const open = (btn) => {
+      if (opener === btn && !panel.hidden) { close(); return; }
+      close(false);
+      opener = btn;
+      btn.parentElement.append(panel);
+      panel.querySelectorAll('[role="menuitem"]').forEach((item) => item.setAttribute('aria-disabled', String(!can_pick(btn, item))));
+      panel.setAttribute('aria-label', btn.getAttribute('aria-label'));
+      panel.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+      (items()[0] || panel).focus();
+    };
+    panel.addEventListener('keydown', (e) => {
+      const list = items();
+      const i = list.indexOf(document.activeElement);
+      const go = (n) => { e.preventDefault(); list[(n + list.length) % list.length].focus(); };
+      if (e.key === 'ArrowDown') go(i + 1);
+      if (e.key === 'ArrowUp') go(i - 1);
+      if (e.key === 'Home') go(0);
+      if (e.key === 'End') go(list.length - 1);
+      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      if (e.key === 'Tab') close(false);
+    });
+    panel.addEventListener('click', (e) => {
+      const item = e.target.closest('[role="menuitem"]');
+      if (!item || item.getAttribute('aria-disabled') === 'true') return;
+      const btn = opener;
+      close();
+      on_pick(btn, item);
+    });
+    document.addEventListener('pointerdown', (e) => { if (!panel.hidden && !panel.contains(e.target) && e.target.closest('[aria-haspopup="menu"]') !== opener) close(false); });
+    return open;
+  };
+  const open_row_menu = row_menu(document.getElementById('js-row-menu'), (btn, item) => {
+    document.getElementById('js-row-result').textContent = `「${btn.dataset.title}」の「${item.dataset.rowAct}」を選んだ（見本なので何も変わりません）`;
+  });
+  document.getElementById('js-gridlist').addEventListener('click', (e) => {
+    const more = e.target.closest('[data-more]');
+    if (more) { open_row_menu(more); return; }
+    const group = e.target.closest('[data-group]');
+    if (!group) return;
+    const open = group.getAttribute('aria-expanded') !== 'true';
+    group.setAttribute('aria-expanded', String(open));
+    document.querySelectorAll(`[data-child-of="${group.dataset.group}"]`).forEach((li) => { li.hidden = !open; });
+  });
+
+  // ── 並べ替え（ドラッグ） ──
+  let steps = [['入口の扉を開けて、明かりを点ける', '1 分'], ['温度と湿度を測る', '3 分'], ['棚の箱の数を数える', '20 分'], ['空調の音と風を確かめる', '5 分'], ['記録を付けて、扉を閉める', '2 分']];
+  const reorder = document.getElementById('js-reorder');
+  const reorder_live = document.getElementById('js-reorder-live');
+  const render_steps = (focus_index = null, grabbed = -1) => {
+    reorder.innerHTML = steps.map(([name, time], i) => `<li${i === grabbed ? ' class="is-grabbed"' : ''}><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-reorder__grip" type="button" data-grip="${i}" aria-label="「${name}」を動かす" aria-describedby="js-reorder-help"${i === grabbed ? ' aria-pressed="true"' : ''}>${svg('dots-six-vertical')}</button><span class="k-reorder__name">${name}</span><span class="k-reorder__meta">${time}</span><span class="k-pop"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-step-menu="${i}" aria-haspopup="menu" aria-expanded="false" aria-label="「${name}」のメニュー">${svg('dots-three')}</button></span></li>`).join('');
+    if (focus_index !== null) reorder.querySelector(`[data-grip="${focus_index}"]`).focus();
+  };
+  const move_step = (from, to) => {
+    const next = [...steps];
+    const [it] = next.splice(from, 1);
+    next.splice(to, 0, it);
+    steps = next;
+  };
+  const say_place = (i) => { reorder_live.textContent = `「${steps[i][0]}」を ${i + 1} 番目に動かしました（${steps.length} 個中）`; };
+  const open_step_menu = row_menu(document.getElementById('js-reorder-menu'), (btn, item) => {
+    const i = Number(btn.dataset.stepMenu);
+    const to = i + Number(item.dataset.step);
+    move_step(i, to);
+    render_steps();
+    say_place(to);
+    reorder.querySelector(`[data-step-menu="${to}"]`).focus();
+  }, (btn, item) => { const to = Number(btn.dataset.stepMenu) + Number(item.dataset.step); return to >= 0 && to < steps.length; });
+  reorder.addEventListener('click', (e) => { const b = e.target.closest('[data-step-menu]'); if (b) open_step_menu(b); });
+
+  // キーボード: 持ち上げて ↑↓ で動かし、置く。Esc で元の位置へ
+  let grabbed = -1;
+  let grabbed_from = -1;
+  reorder.addEventListener('keydown', (e) => {
+    const grip = e.target.closest('[data-grip]');
+    if (!grip) return;
+    const i = Number(grip.dataset.grip);
+    if ((e.key === 'Enter' || e.key === ' ') && grabbed < 0) {
+      e.preventDefault(); grabbed = i; grabbed_from = i; render_steps(i, i);
+      reorder_live.textContent = `「${steps[i][0]}」を持ち上げました。上下の矢印で動かし、Enter で置きます。`;
+    } else if ((e.key === 'Enter' || e.key === ' ') && grabbed >= 0) {
+      e.preventDefault(); const at = grabbed; grabbed = -1; render_steps(at); say_place(at);
+    } else if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && grabbed >= 0) {
+      e.preventDefault();
+      const to = Math.max(0, Math.min(steps.length - 1, grabbed + (e.key === 'ArrowUp' ? -1 : 1)));
+      if (to === grabbed) return;
+      move_step(grabbed, to); grabbed = to; render_steps(to, to);
+      reorder_live.textContent = `${to + 1} 番目`;
+    } else if (e.key === 'Escape' && grabbed >= 0) {
+      e.preventDefault(); move_step(grabbed, grabbed_from); const back = grabbed_from; grabbed = -1; render_steps(back);
+      reorder_live.textContent = `元の ${back + 1} 番目に戻しました`;
+    }
+  });
+  reorder.addEventListener('focusout', (e) => {
+    if (grabbed >= 0 && !reorder.contains(e.relatedTarget)) { const at = grabbed; grabbed = -1; render_steps(); say_place(at); }
+  });
+
+  // ポインタ: つかむ所を押したまま動かすと、落とす先に線を出す
+  const line = document.createElement('div');
+  line.className = 'k-reorder__drop';
+  line.setAttribute('aria-hidden', 'true');
+  reorder.addEventListener('pointerdown', (e) => {
+    const grip = e.target.closest('[data-grip]');
+    if (!grip || e.button !== 0 || grabbed >= 0) return;
+    e.preventDefault();
+    const from = Number(grip.dataset.grip);
+    const rows = [...reorder.children];
+    rows[from].classList.add('is-dragging');
+    document.body.classList.add('is-reordering');
+    grip.setPointerCapture(e.pointerId);
+    let to = from;
+    const on_move = (ev) => {
+      const tops = rows.map((r) => { const b = r.getBoundingClientRect(); return b.top + b.height / 2; });
+      let slot = tops.findIndex((mid) => ev.clientY < mid);
+      if (slot < 0) slot = rows.length;
+      const box = reorder.getBoundingClientRect();
+      const y = slot < rows.length ? rows[slot].getBoundingClientRect().top : rows[rows.length - 1].getBoundingClientRect().bottom;
+      line.style.top = `${y - box.top - 1}px`;
+      if (!line.isConnected) reorder.append(line);
+      to = slot > from ? slot - 1 : slot;
+    };
+    const on_up = () => {
+      grip.removeEventListener('pointermove', on_move);
+      grip.removeEventListener('pointerup', on_up);
+      grip.removeEventListener('pointercancel', on_up);
+      document.body.classList.remove('is-reordering');
+      line.remove();
+      if (to !== from) { move_step(from, to); render_steps(to); say_place(to); } else { rows[from].classList.remove('is-dragging'); }
+    };
+    grip.addEventListener('pointermove', on_move);
+    grip.addEventListener('pointerup', on_up);
+    grip.addEventListener('pointercancel', on_up);
+  });
+  render_steps();
 
   // 値の一覧とコピー
   const copylist = document.getElementById('js-copylist');
