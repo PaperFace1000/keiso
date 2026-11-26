@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Records</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+.panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--space-4); align-items: start; }
+.panel-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); font-size: 14px; }
+.panel-rows { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
+.cheat-card { display: grid; gap: var(--space-2); padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); max-width: 28rem; }
+.cheat-card__cmd { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.cheat-card__cmd code { font-size: 20px; padding: 2px 10px; background: var(--color-sunken); border-radius: var(--radius-sm); }
+.cheat-note { padding: 10px var(--space-4); background: var(--color-warning-bg); border: var(--line) solid var(--color-warning-border); border-radius: var(--radius); font-size: 14px; }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Records</span>
+    <h1>欄・一覧・記録の見せ方</h1>
+    <p>ダッシュボードの欄の状態、分類の色のマスを付けた行、列をそろえる一覧、目標に対する横棒、並べ替えるカード、値のコピーと早見表です。決まりは <code>docs/components.md</code> と <code>docs/patterns.md</code>。</p>
+  </section>
+
+  <!-- 欄 -->
+  <section class="sample-section" aria-labelledby="sec-title">
+    <div class="k-heading"><h2 id="sec-title">欄</h2><span class="k-label">.k-panel.k-section</span></div>
+    <p>見出し・件数・「3 分前に更新」を 1 行に並べます。取得に失敗したら中身を出さずに知らせの欄だけ、更新に失敗したら前の中身を残して上に知らせの欄を足します。空なら枠なしの小さい空の表示です。</p>
+    <div class="panels">
+      <div class="k-panel k-section">
+        <div class="k-section__head"><span data-icon="line:tray"></span><h3>今日の点検</h3><span class="k-count">3</span><span class="k-section__time">3 分前に更新</span></div>
+        <ul class="panel-rows">
+          <li class="panel-row"><span class="k-status k-role-success">Done</span>倉庫 A の温度の確認</li>
+          <li class="panel-row"><span class="k-status k-role-warning">Review</span>倉庫 B の棚卸し</li>
+          <li class="panel-row"><span class="k-status">Idle</span>空調の点検</li>
+        </ul>
+      </div>
+      <div class="k-panel k-section" aria-busy="true">
+        <div class="k-section__head"><span data-icon="line:clock"></span><h3>今週の予定</h3></div>
+        <div class="k-section__state" role="status"><span class="k-loader" aria-hidden="true"><i></i><i></i><i></i><i></i></span>読み込み中</div>
+      </div>
+      <div class="k-panel k-section">
+        <div class="k-section__head"><span data-icon="line:database"></span><h3>在庫の台帳</h3></div>
+        <div class="k-notice k-role-alert" role="alert"><span data-icon="line:warning-octagon"></span><span class="k-notice__title">Alert</span><span class="k-notice__body">台帳を読み込めませんでした。接続を確かめてから、読み込み直してください。</span></div>
+      </div>
+      <div class="k-panel k-section">
+        <div class="k-section__head"><span data-icon="line:bell"></span><h3>知らせ</h3><span class="k-count">2</span><span class="k-section__time">11-26 08:10 に更新</span></div>
+        <div class="k-notice k-role-alert" role="alert"><span data-icon="line:warning-octagon"></span><span class="k-notice__title">Alert</span><span class="k-notice__body">新しい知らせを取れませんでした。下は 08:10 の時点の中身です。</span></div>
+        <ul class="panel-rows">
+          <li class="panel-row">倉庫 B の湿度が上限に近い</li>
+          <li class="panel-row">照明の交換の部品が届いた</li>
+        </ul>
+      </div>
+      <div class="k-panel k-section">
+        <div class="k-section__head"><span data-icon="line:archive"></span><h3>しまった記録</h3><span class="k-count">0</span></div>
+        <div class="k-empty k-empty--sm"><span class="k-icon" data-icon="solid:inbox"></span><p>しまった記録はありません。終わった点検は、ここに移せます。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 列をそろえる一覧 -->
+  <section class="sample-section" aria-labelledby="grid-title">
+    <div class="k-heading"><h2 id="grid-title">分類の色のマスの行・列をそろえる一覧</h2><span class="k-label">.k-cellrow / .k-gridlist</span></div>
+    <p>行の左のマスだけを分類の色で塗ります（分類の色を反転させ、地を文字の色、数字を地の色に）。色の無い分類はマスを塗らず、右に線を引きます。一覧が列を決め、行は subgrid でその列を共有するので、期日・時間・操作の縦の位置が行の間でそろいます。599px 以下ではカードに崩します。右端の星は行のピンの切り替えで、押すと反転し、下の「よく使う作業」に加わります。</p>
+    <ul class="k-gridlist" id="js-gridlist" aria-label="今週の作業"></ul>
+  </section>
+
+  <!-- 並べ替えるカード -->
+  <section class="sample-section" aria-labelledby="fav-title">
+    <div class="k-heading"><h2 id="fav-title">上へ・下へで並べ替えるカードの一覧</h2><span class="k-label">Favorites</span></div>
+    <p>先頭の「上へ」と末尾の「下へ」は押せない形にしますが、<code>disabled</code> ではなく <code>aria-disabled</code> にして、押したあともフォーカスを同じボタンに残します（キーボードで続けて押せます）。動かしたことは読み上げます。</p>
+    <div class="k-panel k-section" style="max-width: 40rem;">
+      <div class="k-section__head"><span data-icon="line:star"></span><h3>よく使う作業</h3><span class="k-count" id="js-fav-count">0</span></div>
+      <ul class="k-cellrows" id="js-fav-list" aria-label="よく使う作業"></ul>
+      <div class="k-empty k-empty--sm" id="js-fav-empty" hidden><span class="k-icon" data-icon="solid:star"></span><p>よく使う作業はまだありません。一覧の行の星から置けます。</p></div>
+      <span class="k-visually-hidden" id="js-fav-live" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <!-- 目標に対する横棒 -->
+  <section class="sample-section" aria-labelledby="goal-title">
+    <div class="k-heading"><h2 id="goal-title">目標に対する横棒</h2><span class="k-label">.k-goal</span></div>
+    <p>分類ごとの合計を目標と比べます。棒は角を立てた四角で、目標までを分類の色で塗り、超えた分は同じ色の斜めの縞にして、目標の位置に上下へはみ出す線を引きます。超えた量と残りは必ず文字でも出します。棒は飾りなので読み上げません。</p>
+    <div class="k-panel">
+      <ul class="k-goals">
+        <li class="k-goal" data-extra-color="ochre">
+          <div class="k-goal__head"><span class="k-tag" data-extra-color="ochre">倉庫</span><span class="k-goal__nums">合計 12:30 / 目標 20:00</span><span class="k-goal__rest">残り 7:30</span></div>
+          <div class="k-goal__bar" aria-hidden="true"><span class="k-goal__fill" style="width: 62.5%;"></span><span class="k-goal__mark" style="left: 100%;"></span></div>
+        </li>
+        <li class="k-goal" data-extra-color="blue">
+          <div class="k-goal__head"><span class="k-tag" data-extra-color="blue">設備</span><span class="k-goal__nums">合計 8:30 / 目標 8:00</span><span class="k-goal__rest is-over">0:30 超過</span></div>
+          <div class="k-goal__bar" aria-hidden="true"><span class="k-goal__fill" style="width: 94.1%;"></span><span class="k-goal__over" style="width: 5.9%;"></span><span class="k-goal__mark" style="left: 94.1%;"></span></div>
+        </li>
+        <li class="k-goal">
+          <div class="k-goal__head"><span class="k-tag">その他</span><span class="k-goal__nums">合計 3:15 / 目標 6:00</span><span class="k-goal__rest">残り 2:45</span></div>
+          <div class="k-goal__bar" aria-hidden="true"><span class="k-goal__fill" style="width: 54.2%;"></span><span class="k-goal__mark" style="left: 100%;"></span></div>
+        </li>
+        <li class="k-goal" data-extra-color="violet">
+          <div class="k-goal__head"><span class="k-tag" data-extra-color="violet">書類</span><span class="k-goal__nums">合計 1:45</span><span class="k-goal__rest">目標なし</span></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 値の一覧とコピー -->
+  <section class="sample-section" aria-labelledby="copy-title">
+    <div class="k-heading"><h2 id="copy-title">値の一覧とコピー</h2><span class="k-label">.k-copylist</span></div>
+    <p>作った値を番号つきで並べ、1 つずつかまとめてコピーします。押すと 1.5 秒だけ「コピーした」か「コピーできなかった」に変え、読み上げます。行ごとのボタンは <code>aria-label</code> を「n 行目をコピー」にします。</p>
+    <div class="sample-stack" style="max-width: 40rem;">
+      <div class="sample-row">
+        <button class="k-btn k-btn--primary k-btn--sm" type="button" id="js-gen"><span data-icon="line:arrow-clockwise"></span>作る</button>
+        <button class="k-btn k-btn--ghost k-btn--sm k-copy" type="button" id="js-copy-all"><span data-icon="line:copy"></span><span class="js-copy-label" aria-live="polite">すべてコピー</span></button>
+      </div>
+      <ol class="k-copylist" id="js-copylist" aria-label="作った棚の番号"></ol>
+    </div>
+  </section>
+
+  <!-- コマンドの早見表 -->
+  <section class="sample-section" aria-labelledby="cheat-title">
+    <div class="k-heading"><h2 id="cheat-title">コマンドの早見表</h2><span class="k-label">.k-cheats</span></div>
+    <p>コマンドと説明・例を 2 列に並べ、599px 以下で 1 列に積みます。置き換えの例は「前」を ALERT、「後」を SUCCESS の地で示し、読み上げ用に「前: 」「後: 」を添えます。一致した部分は WARNING の地と下線です。</p>
+    <div class="cheat-note">見本の記録の付け方の早見表です。コマンドは架空のものです。</div>
+    <div class="cheat-card">
+      <strong style="font-size: 15px;">棚の番号を振り直す</strong>
+      <div class="cheat-card__cmd"><code>renum</code><button class="k-btn k-btn--ghost k-btn--sm k-copy" type="button" data-copy="renum" aria-label="renum をコピー"><span data-icon="line:copy"></span><span class="js-copy-label" aria-live="polite">コピー</span></button></div>
+      <p class="k-muted" style="font-size: 13px;">左から順に 01 から振り直します。番号を飛ばした棚も詰めます。</p>
+    </div>
+    <ul class="k-cheats">
+      <li>
+        <div class="k-cheats__cmd"><code>rec</code><button class="k-btn k-btn--ghost k-btn--sm k-copy" type="button" data-copy="rec" aria-label="rec をコピー"><span data-icon="line:copy"></span><span class="js-copy-label" aria-live="polite">コピー</span></button></div>
+        <div class="k-cheats__desc"><span>今の時刻で記録を 1 件足す。<span class="k-code-inline">-t 09:30</span> で時刻を決める。</span><span class="k-cheats__eg">例: <span class="k-code-inline">rec 倉庫 B 18.2℃</span></span></div>
+      </li>
+      <li>
+        <div class="k-cheats__cmd"><code>sub</code><button class="k-btn k-btn--ghost k-btn--sm k-copy" type="button" data-copy="sub" aria-label="sub をコピー"><span data-icon="line:copy"></span><span class="js-copy-label" aria-live="polite">コピー</span></button></div>
+        <div class="k-cheats__desc"><span>記録の中の言葉を置き換える。</span><span class="k-cheats__eg"><span class="k-chip-before"><span class="k-visually-hidden">前: </span>倉庫Ｂ</span><span class="k-icon k-icon--16" data-icon="line:arrow-right"></span><span class="k-chip-after"><span class="k-visually-hidden">後: </span>倉庫 B</span></span></div>
+      </li>
+      <li>
+        <div class="k-cheats__cmd"><code>find</code><button class="k-btn k-btn--ghost k-btn--sm k-copy" type="button" data-copy="find" aria-label="find をコピー"><span data-icon="line:copy"></span><span class="js-copy-label" aria-live="polite">コピー</span></button></div>
+        <div class="k-cheats__desc"><span>記録を言葉で探す。</span><span class="k-cheats__eg"><span class="k-code-inline">湿度</span><span class="k-icon k-icon--16" data-icon="line:arrow-right"></span><span>倉庫 B の<mark>湿度</mark>が上限に近い</span></span></div>
+      </li>
+    </ul>
+  </section>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { icon_svg, copy_button, fill_icons } = window.keiso_sample;
+  const svg = (name) => `<span class="k-icon k-icon--16" aria-hidden="true">${icon_svg(`line:${name}`)}</span>`;
+
+  // 一覧と、ピンで置く「よく使う作業」
+  const ITEMS = [
+    { id: 'a', no: '041', title: '倉庫 A の棚卸し', cat: ['倉庫', 'ochre', 'archive'], due: ['alert', 'warning-octagon', '11-24', '2 日超過'], time: '1:20' },
+    { id: 'b', no: '042', title: '倉庫 B の棚卸しと、帳簿の数え直し', cat: ['倉庫', 'ochre', 'archive'], due: ['warning', 'warning', '11-26', '今日'], time: '0:45' },
+    { id: 'c', no: '044', title: '空調の点検', cat: ['設備', 'blue', 'gear-six'], due: ['', 'calendar', '12-03', 'あと 7 日'], time: '2:05' },
+    { id: 'd', no: '046', title: '発注の控えの整理', cat: null, due: null, time: '0:10' },
+  ];
+  let favorites = ['b', 'c'];
+  const due_html = (due) => {
+    if (!due) return '<span class="k-due"><span class="k-due__date" aria-hidden="true">—</span><span class="k-due__rest k-visually-hidden">期日なし</span></span>';
+    const [role, icon, date, rest] = due;
+    return `<span class="k-due${role ? ` k-role-${role}` : ''}"><span class="k-due__date">${svg(icon)}${date}</span><span class="k-due__rest">${rest}</span></span>`;
+  };
+  const key_html = (item) => `<span class="k-cellrow__key">${item.cat ? svg(item.cat[2]) : ''}${item.no}</span>`;
+  const meta_html = (item) => `<span class="k-cellrow__meta">${item.cat ? `<span class="k-tag" data-extra-color="${item.cat[1]}">${item.cat[0]}</span>` : '<span>分類なし</span>'}</span>`;
+  const color_attr = (item) => (item.cat ? ` data-extra-color="${item.cat[1]}"` : '');
+
+  const render_grid = () => {
+    document.getElementById('js-gridlist').innerHTML = ITEMS.map((item) => {
+      const on = favorites.includes(item.id);
+      const label = on ? `${item.title}をよく使う作業から外す` : `${item.title}をよく使う作業に加える`;
+      return `<li><div class="k-cellrow"${color_attr(item)}>${key_html(item)}<span class="k-cellrow__main"><span class="k-cellrow__title" title="${item.title}">${item.title}</span>${meta_html(item)}</span>${due_html(item.due)}<span class="k-gridlist__time">${item.time}</span><span class="k-cellrow__actions"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-pin="${item.id}" aria-pressed="${on}" aria-label="${label}" title="${label}">${svg('star')}</button><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" aria-label="その他の操作">${svg('dots-three')}</button></span></div></li>`;
+    }).join('');
+  };
+
+  const fav_list = document.getElementById('js-fav-list');
+  const fav_row = (item) => `<li class="k-cellrow"${color_attr(item)} data-fav="${item.id}">${key_html(item)}<span class="k-cellrow__main"><span class="k-cellrow__title">${item.title}</span>${meta_html(item)}</span><span class="k-cellrow__actions"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-move="-1" aria-label="${item.title}を上へ">${svg('arrow-up')}</button><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-move="1" aria-label="${item.title}を下へ">${svg('arrow-down')}</button></span></li>`;
+  const update_ends = () => {
+    const rows = [...fav_list.children];
+    rows.forEach((row, i) => {
+      row.querySelector('[data-move="-1"]').setAttribute('aria-disabled', String(i === 0));
+      row.querySelector('[data-move="1"]').setAttribute('aria-disabled', String(i === rows.length - 1));
+    });
+    document.getElementById('js-fav-count').textContent = String(rows.length);
+    document.getElementById('js-fav-empty').hidden = rows.length > 0;
+    fav_list.hidden = rows.length === 0;
+  };
+  const render_fav = () => {
+    fav_list.innerHTML = favorites.map((id) => fav_row(ITEMS.find((item) => item.id === id))).join('');
+    update_ends();
+  };
+  // 押した行は外さず、隣の行を動かす（押したボタンからフォーカスが外れないように）
+  fav_list.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-move]');
+    if (!btn || btn.getAttribute('aria-disabled') === 'true') return;
+    const row = btn.closest('li');
+    const step = Number(btn.dataset.move);
+    if (step < 0) row.after(row.previousElementSibling); else row.before(row.nextElementSibling);
+    favorites = [...fav_list.children].map((li) => li.dataset.fav);
+    update_ends();
+    const item = ITEMS.find((it) => it.id === row.dataset.fav);
+    document.getElementById('js-fav-live').textContent = `${item.title}を ${favorites.indexOf(item.id) + 1} 番目に動かしました`;
+  });
+  document.getElementById('js-gridlist').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-pin]');
+    if (!btn) return;
+    const id = btn.dataset.pin;
+    favorites = favorites.includes(id) ? favorites.filter((f) => f !== id) : [...favorites, id];
+    render_grid();
+    render_fav();
+    document.querySelector(`[data-pin="${id}"]`).focus();
+  });
+  render_grid();
+  render_fav();
+
+  // 値の一覧とコピー
+  const copylist = document.getElementById('js-copylist');
+  const make_values = () => Array.from({ length: 4 }, () => `B-${String(Math.floor(Math.random() * 90) + 10)}-${Math.random().toString(16).slice(2, 8)}`);
+  let values = ['B-03-4f1a9c', 'B-04-0d72e5', 'B-05-a39b11', 'B-07-6c08f2'];
+  const render_copy = () => {
+    copylist.innerHTML = values.map((value, i) => `<li><code>${value}</code><button class="k-btn k-btn--ghost k-btn--sm k-copy" type="button" data-index="${i}" aria-label="${i + 1} 行目をコピー"><span data-icon="line:copy"></span><span class="js-copy-label" aria-live="polite">コピー</span></button></li>`).join('');
+    fill_icons(copylist);
+    copylist.querySelectorAll('.k-copy').forEach((btn) => copy_button(btn, () => values[Number(btn.dataset.index)]));
+    document.getElementById('js-copy-all').hidden = values.length < 2;
+  };
+  document.getElementById('js-gen').addEventListener('click', () => { values = make_values(); render_copy(); });
+  copy_button(document.getElementById('js-copy-all'), () => values.join('\n'));
+  document.querySelectorAll('[data-copy]').forEach((btn) => copy_button(btn, () => btn.dataset.copy));
+  render_copy();
+});
+</script>
+</body>
+</html>

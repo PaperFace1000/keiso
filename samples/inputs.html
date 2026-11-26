@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Inputs</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+.form-demo { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--space-5) var(--space-4); align-items: start; }
+.scroll-demo { height: 9rem; overflow: auto; font-size: 13px; }
+.scroll-demo pre { margin: 0; font: 12px/1.8 var(--font-mono); width: max-content; }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Inputs</span>
+    <h1>選ぶ・入れる部品</h1>
+    <p>フォームの値を選ぶボタン、日付と時刻の欄、色とアイコンの選び手、分類から段階的に絞る選択、開け閉めする欄です。選んだものは文字の色で塗って反転させ、先頭や右端に四角・ひし形の印を出します。決まりは <code>docs/components.md</code>。</p>
+  </section>
+
+  <!-- 選択肢のボタン -->
+  <section class="sample-section" aria-labelledby="choice-title">
+    <div class="k-heading"><h2 id="choice-title">選択肢のボタン</h2><span class="k-label">.k-choice</span></div>
+    <p>フォームの値を 2〜4 個から 1 つ選ぶときに使います。中身は本物のラジオボタンで、選んだものは反転し、先頭のひし形を塗ります。表示の切り替え（.k-segment）とは別の部品です。矢印キーで選び直せます。</p>
+    <form class="form-demo" id="js-choice-form" novalidate>
+      <fieldset class="k-choice">
+        <legend>記録の間隔</legend>
+        <label><input type="radio" name="cycle" value="day"><span data-icon="line:sun"></span>毎日</label>
+        <label><input type="radio" name="cycle" value="week" checked><span data-icon="line:calendar"></span>毎週</label>
+        <label><input type="radio" name="cycle" value="month"><span data-icon="line:archive"></span>毎月</label>
+      </fieldset>
+      <fieldset class="k-choice">
+        <legend>知らせ方</legend>
+        <label><input type="radio" name="notify" value="none"><span data-icon="line:bell-slash"></span>知らせない</label>
+        <label><input type="radio" name="notify" value="bell" checked><span data-icon="line:bell"></span>画面で</label>
+        <label><input type="radio" name="notify" value="mail" disabled><span data-icon="line:envelope"></span>メール（未設定）</label>
+      </fieldset>
+    </form>
+  </section>
+
+  <!-- 日付・時刻 -->
+  <section class="sample-section" aria-labelledby="date-title">
+    <div class="k-heading"><h2 id="date-title">日付・時刻の入力</h2><span class="k-label">date / time / datetime-local</span></div>
+    <p>ブラウザの素の欄を使い、普通の入力欄と同じ高さと枠にそろえます。数字は等幅です。開始と終了は 2 列に並べ、599px 以下で 1 列にします。終了が開始より前なら、欄の下に理由を出します。</p>
+    <form class="form-demo" id="js-date-form" novalidate>
+      <div class="k-field">
+        <label for="js-date">点検の日</label>
+        <input class="k-input" type="date" id="js-date" value="2026-11-26">
+      </div>
+      <div class="k-field">
+        <label for="js-time">始める時刻</label>
+        <input class="k-input" type="time" id="js-time" value="09:30">
+      </div>
+      <div class="k-field" style="grid-column: 1 / -1;">
+        <span class="k-field__label" id="js-range-label">止める期間</span>
+        <div class="k-range" role="group" aria-labelledby="js-range-label">
+          <div class="k-field"><label for="js-start">開始</label><input class="k-input" type="datetime-local" id="js-start" value="2026-11-26T13:00"></div>
+          <div class="k-field"><label for="js-end">終了</label><input class="k-input" type="datetime-local" id="js-end" value="2026-11-26T11:00" aria-invalid="true" aria-describedby="js-range-error"></div>
+        </div>
+        <span class="k-field__error" id="js-range-error"><span class="k-icon k-icon--16" data-icon="line:warning-octagon"></span><span id="js-range-error-text">終了が開始より前になっています。終了を 13:00 より後にしてください。</span></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- 色とアイコンの選び手 -->
+  <section class="sample-section" aria-labelledby="picker-title">
+    <div class="k-heading"><h2 id="picker-title">色の選び手・アイコンの選び手</h2><span class="k-label">.k-swatch / .k-cell</span></div>
+    <p>分類の色 12 色と色なし、線のアイコンから 1 つを選びます。選んでいるマスは反転し、色のマスは地と点の色が入れ替わります。色なしは点線の枠です（斜線は押せないボタンの印なので使いません）。矢印キーでマスを動き、Enter で選んで閉じ、Esc で閉じます。</p>
+    <div class="sample-row">
+      <div class="k-pop">
+        <button class="k-swatch-btn" type="button" id="js-color-btn" aria-haspopup="dialog"><span class="k-swatch" id="js-color-current" data-extra-color="blue"></span><span id="js-color-name">青</span><span class="k-icon k-icon--16" data-icon="line:caret-down"></span></button>
+        <div class="k-popover" id="js-color-pop" role="dialog" aria-label="棚の色を選ぶ" hidden>
+          <span class="k-label">Color</span>
+          <div class="k-cells" id="js-color-cells"></div>
+        </div>
+      </div>
+      <div class="k-pop">
+        <button class="k-swatch-btn" type="button" id="js-icon-btn" aria-haspopup="dialog"><span class="k-icon" id="js-icon-current" data-icon="line:folder"></span><span class="k-num" id="js-icon-name" style="font-size: 13px;">folder</span><span class="k-icon k-icon--16" data-icon="line:caret-down"></span></button>
+        <div class="k-popover" id="js-icon-pop" role="dialog" aria-label="棚のアイコンを選ぶ" hidden>
+          <label class="k-prompt k-prompt--sm"><input type="text" id="js-icon-filter" placeholder="名前で絞り込む" aria-label="アイコンの名前で絞り込む"></label>
+          <div class="k-cells k-cells--icons" id="js-icon-cells"></div>
+          <span class="k-cascade__note" id="js-icon-note" aria-live="polite"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 段階的に絞る選択 -->
+  <section class="sample-section" aria-labelledby="cascade-title">
+    <div class="k-heading"><h2 id="cascade-title">段階的に絞る選択</h2><span class="k-label">.k-cascade</span></div>
+    <p>項目が多く、分類から選ぶほうが早い欄です。上から、固定した項目・すべてから探す欄・「なし」・最近使った項目・分類の一覧。分類を開くと、その分類の項目だけになります。フォーカスは探す欄に置いたまま、↑↓ で行を指し、Enter で選ぶ・開く、→ で開き、← か空の欄で Backspace で戻り、Esc で閉じます。</p>
+    <div class="k-field" style="max-width: 24rem;">
+      <span class="k-field__label" id="js-cascade-label">記録を付ける作業</span>
+      <div class="k-pop" style="display: grid;">
+        <button class="k-picker-btn is-empty" type="button" id="js-cascade-btn" aria-haspopup="dialog" aria-labelledby="js-cascade-label js-cascade-value"><span class="k-icon" data-icon="line:folder"></span><span class="k-picker-btn__value" id="js-cascade-value">選んでいません</span></button>
+        <div class="k-popover k-cascade" id="js-cascade-pop" role="dialog" aria-label="作業を選ぶ" hidden>
+          <div class="k-cascade__pinned" role="listbox" id="js-cascade-pinned" aria-label="固定した作業"></div>
+          <label class="k-prompt k-prompt--sm"><input type="text" id="js-cascade-input" role="combobox" aria-expanded="true" aria-controls="js-cascade-pinned js-cascade-list" aria-autocomplete="list" placeholder="すべてから探す" aria-label="すべての作業から探す"></label>
+          <div class="k-cascade__list" role="listbox" id="js-cascade-list" aria-label="作業"></div>
+          <span class="k-cascade__note" id="js-cascade-note" aria-live="polite"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 開け閉めする欄 -->
+  <section class="sample-section" aria-labelledby="disc-title">
+    <div class="k-heading"><h2 id="disc-title">開け閉めする欄</h2><span class="k-label">.k-disclosure</span></div>
+    <p>見出しの中のボタンで本文を開け閉めします（<code>aria-expanded</code>）。中身が主役なら枠つき、補足なら枠なし。矢印は開くと下を向きます。開け閉めの状態は保存しません。</p>
+    <div class="form-demo">
+      <div class="k-disclosures">
+        <div class="k-disclosure">
+          <h3 class="k-disclosure__head"><button class="k-disclosure__btn" type="button" aria-expanded="true" aria-controls="js-disc-1" data-disclosure><span data-icon="line:caret-right"></span>前回の記録<span class="k-disclosure__meta">11-19</span></button></h3>
+          <div class="k-disclosure__panel" id="js-disc-1"><p>温度 18.2℃、湿度 46%。どちらも基準の内側でした。</p></div>
+        </div>
+        <div class="k-disclosure">
+          <h3 class="k-disclosure__head"><button class="k-disclosure__btn" type="button" aria-expanded="false" aria-controls="js-disc-2" data-disclosure><span data-icon="line:caret-right"></span>見る場所の順番<span class="k-disclosure__meta">4 か所</span></button></h3>
+          <div class="k-disclosure__panel" id="js-disc-2" hidden><p>入口 → 1 番の棚 → 2 番の棚 → 一番遠い棚の順に見ます。</p></div>
+        </div>
+      </div>
+      <div class="k-disclosure k-disclosure--quiet">
+        <h3 class="k-disclosure__head"><button class="k-disclosure__btn" type="button" aria-expanded="false" aria-controls="js-disc-3" data-disclosure><span data-icon="line:caret-right"></span>詳しい情報</button></h3>
+        <div class="k-disclosure__panel" id="js-disc-3" hidden>
+          <dl class="k-kv k-panel" style="padding: var(--space-2) var(--space-3);"><dt>ID</dt><dd class="k-num">a1f3-09c2</dd><dt>Created</dt><dd class="k-num">2026-11-26 13:20</dd></dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- スクロールバー -->
+  <section class="sample-section" aria-labelledby="scroll-title">
+    <div class="k-heading"><h2 id="scroll-title">スクロールバー</h2><span class="k-label">scrollbar</span></div>
+    <p>土台の CSS で全体を細くし、つまみを強い線の色の四角にします。なぞると補足の文字の色になります。部品ごとに上書きしません。</p>
+    <div class="k-panel scroll-demo" tabindex="0" aria-label="スクロールの見本">
+<pre>09:40:02  INFO     週次の点検を始めた（12 項目）。この行は横にも長いので、箱の中だけ横にスクロールします。
+09:41:15  SUCCESS  倉庫 A の温度を記録した
+09:43:48  WARNING  倉庫 B の湿度が基準の上限に近い（58%）
+09:44:03  ALERT    空調 2 番の応答が無い。手で確かめること
+09:44:10  WAIT     担当の確認を待っている
+09:50:31  INFO     倉庫 B の棚を数え直した
+09:52:07  SUCCESS  棚卸しの差が 0 件になった
+09:55:12  INFO     点検を終えた</pre>
+    </div>
+  </section>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { popover, icon_svg } = window.keiso_sample;
+
+  document.getElementById('js-choice-form').addEventListener('submit', (e) => e.preventDefault());
+
+  // 日付: 終了が開始より前なら欄の下に出す
+  const start = document.getElementById('js-start');
+  const end = document.getElementById('js-end');
+  const range_error = document.getElementById('js-range-error');
+  const check_range = () => {
+    const bad = end.value !== '' && start.value !== '' && end.value < start.value;
+    end.setAttribute('aria-invalid', String(bad));
+    range_error.hidden = !bad;
+    document.getElementById('js-range-error-text').textContent = `終了が開始より前になっています。終了を ${start.value.slice(11)} より後にしてください。`;
+  };
+  start.addEventListener('change', check_range);
+  end.addEventListener('change', check_range);
+  check_range();
+
+  // マスの並びを矢印キーで動く
+  const grid_keys = (container) => {
+    container.addEventListener('keydown', (e) => {
+      const cells = [...container.querySelectorAll('.k-cell')];
+      const index = cells.indexOf(document.activeElement);
+      if (index < 0) return;
+      const cols = getComputedStyle(container).gridTemplateColumns.split(' ').length;
+      const moves = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: cols, ArrowUp: -cols };
+      if (!(e.key in moves)) return;
+      e.preventDefault();
+      const next = cells[Math.min(cells.length - 1, Math.max(0, index + moves[e.key]))];
+      next.focus();
+    });
+  };
+
+  // 色の選び手
+  const COLORS = [['red', '赤'], ['orange', '橙'], ['ochre', '黄土'], ['olive', 'オリーブ'], ['green', '緑'], ['teal', '青緑'],
+    ['cyan', '水'], ['blue', '青'], ['indigo', '藍'], ['violet', '紫'], ['magenta', '赤紫'], ['gray', '灰']];
+  let color_key = 'blue';
+  const color_btn = document.getElementById('js-color-btn');
+  const color_cells = document.getElementById('js-color-cells');
+  const render_colors = () => {
+    const none = `<button class="k-cell k-cell--wide" type="button" data-color="" aria-pressed="${color_key === ''}"><span class="k-swatch k-swatch--none"></span>色なし</button>`;
+    color_cells.innerHTML = none + COLORS.map(([key, label]) => `<button class="k-cell" type="button" data-color="${key}" aria-pressed="${key === color_key}" aria-label="${label}" title="${label}"><span class="k-swatch" data-extra-color="${key}"></span></button>`).join('');
+  };
+  const update_color_btn = () => {
+    const found = COLORS.find(([key]) => key === color_key);
+    const swatch = document.getElementById('js-color-current');
+    swatch.className = found ? 'k-swatch' : 'k-swatch k-swatch--none';
+    if (found) swatch.dataset.extraColor = color_key; else delete swatch.dataset.extraColor;
+    const name = found ? found[1] : '色なし';
+    document.getElementById('js-color-name').textContent = name;
+    color_btn.setAttribute('aria-label', `棚の色: ${name}`);
+  };
+  const color_pop = popover(color_btn, document.getElementById('js-color-pop'), {
+    on_open: () => { render_colors(); (color_cells.querySelector('[aria-pressed="true"]') || color_cells.querySelector('.k-cell')).focus(); },
+  });
+  color_cells.addEventListener('click', (e) => {
+    const cell = e.target.closest('.k-cell');
+    if (!cell) return;
+    color_key = cell.dataset.color;
+    update_color_btn();
+    color_pop.close();
+  });
+  grid_keys(color_cells);
+  update_color_btn();
+
+  // アイコンの選び手: 全角・半角と大文字・小文字の違いを無視して名前で絞り込む
+  const ICON_NAMES = Object.keys((window.KEISO_ICONS || {}).line || {}).sort();
+  let icon_key = 'folder';
+  const icon_btn = document.getElementById('js-icon-btn');
+  const icon_cells = document.getElementById('js-icon-cells');
+  const icon_filter = document.getElementById('js-icon-filter');
+  const normalize = (text) => text.normalize('NFKC').toLowerCase().trim();
+  const render_icons = () => {
+    const query = normalize(icon_filter.value);
+    const names = ICON_NAMES.filter((name) => name.includes(query));
+    const none = `<button class="k-cell k-cell--wide" type="button" data-icon-key="" aria-pressed="${icon_key === ''}"><span class="k-icon k-icon--16">${icon_svg('line:minus')}</span>なし</button>`;
+    icon_cells.innerHTML = none + names.map((name) => `<button class="k-cell" type="button" data-icon-key="${name}" aria-pressed="${name === icon_key}" aria-label="${name}" title="${name}"><span class="k-icon" aria-hidden="true">${icon_svg(`line:${name}`)}</span></button>`).join('');
+    document.getElementById('js-icon-note').textContent = names.length === 0 ? '見つかりません' : '';
+  };
+  const update_icon_btn = () => {
+    document.getElementById('js-icon-current').innerHTML = icon_svg(`line:${icon_key || 'minus'}`);
+    document.getElementById('js-icon-name').textContent = icon_key || 'なし';
+    icon_btn.setAttribute('aria-label', `棚のアイコン: ${icon_key || 'なし'}`);
+  };
+  const icon_pop = popover(icon_btn, document.getElementById('js-icon-pop'), {
+    on_open: () => { icon_filter.value = ''; render_icons(); icon_filter.focus(); },
+  });
+  icon_filter.addEventListener('input', render_icons);
+  icon_filter.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); (icon_cells.querySelector('.k-cell:not(.k-cell--wide)') || icon_cells.querySelector('.k-cell')).focus(); }
+  });
+  icon_cells.addEventListener('click', (e) => {
+    const cell = e.target.closest('.k-cell');
+    if (!cell) return;
+    icon_key = cell.dataset.iconKey;
+    update_icon_btn();
+    icon_pop.close();
+  });
+  grid_keys(icon_cells);
+  update_icon_btn();
+
+  // 段階的に絞る選択
+  const CATEGORIES = [
+    { key: 'stock', name: '倉庫', color: 'ochre', items: ['倉庫 A の棚卸し', '倉庫 B の棚卸し', '倉庫 A の温度の確認', '倉庫 B の湿度の確認'] },
+    { key: 'equip', name: '設備', color: 'blue', items: ['空調の点検', '照明の交換', '非常口の確認'] },
+    { key: 'paper', name: '書類', color: 'violet', items: ['発注の控えの整理', '点検の記録の清書'] },
+  ];
+  const PINNED = ['週次の点検'];
+  const RECENT = ['倉庫 B の棚卸し', '空調の点検'];
+  const ALL = [...PINNED.map((name) => ({ name, cat: null })), ...CATEGORIES.flatMap((c) => c.items.map((name) => ({ name, cat: c })))];
+  const cat_of = (name) => (ALL.find((item) => item.name === name) || {}).cat;
+  const cascade_btn = document.getElementById('js-cascade-btn');
+  const cascade_input = document.getElementById('js-cascade-input');
+  const pinned_box = document.getElementById('js-cascade-pinned');
+  const list_box = document.getElementById('js-cascade-list');
+  const note = document.getElementById('js-cascade-note');
+  let view = null;
+  let chosen = null;
+  let active = 0;
+  let options = [];
+  let return_cat = null;
+
+  const option_html = (opt, i) => {
+    const dot = opt.cat ? `<span class="k-swatch-dot" data-extra-color="${opt.cat.color}"></span>` : '';
+    const lead = opt.kind === 'back' ? `<span class="k-icon k-icon--16">${icon_svg('line:arrow-left')}</span>` : opt.kind === 'pin' ? `<span class="k-icon k-icon--16">${icon_svg('line:star')}</span>` : dot;
+    const end = opt.kind === 'cat' ? `<span class="k-option__end">${opt.cat.items.length}</span><span class="k-icon k-icon--16">${icon_svg('line:caret-right')}</span>` : '';
+    const quiet = opt.kind === 'none' || opt.kind === 'back' ? ' k-option--quiet' : '';
+    const selected = (opt.kind === 'item' || opt.kind === 'pin') && opt.name === chosen;
+    return `<div class="k-option${quiet}" role="option" id="js-cascade-opt-${i}" data-index="${i}" aria-selected="${selected}">${lead}<span class="k-option__main">${opt.label}</span>${end}</div>`;
+  };
+  const head = (text) => `<div class="k-cascade__head k-label" role="presentation">${text}</div>`;
+
+  const render = () => {
+    const query = cascade_input.value.normalize('NFKC').trim();
+    const pinned = query === '' && view === null ? PINNED.map((name) => ({ kind: 'pin', name, label: name, cat: null })) : [];
+    let body = [];
+    let html = '';
+    if (query !== '') {
+      body = ALL.filter((item) => item.name.includes(query)).map((item) => ({ kind: 'item', name: item.name, label: item.name, cat: item.cat }));
+      note.textContent = body.length === 0 ? '見つかりません' : `${body.length} 件`;
+    } else if (view === null) {
+      body = [{ kind: 'none', label: 'なし（選ばない）' },
+        ...RECENT.map((name) => ({ kind: 'item', name, label: name, cat: cat_of(name), group: 'recent' })),
+        ...CATEGORIES.map((c) => ({ kind: 'cat', label: c.name, cat: c, group: 'cat' }))];
+      note.textContent = '';
+    } else {
+      body = [{ kind: 'back', label: '分類の一覧' }, ...view.items.map((name) => ({ kind: 'item', name, label: name, cat: view }))];
+      note.textContent = '';
+    }
+    options = [...pinned, ...body];
+    pinned_box.hidden = pinned.length === 0;
+    pinned_box.innerHTML = pinned.map((opt, i) => option_html(opt, i)).join('');
+    let last_group = '';
+    body.forEach((opt, j) => {
+      const i = pinned.length + j;
+      const group = query !== '' ? 'found' : opt.group || '';
+      if (group !== last_group) {
+        if (group === 'recent') html += head('Recent');
+        if (group === 'cat') html += head('Categories');
+        if (group === 'found') html += head('すべてから探した結果');
+        last_group = group;
+      }
+      html += option_html(opt, i);
+    });
+    if (view !== null && query === '') html = head(view.name) + html;
+    list_box.innerHTML = html;
+    set_active(Math.min(active, options.length - 1));
+  };
+  const set_active = (i) => {
+    active = Math.max(0, i);
+    document.querySelectorAll('#js-cascade-pop .k-option').forEach((el) => el.classList.toggle('is-active', Number(el.dataset.index) === active));
+    const el = document.getElementById(`js-cascade-opt-${active}`);
+    if (el) { cascade_input.setAttribute('aria-activedescendant', el.id); el.scrollIntoView({ block: 'nearest' }); } else cascade_input.removeAttribute('aria-activedescendant');
+  };
+  const update_cascade_btn = () => {
+    const value = document.getElementById('js-cascade-value');
+    const cat = chosen ? cat_of(chosen) : null;
+    cascade_btn.classList.toggle('is-empty', chosen === null);
+    value.innerHTML = chosen === null ? '選んでいません' : `${cat ? `<span class="k-tag" data-extra-color="${cat.color}" style="margin-right: 8px;">${cat.name}</span>` : ''}${chosen}`;
+  };
+  const cascade_pop = popover(cascade_btn, document.getElementById('js-cascade-pop'), {
+    on_open: () => {
+      view = null; cascade_input.value = ''; active = 0; render();
+      const found = options.findIndex((o) => o.name === chosen);
+      set_active(found >= 0 ? found : options.findIndex((o) => o.kind === 'item'));
+      cascade_input.focus();
+    },
+  });
+  const open_cat = (cat) => { view = cat; cascade_input.value = ''; active = 1; render(); };
+  const go_back = () => { return_cat = view; view = null; render(); set_active(options.findIndex((o) => o.kind === 'cat' && o.cat === return_cat)); };
+  const pick = (opt) => {
+    if (!opt) return;
+    if (opt.kind === 'cat') { open_cat(opt.cat); return; }
+    if (opt.kind === 'back') { go_back(); return; }
+    chosen = opt.kind === 'none' ? null : opt.name;
+    update_cascade_btn();
+    cascade_pop.close();
+  };
+  cascade_input.addEventListener('input', () => { active = 0; render(); });
+  cascade_input.addEventListener('keydown', (e) => {
+    if (e.isComposing) return;
+    const empty = cascade_input.value === '';
+    if (e.key === 'ArrowDown') { e.preventDefault(); set_active(Math.min(options.length - 1, active + 1)); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); set_active(active - 1); }
+    if (e.key === 'Enter') { e.preventDefault(); pick(options[active]); }
+    if (e.key === 'ArrowRight' && empty && options[active] && options[active].kind === 'cat') { e.preventDefault(); open_cat(options[active].cat); }
+    if ((e.key === 'ArrowLeft' || e.key === 'Backspace') && empty && view !== null) { e.preventDefault(); go_back(); }
+    if (e.key === 'Tab') cascade_pop.close(false);
+  });
+  document.getElementById('js-cascade-pop').addEventListener('click', (e) => {
+    const el = e.target.closest('.k-option');
+    if (el) { pick(options[Number(el.dataset.index)]); if (!document.getElementById('js-cascade-pop').hidden) cascade_input.focus(); }
+  });
+
+  // 開け閉めする欄
+  document.querySelectorAll('[data-disclosure]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') !== 'true';
+      btn.setAttribute('aria-expanded', String(open));
+      document.getElementById(btn.getAttribute('aria-controls')).hidden = !open;
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Overlays</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+.mock-header { display: flex; align-items: center; gap: var(--space-3); min-height: 52px; padding: 0 var(--space-4); background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+.mock-header .k-logo { margin-right: auto; font-size: 14px; }
+.list-head { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.list-head h3 { font-size: 16px; }
+.list-head__tools { margin-left: auto; display: flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; }
+.filter-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--space-2); }
+.filter-add { display: flex; gap: var(--space-2); }
+.filter-add .k-input { flex: 1; min-width: 0; }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Overlays</span>
+    <h1>浮かぶ部品とダイアログ</h1>
+    <p>メニュー・ポップオーバーは、トーストと同じく浮かんでいるので影を付けます（影はこの 3 つだけ）。指している項目は反転して ▸ を出し、選んである値は右端に四角い印を出します。決まりは <code>docs/components.md</code> と <code>docs/patterns.md</code>。</p>
+  </section>
+
+  <!-- メニュー -->
+  <section class="sample-section" aria-labelledby="menu-title">
+    <div class="k-heading"><h2 id="menu-title">メニュー</h2><span class="k-label">.k-popover.k-menu</span></div>
+    <p>押すと下に開き、最初の項目（選んである値があればそれ）にフォーカスを移します。↑↓・Home・End で動き、Enter で選んで閉じ、Esc で閉じてボタンに戻ります。外側を押す・Tab でも閉じます。</p>
+    <div class="sample-row">
+      <div class="k-pop">
+        <button class="k-btn" type="button" id="js-menu-btn"><span data-icon="line:dots-three"></span>その他の操作</button>
+        <div class="k-popover k-menu" id="js-menu" role="menu" aria-label="倉庫 B の棚卸しの操作" hidden>
+          <button class="k-option" type="button" role="menuitem" tabindex="-1"><span data-icon="line:pencil-simple"></span><span class="k-option__main">編集する</span><span class="k-option__end">E</span></button>
+          <button class="k-option" type="button" role="menuitem" tabindex="-1"><span data-icon="line:copy"></span><span class="k-option__main">複製する</span></button>
+          <hr class="k-menu__sep">
+          <div class="k-menu__group k-label" role="presentation">Sort</div>
+          <button class="k-option" type="button" role="menuitemradio" aria-checked="true" tabindex="-1"><span data-icon="line:sort-ascending"></span><span class="k-option__main">新しい順</span></button>
+          <button class="k-option" type="button" role="menuitemradio" aria-checked="false" tabindex="-1"><span data-icon="line:sort-ascending"></span><span class="k-option__main">古い順</span></button>
+          <hr class="k-menu__sep">
+          <button class="k-option k-option--alert" type="button" role="menuitem" tabindex="-1"><span data-icon="line:trash"></span><span class="k-option__main">削除する</span></button>
+        </div>
+      </div>
+      <span class="k-muted" id="js-menu-result" role="status" style="font-size: 13px;"></span>
+    </div>
+  </section>
+
+  <!-- ヘッダーの状態の小ボタン -->
+  <section class="sample-section" aria-labelledby="hs-title">
+    <div class="k-heading"><h2 id="hs-title">ヘッダーの状態の小ボタン</h2><span class="k-label">.k-statusbtn</span></div>
+    <p>同期などの状態を、四角い点と大文字の短い名前でヘッダーに出します。押すと、つなぎ先ごとの状態と「今すぐ更新」のポップオーバーを開きます。599px 以下では点だけにし、<code>aria-label</code> に状態の文を全部入れます。</p>
+    <div class="mock-header">
+      <span class="k-logo"><span data-icon="solid:keiso"></span>keiso</span>
+      <div class="k-pop">
+        <button class="k-statusbtn k-role-success" type="button" id="js-sync-btn" aria-label="同期の状態（同期 09:12）"><span class="k-statusbtn__text">Sync 09:12</span></button>
+        <div class="k-popover k-popover--end k-statuspop" id="js-sync-pop" role="dialog" aria-label="同期の状態" hidden>
+          <span class="k-label">Sync</span>
+          <div class="k-statuspop__item">
+            <strong>点検の記録</strong>
+            <span class="k-statuspop__ok">最後に成功 11-26 09:12</span>
+            <button class="k-btn k-btn--sm" type="button" data-sync><span data-icon="line:arrow-clockwise"></span>今すぐ更新</button>
+          </div>
+          <div class="k-statuspop__item">
+            <strong>在庫の台帳</strong>
+            <span class="k-statuspop__ok">最後に成功 11-25 17:40</span>
+            <span class="k-statuspop__ng">接続できませんでした。ネットワークを確かめてください。</span>
+            <button class="k-btn k-btn--sm" type="button" data-sync><span data-icon="line:arrow-clockwise"></span>今すぐ更新</button>
+          </div>
+          <span class="k-muted" id="js-sync-result" role="status" style="font-size: 12px;"></span>
+        </div>
+      </div>
+      <button class="k-statusbtn k-role-alert" type="button" aria-label="同期の状態（同期に失敗。接続できません）"><span class="k-statusbtn__text">Sync failed</span></button>
+    </div>
+  </section>
+
+  <!-- 見出しから開くフィルタと除外の切り替え -->
+  <section class="sample-section" aria-labelledby="filter-title">
+    <div class="k-heading"><h2 id="filter-title">見出しから開くフィルタと除外の切り替え</h2><span class="k-label">Filter / Excluded</span></div>
+    <p>見出しの右の「フィルタ」に、効いている条件の数を件数の札で添えます。条件は変えたらすぐ一覧に反映します。「フィルタで n 件を除外」を押すと、外した行を今だけ点線の枠と薄い文字で戻します（覚えさせません）。</p>
+    <div class="k-panel k-section">
+      <div class="list-head">
+        <span data-icon="line:tray"></span><h3>今週の作業</h3><span class="k-count" id="js-filter-count">0</span>
+        <div class="list-head__tools">
+          <button class="k-btn k-btn--ghost k-btn--sm" type="button" id="js-exclude-btn" aria-pressed="false"><span data-icon="line:funnel"></span><span id="js-exclude-label"></span></button>
+          <div class="k-pop">
+            <button class="k-btn k-btn--ghost k-btn--sm" type="button" id="js-filter-btn"><span data-icon="line:sliders-horizontal"></span>フィルタ<span class="k-count" id="js-filter-active">2</span></button>
+            <div class="k-popover k-popover--end" id="js-filter-pop" role="dialog" aria-label="フィルタ" hidden style="width: min(22rem, calc(100vw - 32px)); max-width: none;">
+              <span class="k-label">Filters</span>
+              <div class="sample-stack" id="js-filter-rows"></div>
+              <form class="filter-add" id="js-filter-add" novalidate>
+                <input class="k-input" id="js-filter-word" placeholder="題名に含む言葉" aria-label="除外する言葉">
+                <button class="k-btn" type="submit">追加</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ul class="k-cellrows" id="js-filter-list" aria-label="今週の作業"></ul>
+      <span class="k-visually-hidden" id="js-filter-live" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <!-- 項目を選ぶダイアログ -->
+  <section class="sample-section" aria-labelledby="pick-title">
+    <div class="k-heading"><h2 id="pick-title">項目を選ぶダイアログ</h2><span class="k-label">.k-dialog--picker</span></div>
+    <p>候補が多く、検索や固定した候補があるときは、上に寄せた大きなダイアログで選びます。何の値を選ぶのかと今の値を中に出します。900px 以上では左に固定した候補、右に探す欄と残りの一覧の 2 段にし、それぞれの段の中でスクロールします。選ぶだけなので、外側を押しても Esc でも閉じます。</p>
+    <div class="k-field" style="max-width: 24rem;">
+      <span class="k-field__label" id="js-pick-label">記録を付ける棚</span>
+      <button class="k-picker-btn" type="button" id="js-pick-btn" aria-haspopup="dialog" aria-labelledby="js-pick-label js-pick-value"><span class="k-icon" data-icon="line:archive"></span><span class="k-picker-btn__value" id="js-pick-value">B-03 上段</span></button>
+    </div>
+    <dialog class="k-dialog k-dialog--picker" id="js-pick-dialog" aria-labelledby="js-pick-dialog-title">
+      <div class="k-dialog__head"><span data-icon="line:archive"></span><h3 id="js-pick-dialog-title">この記録を付ける棚</h3><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-close aria-label="閉じる"><span data-icon="line:x"></span></button></div>
+      <div class="k-dialog__body">
+        <p class="k-picker__desc">倉庫 B の棚卸し（11-26 09:40）。帳簿との差が 2 件あった棚の記録です。</p>
+        <div class="k-picker__current"><span class="k-label">Current</span><span id="js-pick-current">B-03 上段</span></div>
+        <div class="k-picker__cols">
+          <div class="k-picker__col">
+            <span class="k-label">Pinned</span>
+            <ul class="k-picker__list" id="js-pick-pinned" aria-label="固定した棚"></ul>
+          </div>
+          <div class="k-picker__col">
+            <label class="k-prompt k-prompt--sm"><input type="text" id="js-pick-search" placeholder="棚を探す" aria-label="棚を探す"></label>
+            <div><button class="k-btn k-btn--sm" type="button" data-pick=""><span data-icon="line:x-circle"></span>なし</button></div>
+            <div id="js-pick-groups" class="sample-stack"></div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </section>
+
+  <!-- 詳細のダイアログ -->
+  <section class="sample-section" aria-labelledby="detail-title">
+    <div class="k-heading"><h2 id="detail-title">詳細のダイアログ</h2><span class="k-label">.k-dialog--wide</span></div>
+    <p>一覧の番号か題名から、広い版（55rem）のダイアログで詳細を開きます。題名は省略せず折り返します。読み込み中は本文の位置に順に灯る点、失敗は ALERT の知らせを出します。外側のクリックでは閉じません。</p>
+    <div class="sample-row">
+      <button class="k-btn" type="button" data-detail="ok">詳細を開く</button>
+      <button class="k-btn" type="button" data-detail="loading">読み込み中の例</button>
+      <button class="k-btn" type="button" data-detail="error">失敗の例</button>
+    </div>
+    <dialog class="k-dialog k-dialog--wide" id="js-detail" aria-labelledby="js-detail-title">
+      <div class="k-dialog__head"><span data-icon="line:file-text"></span><h3 id="js-detail-title">#048 倉庫 B の棚卸しで、帳簿と数が合わなかった 2 件の確認</h3><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-close aria-label="閉じる"><span data-icon="line:x"></span></button></div>
+      <div class="k-dialog__body">
+        <div class="sample-row"><span class="k-tag" data-extra-color="ochre">倉庫</span><span class="k-status k-role-warning">Review</span></div>
+        <dl class="k-kv">
+          <dt>Owner</dt><dd>テスト太郎</dd>
+          <dt>Due</dt><dd class="k-num">2026-11-28</dd>
+          <dt>Updated</dt><dd class="k-num">2026-11-26 09:40</dd>
+        </dl>
+        <div id="js-detail-body"></div>
+      </div>
+      <div class="k-dialog__foot" style="flex-wrap: wrap;">
+        <button class="k-btn k-btn--ghost k-btn--sm" type="button" style="margin-right: auto;"><span data-icon="line:link"></span>棚の一覧</button>
+        <button class="k-btn" type="button"><span data-icon="line:arrow-square-out"></span>元のページで開く</button>
+        <button class="k-btn k-btn--primary" type="button" data-close>閉じる</button>
+      </div>
+    </dialog>
+  </section>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { popover, menu, icon_svg, fill_icons } = window.keiso_sample;
+  const escape_html = (text) => text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // メニュー
+  menu(document.getElementById('js-menu-btn'), document.getElementById('js-menu'), (item) => {
+    document.getElementById('js-menu-result').textContent = `「${item.querySelector('.k-option__main').textContent}」を選んだ`;
+  });
+
+  // ヘッダーの状態の小ボタン: 更新中は押せなくし、結果を 1 行で出す
+  popover(document.getElementById('js-sync-btn'), document.getElementById('js-sync-pop'));
+  document.querySelectorAll('[data-sync]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (btn.getAttribute('aria-busy') === 'true') return;
+      btn.setAttribute('aria-busy', 'true');
+      setTimeout(() => {
+        btn.removeAttribute('aria-busy');
+        document.getElementById('js-sync-result').textContent = '更新した（見本なので中身は変わりません）';
+      }, 1200);
+    });
+  });
+
+  // フィルタと除外の切り替え
+  const ITEMS = [
+    { no: '041', title: '倉庫 A の棚卸し', color: 'ochre' },
+    { no: '042', title: '倉庫 B の棚卸し', color: 'ochre' },
+    { no: '043', title: 'いつか 倉庫 C を片付ける', color: 'ochre' },
+    { no: '044', title: '空調の点検', color: 'blue' },
+    { no: '045', title: '下書き: 照明の交換の手順', color: 'blue' },
+    { no: '046', title: '発注の控えの整理', color: '' },
+  ];
+  const filters = [{ word: 'いつか', on: true }, { word: '下書き', on: true }];
+  let show_excluded = false;
+  const reason_of = (item) => filters.find((f) => f.on && item.title.includes(f.word));
+  const render_filter = () => {
+    const excluded = ITEMS.filter(reason_of);
+    const visible = ITEMS.filter((item) => !reason_of(item) || show_excluded);
+    document.getElementById('js-filter-count').textContent = String(ITEMS.length - excluded.length);
+    const active_count = filters.filter((f) => f.on).length;
+    const badge = document.getElementById('js-filter-active');
+    badge.textContent = String(active_count);
+    badge.hidden = active_count === 0;
+    const exclude_btn = document.getElementById('js-exclude-btn');
+    exclude_btn.hidden = excluded.length === 0;
+    if (excluded.length === 0) show_excluded = false;
+    exclude_btn.setAttribute('aria-pressed', String(show_excluded));
+    exclude_btn.querySelector('[data-icon]').innerHTML = icon_svg(show_excluded ? 'line:eye-slash' : 'line:funnel');
+    document.getElementById('js-exclude-label').textContent = show_excluded ? `除外した ${excluded.length} 件を隠す` : `フィルタで ${excluded.length} 件を除外`;
+    document.getElementById('js-filter-list').innerHTML = visible.map((item) => {
+      const reason = reason_of(item);
+      const color = item.color ? ` data-extra-color="${item.color}"` : '';
+      const meta = reason ? `<span class="k-icon k-icon--16" aria-hidden="true">${icon_svg('line:funnel')}</span>除外: 「${escape_html(reason.word)}」を含む` : '今週';
+      return `<li class="k-cellrow${reason ? ' is-excluded' : ''}"${color}><span class="k-cellrow__key">${item.no}</span><span class="k-cellrow__main"><span class="k-cellrow__title">${escape_html(item.title)}</span><span class="k-cellrow__meta">${meta}</span></span></li>`;
+    }).join('');
+    document.getElementById('js-filter-rows').innerHTML = filters.map((f, i) => `
+      <div class="filter-row">
+        <label class="k-check"><input type="checkbox" data-filter-on="${i}" ${f.on ? 'checked' : ''}><span class="k-visually-hidden">「${escape_html(f.word)}」のフィルタを有効にする</span></label>
+        <span>題名に「${escape_html(f.word)}」を含む</span>
+        <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-filter-del="${i}" aria-label="「${escape_html(f.word)}」のフィルタを削除"><span class="k-icon k-icon--16" aria-hidden="true">${icon_svg('line:trash')}</span></button>
+      </div>`).join('') || '<span class="k-muted" style="font-size: 13px;">フィルタはありません</span>';
+    document.getElementById('js-filter-live').textContent = show_excluded ? `除外した ${excluded.length} 件を表示しています` : `${ITEMS.length - excluded.length} 件を表示しています`;
+  };
+  popover(document.getElementById('js-filter-btn'), document.getElementById('js-filter-pop'), { on_open: () => document.getElementById('js-filter-word').focus() });
+  document.getElementById('js-exclude-btn').addEventListener('click', () => { show_excluded = !show_excluded; render_filter(); });
+  document.getElementById('js-filter-rows').addEventListener('change', (e) => {
+    const i = e.target.dataset.filterOn;
+    if (i !== undefined) { filters[Number(i)].on = e.target.checked; render_filter(); }
+  });
+  document.getElementById('js-filter-rows').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-filter-del]');
+    if (btn) { filters.splice(Number(btn.dataset.filterDel), 1); render_filter(); document.getElementById('js-filter-word').focus(); }
+  });
+  document.getElementById('js-filter-add').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = document.getElementById('js-filter-word');
+    const word = input.value.trim();
+    if (word === '' || filters.some((f) => f.word === word)) return;
+    filters.push({ word, on: true });
+    input.value = '';
+    render_filter();
+  });
+  render_filter();
+
+  // 項目を選ぶダイアログ
+  const SHELVES = { pinned: ['B-03 上段', 'B-03 下段', 'A-01 上段'], recent: ['B-04 上段', 'A-02 下段'],
+    groups: [['倉庫 A', ['A-01 上段', 'A-01 下段', 'A-02 上段', 'A-02 下段']], ['倉庫 B', ['B-03 上段', 'B-03 下段', 'B-04 上段', 'B-04 下段', 'B-05 上段']]] };
+  let shelf = 'B-03 上段';
+  const pick_dialog = document.getElementById('js-pick-dialog');
+  const pick_btn = document.getElementById('js-pick-btn');
+  const search = document.getElementById('js-pick-search');
+  const option = (name) => `<li><button class="k-option" type="button" data-pick="${name}" aria-current="${name === shelf}"><span class="k-option__main">${name}</span></button></li>`;
+  const render_pick = () => {
+    const query = search.value.normalize('NFKC').trim().toUpperCase();
+    const hit = (name) => name.toUpperCase().includes(query);
+    document.getElementById('js-pick-pinned').innerHTML = SHELVES.pinned.map(option).join('');
+    const groups = query === '' ? [['Recent', SHELVES.recent], ...SHELVES.groups] : [['検索の結果', SHELVES.groups.flatMap(([, names]) => names).filter(hit)]];
+    document.getElementById('js-pick-groups').innerHTML = groups.map(([label, names]) => `<div class="sample-stack" style="gap: var(--space-1);"><span class="k-label">${label}</span>${names.length ? `<ul class="k-picker__list">${names.map(option).join('')}</ul>` : '<span class="k-muted" style="font-size: 13px;">見つかりません</span>'}</div>`).join('');
+    document.getElementById('js-pick-current').innerHTML = shelf === '' ? '<span class="k-muted">なし</span>' : shelf;
+  };
+  pick_btn.addEventListener('click', () => { search.value = ''; render_pick(); pick_dialog.showModal(); search.focus(); });
+  search.addEventListener('input', render_pick);
+  pick_dialog.addEventListener('click', (e) => {
+    if (e.target === pick_dialog) { pick_dialog.close(); return; }
+    if (e.target.closest('[data-close]')) { pick_dialog.close(); return; }
+    const btn = e.target.closest('[data-pick]');
+    if (!btn) return;
+    shelf = btn.dataset.pick;
+    document.getElementById('js-pick-value').textContent = shelf === '' ? 'なし' : shelf;
+    pick_btn.classList.toggle('is-empty', shelf === '');
+    pick_dialog.close();
+  });
+  pick_dialog.addEventListener('close', () => pick_btn.focus());
+
+  // 詳細のダイアログ
+  const detail = document.getElementById('js-detail');
+  const detail_body = document.getElementById('js-detail-body');
+  let opener = null;
+  const BODY = '帳簿では 24 個の箱が、棚では 22 個でした。\n2 個は B-04 の棚に移したまま、記録を直していない見込みです。\n確かめたら、この記録の状態を Done にしてください。';
+  document.querySelectorAll('[data-detail]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      opener = btn;
+      const mode = btn.dataset.detail;
+      if (mode === 'ok') detail_body.innerHTML = `<p style="white-space: pre-wrap;">${escape_html(BODY)}</p>`;
+      if (mode === 'loading') detail_body.innerHTML = '<div class="k-section__state" role="status"><span class="k-loader" aria-hidden="true"><i></i><i></i><i></i><i></i></span>読み込み中</div>';
+      if (mode === 'error') detail_body.innerHTML = `<div class="k-notice k-role-alert" role="alert"><span data-icon="line:warning-octagon"></span><span class="k-notice__title">Alert</span><span class="k-notice__body">本文を読み込めませんでした。接続を確かめてから、開き直してください。</span></div>`;
+      fill_icons(detail_body);
+      detail.showModal();
+    });
+  });
+  detail.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => detail.close()));
+  detail.addEventListener('close', () => { if (opener) opener.focus(); });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Time</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+.due-demo { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 9rem), 1fr)); gap: var(--space-3); }
+.due-demo > div { display: grid; gap: var(--space-2); padding: var(--space-3); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Time</span>
+    <h1>日付と時刻の見せ方</h1>
+    <p>期日の印、日付の送りの帯、月のカレンダー、時刻つきのタイムラインです。日付と時刻はどれも等幅の数字にします。決まりは <code>docs/components.md</code> と <code>docs/patterns.md</code>。</p>
+  </section>
+
+  <!-- 期日の印 -->
+  <section class="sample-section" aria-labelledby="due-title">
+    <div class="k-heading"><h2 id="due-title">期日の印</h2><span class="k-label">.k-due</span></div>
+    <p>1 段目にアイコンと日付、2 段目に残りの日数。どの状態も 2 段にして、列の幅と行の高さをそろえます。色だけに頼らず、2 段目の文字で状態を伝えます。年が今年でないときだけ年を付けます。</p>
+    <div class="due-demo">
+      <div><span class="k-label">Overdue</span><span class="k-due k-role-alert"><span class="k-due__date"><span data-icon="line:warning-octagon"></span>11-24</span><span class="k-due__rest">2 日超過</span></span></div>
+      <div><span class="k-label">Today</span><span class="k-due k-role-warning"><span class="k-due__date"><span data-icon="line:warning"></span>11-26</span><span class="k-due__rest">今日</span></span></div>
+      <div><span class="k-label">Upcoming</span><span class="k-due"><span class="k-due__date"><span data-icon="line:calendar"></span>2027-01-08</span><span class="k-due__rest">あと 43 日</span></span></div>
+      <div><span class="k-label">None</span><span class="k-due"><span class="k-due__date" aria-hidden="true">—</span><span class="k-due__rest k-visually-hidden">期日なし</span></span></div>
+    </div>
+  </section>
+
+  <!-- 日付の送り -->
+  <section class="sample-section" aria-labelledby="day-title">
+    <div class="k-heading"><h2 id="day-title">日付の送り</h2><span class="k-label">.k-periodbar</span></div>
+    <p>1 日ずつ見る画面の上の帯です。左に日付と曜日、右に「前の日」「今日」「次の日」。月のカレンダーの上の帯と同じ作りです。日付は移ったことを読み上げます（<code>aria-live</code>）。今日を見ているときは「今日」を押せなくします。</p>
+    <div class="k-panel">
+      <div class="k-periodbar">
+        <div class="k-periodbar__title"><strong id="js-day-title" aria-live="polite"></strong><span class="k-periodbar__sub" id="js-day-sub"></span></div>
+        <div class="k-periodbar__nav">
+          <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" id="js-day-prev" aria-label="前の日"><span data-icon="line:caret-left"></span></button>
+          <button class="k-btn k-btn--sm" type="button" id="js-day-today">今日</button>
+          <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" id="js-day-next" aria-label="次の日"><span data-icon="line:caret-right"></span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 月のカレンダー -->
+  <section class="sample-section" aria-labelledby="cal-title">
+    <div class="k-heading"><h2 id="cal-title">月のカレンダー</h2><span class="k-label">.k-cal</span></div>
+    <p>日曜から始まる 7 列の表です。土日はマスの地を一段沈め、日曜と祝日は数字を薄い文字にします。赤は異常の色（ALERT）なので、休みの日には使いません。祝日はマスに四角い印と名前を出し、今日は数字を反転させます。前後の月の日は点線の枠だけにします。599px 以下では祝日の名前を隠し、数字の下線と下の一覧で伝えます。</p>
+    <div class="k-panel sample-stack">
+      <div class="k-periodbar">
+        <div class="k-periodbar__title"><h3 id="js-cal-title" aria-live="polite"></h3><span class="k-periodbar__sub" id="js-cal-era"></span></div>
+        <div class="k-periodbar__nav">
+          <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" id="js-cal-prev" aria-label="前の月"><span data-icon="line:caret-left"></span></button>
+          <button class="k-btn k-btn--sm" type="button" id="js-cal-today">今月</button>
+          <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" id="js-cal-next" aria-label="次の月"><span data-icon="line:caret-right"></span></button>
+        </div>
+      </div>
+      <table class="k-cal" id="js-cal" aria-labelledby="js-cal-title">
+        <thead><tr>
+          <th scope="col"><abbr title="日曜">Sun</abbr></th><th scope="col"><abbr title="月曜">Mon</abbr></th><th scope="col"><abbr title="火曜">Tue</abbr></th><th scope="col"><abbr title="水曜">Wed</abbr></th><th scope="col"><abbr title="木曜">Thu</abbr></th><th scope="col"><abbr title="金曜">Fri</abbr></th><th scope="col"><abbr title="土曜">Sat</abbr></th>
+        </tr></thead>
+        <tbody id="js-cal-body"></tbody>
+      </table>
+      <h4 id="js-hol-title" style="font-size: 16px; margin-top: var(--space-3);"></h4>
+      <ul class="k-holidays" id="js-hol-list" aria-labelledby="js-hol-title"></ul>
+    </div>
+  </section>
+
+  <!-- タイムライン -->
+  <section class="sample-section" aria-labelledby="tl-title">
+    <div class="k-heading"><h2 id="tl-title">時刻つきのタイムライン</h2><span class="k-label">.k-timeline</span></div>
+    <p>短い記録を時刻の順に並べます。時刻の右に縦の線、行ごとに四角い点。上の欄に書いて「記録」（<kbd>Ctrl</kbd> + <kbd>Enter</kbd> でも送る）、編集はダイアログにせずその場で、削除は確認のダイアログで聞きます。</p>
+    <div class="k-panel sample-stack" style="max-width: 44rem;">
+      <form class="k-composer" id="js-tl-form" novalidate>
+        <label class="k-visually-hidden" for="js-tl-text">記録の本文</label>
+        <textarea class="k-textarea" id="js-tl-text" rows="3" placeholder="いまの様子を書く"></textarea>
+        <div class="k-composer__foot">
+          <span class="k-field__hint">今の時刻で記録します。</span>
+          <button class="k-btn k-btn--primary k-btn--sm" type="submit" id="js-tl-send" disabled><span data-icon="line:plus"></span>記録</button>
+        </div>
+      </form>
+      <ol class="k-timeline" id="js-tl-list" aria-label="今日の記録"></ol>
+      <p class="k-muted" id="js-tl-empty" style="font-size: 13px;" hidden>まだ記録はありません</p>
+      <span class="k-visually-hidden" id="js-tl-live" aria-live="polite"></span>
+      <div class="sample-row"><button class="k-btn k-btn--ghost k-btn--sm" type="button" id="js-tl-clear">空の状態を見る</button></div>
+    </div>
+    <dialog class="k-dialog" id="js-tl-dialog" role="alertdialog" aria-labelledby="js-tl-dialog-title" aria-describedby="js-tl-dialog-body">
+      <div class="k-dialog__head"><span class="k-role-alert" style="color: var(--k-role);" data-icon="line:warning-octagon"></span><h3 id="js-tl-dialog-title"></h3></div>
+      <div class="k-dialog__body"><p id="js-tl-dialog-body">消した記録は元に戻せません。</p></div>
+      <div class="k-dialog__foot"><button class="k-btn" type="button" value="cancel" id="js-tl-cancel">やめる</button><button class="k-btn k-btn--alert" type="button" id="js-tl-delete">削除する</button></div>
+    </dialog>
+  </section>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { icon_svg } = window.keiso_sample;
+  const svg = (name) => `<span class="k-icon k-icon--16" aria-hidden="true">${icon_svg(`line:${name}`)}</span>`;
+  const pad = (n) => String(n).padStart(2, '0');
+  const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const WEEK_JA = ['日', '月', '火', '水', '木', '金', '土'];
+  const today = new Date();
+
+  // 日付の送り
+  let day = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const render_day = () => {
+    document.getElementById('js-day-title').textContent = `${ymd(day)} ${WEEK[day.getDay()].toUpperCase()}`;
+    const diff = Math.round((day - new Date(today.getFullYear(), today.getMonth(), today.getDate())) / 86400000);
+    document.getElementById('js-day-sub').textContent = diff === 0 ? '今日' : diff > 0 ? `${diff} 日後` : `${-diff} 日前`;
+    document.getElementById('js-day-today').setAttribute('aria-disabled', String(diff === 0));
+  };
+  document.getElementById('js-day-prev').addEventListener('click', () => { day.setDate(day.getDate() - 1); render_day(); });
+  document.getElementById('js-day-next').addEventListener('click', () => { day.setDate(day.getDate() + 1); render_day(); });
+  document.getElementById('js-day-today').addEventListener('click', () => { day = new Date(today.getFullYear(), today.getMonth(), today.getDate()); render_day(); });
+  render_day();
+
+  // 月のカレンダー（見本の祝日は 2026 年の分だけ持つ）
+  const HOLIDAYS = {
+    '2026-01-01': '元日', '2026-01-12': '成人の日', '2026-02-11': '建国記念の日', '2026-02-23': '天皇誕生日', '2026-03-20': '春分の日',
+    '2026-04-29': '昭和の日', '2026-05-03': '憲法記念日', '2026-05-04': 'みどりの日', '2026-05-05': 'こどもの日', '2026-05-06': '振替休日',
+    '2026-07-20': '海の日', '2026-08-11': '山の日', '2026-09-21': '敬老の日', '2026-09-22': '国民の休日', '2026-09-23': '秋分の日',
+    '2026-10-12': 'スポーツの日', '2026-11-03': '文化の日', '2026-11-23': '勤労感謝の日',
+  };
+  const era_of = (d) => {
+    const parts = new Intl.DateTimeFormat('ja-JP-u-ca-japanese', { era: 'long', year: 'numeric' }).formatToParts(d);
+    const era = (parts.find((p) => p.type === 'era') || {}).value || '';
+    const year = (parts.find((p) => p.type === 'year') || {}).value || '';
+    return `${era}${year === '1' ? '元' : year}年`;
+  };
+  const era_range = (a, b) => { const x = era_of(a); const y = era_of(b); return x === y ? x : `${x}／${y}`; };
+  let month = new Date(today.getFullYear(), today.getMonth(), 1);
+  const render_cal = () => {
+    const y = month.getFullYear();
+    const m = month.getMonth();
+    document.getElementById('js-cal-title').textContent = `${y} 年 ${m + 1} 月`;
+    document.getElementById('js-cal-era').textContent = era_range(new Date(y, m, 1), new Date(y, m + 1, 0));
+    const start = new Date(y, m, 1 - new Date(y, m, 1).getDay());
+    const weeks = Math.ceil((new Date(y, m, 1).getDay() + new Date(y, m + 1, 0).getDate()) / 7);
+    let html = '';
+    for (let w = 0; w < weeks; w += 1) {
+      html += '<tr>';
+      for (let i = 0; i < 7; i += 1) {
+        const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + w * 7 + i);
+        const key = ymd(d);
+        const holiday = HOLIDAYS[key];
+        const cls = [d.getMonth() !== m && 'is-outside', (i === 0 || i === 6) && 'is-weekend', i === 0 && 'is-sunday', holiday && 'is-holiday'].filter(Boolean).join(' ');
+        const current = key === ymd(today) ? ' aria-current="date"' : '';
+        const title = holiday ? ` title="${holiday}"` : '';
+        html += `<td class="${cls}"${current}${title}><span class="k-cal__day">${d.getDate()}</span>${holiday ? `<span class="k-cal__name">${holiday}</span>` : ''}</td>`;
+      }
+      html += '</tr>';
+    }
+    document.getElementById('js-cal-body').innerHTML = html;
+    document.getElementById('js-hol-title').textContent = `${y} 年（${era_range(new Date(y, 0, 1), new Date(y, 11, 31))}）の祝日`;
+    const list = Object.entries(HOLIDAYS).filter(([key]) => key.startsWith(String(y)));
+    document.getElementById('js-hol-list').innerHTML = list.length === 0
+      ? '<li class="k-muted" style="border: 0; font-size: 13px;">この見本は 2026 年の祝日だけを持っています</li>'
+      : list.map(([key, name]) => {
+        const d = new Date(`${key}T00:00`);
+        const state = key === ymd(today) ? ' aria-current="date"' : key < ymd(today) ? ' class="is-past"' : '';
+        return `<li${state}><time datetime="${key}">${key.slice(5).replace('-', '/')}（${WEEK_JA[d.getDay()]}）</time><span>${name}</span></li>`;
+      }).join('');
+  };
+  document.getElementById('js-cal-prev').addEventListener('click', () => { month = new Date(month.getFullYear(), month.getMonth() - 1, 1); render_cal(); });
+  document.getElementById('js-cal-next').addEventListener('click', () => { month = new Date(month.getFullYear(), month.getMonth() + 1, 1); render_cal(); });
+  document.getElementById('js-cal-today').addEventListener('click', () => { month = new Date(today.getFullYear(), today.getMonth(), 1); render_cal(); });
+  render_cal();
+
+  // タイムライン
+  const escape_html = (text) => text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  let entries = [
+    { id: 1, at: '2026-11-26T09:15', text: '倉庫 A の温度を測った。18.2℃。' },
+    { id: 2, at: '2026-11-26T09:43', text: '倉庫 B の湿度が 58%。上限に近いので、午後にもう一度測る。' },
+    { id: 3, at: '2026-11-26T10:05', text: '空調 2 番の応答が無い。手で確かめた。止まっていたので入れ直した。' },
+  ];
+  let editing = null;
+  let next_id = 4;
+  let sending = false;
+  const list = document.getElementById('js-tl-list');
+  const text = document.getElementById('js-tl-text');
+  const send = document.getElementById('js-tl-send');
+  const live = document.getElementById('js-tl-live');
+  const hm = (at) => at.slice(11, 16);
+  const render_tl = () => {
+    entries.sort((a, b) => (a.at < b.at ? -1 : 1));
+    list.innerHTML = entries.map((e) => {
+      if (e.id === editing) {
+        return `<li><time datetime="${e.at}">${hm(e.at)}</time><div class="k-timeline__body">
+          <label class="k-visually-hidden" for="js-tl-edit">${hm(e.at)} の記録の本文</label>
+          <textarea class="k-textarea" id="js-tl-edit" rows="3">${escape_html(e.text)}</textarea>
+          <span class="k-field__error" id="js-tl-edit-error" role="alert" hidden>${svg('warning-octagon')}本文を入れてください（消すときは削除のボタンを使ってください）</span>
+          <div class="k-timeline__edit-foot"><label class="k-label" for="js-tl-edit-at">Time</label><input class="k-input" type="datetime-local" id="js-tl-edit-at" value="${e.at}">
+          <button class="k-btn k-btn--sm" type="button" data-cancel="${e.id}">やめる</button><button class="k-btn k-btn--primary k-btn--sm" type="button" data-save="${e.id}">${svg('floppy-disk')}保存</button></div>
+        </div><span></span></li>`;
+      }
+      return `<li><time datetime="${e.at}">${hm(e.at)}</time><div class="k-timeline__body"><p>${escape_html(e.text)}</p></div>
+        <span class="k-timeline__actions"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-edit="${e.id}" aria-label="${hm(e.at)} の記録を編集">${svg('pencil-simple')}</button><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-del="${e.id}" aria-label="${hm(e.at)} の記録を削除">${svg('trash')}</button></span></li>`;
+    }).join('');
+    document.getElementById('js-tl-empty').hidden = entries.length > 0;
+    list.hidden = entries.length === 0;
+  };
+  text.addEventListener('input', () => { send.disabled = text.value.trim() === ''; });
+  text.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !e.isComposing) { e.preventDefault(); document.getElementById('js-tl-form').requestSubmit(); }
+  });
+  document.getElementById('js-tl-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    // 押された瞬間に止める印で、連打の 2 回目を受け付けない（サーバー側でも防ぐこと）
+    if (sending || text.value.trim() === '') return;
+    sending = true;
+    send.setAttribute('aria-busy', 'true');
+    send.disabled = true;
+    setTimeout(() => {
+      const now = new Date();
+      entries.push({ id: next_id, at: `${ymd(now)}T${pad(now.getHours())}:${pad(now.getMinutes())}`, text: text.value.trim() });
+      next_id += 1;
+      text.value = '';
+      send.removeAttribute('aria-busy');
+      sending = false;
+      render_tl();
+      text.focus();
+    }, 500);
+  });
+  const dialog = document.getElementById('js-tl-dialog');
+  let deleting = null;
+  list.addEventListener('click', (e) => {
+    const edit = e.target.closest('[data-edit]');
+    const del = e.target.closest('[data-del]');
+    const cancel = e.target.closest('[data-cancel]');
+    const save = e.target.closest('[data-save]');
+    if (edit) { editing = Number(edit.dataset.edit); render_tl(); document.getElementById('js-tl-edit').focus(); }
+    if (cancel) { const id = Number(cancel.dataset.cancel); editing = null; render_tl(); list.querySelector(`[data-edit="${id}"]`).focus(); }
+    if (save) {
+      const id = Number(save.dataset.save);
+      const body = document.getElementById('js-tl-edit').value.trim();
+      if (body === '') { document.getElementById('js-tl-edit-error').hidden = false; return; }
+      const entry = entries.find((x) => x.id === id);
+      entry.text = body;
+      entry.at = document.getElementById('js-tl-edit-at').value || entry.at;
+      editing = null;
+      render_tl();
+      list.querySelector(`[data-edit="${id}"]`).focus();
+    }
+    if (del) {
+      deleting = entries.find((x) => x.id === Number(del.dataset.del));
+      document.getElementById('js-tl-dialog-title').textContent = `${hm(deleting.at)} の記録を削除しますか`;
+      dialog.showModal();
+      document.getElementById('js-tl-cancel').focus();
+    }
+  });
+  document.getElementById('js-tl-cancel').addEventListener('click', () => dialog.close());
+  document.getElementById('js-tl-delete').addEventListener('click', () => {
+    entries = entries.filter((x) => x !== deleting);
+    live.textContent = `${hm(deleting.at)} の記録を削除しました`;
+    dialog.close();
+    render_tl();
+    text.focus();
+  });
+  document.getElementById('js-tl-clear').addEventListener('click', () => { entries = []; render_tl(); });
+  render_tl();
+});
+</script>
+</body>
+</html>
