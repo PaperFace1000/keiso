@@ -1,0 +1,183 @@
+/* keiso の大きな画面（1 日の時間軸の予定表・並べ替えるダッシュボード・3 ペインと上に残る帯・幅や大きさのつまみ・左右の編集画面・カンバン・会話・浮かぶパネル・図の拡大・まとめて実行・録音）の見本の CSS。
+   kit.css の後に読み込む。アプリへはこのファイルを配らず、docs/patterns.md とこの見た目に合わせて各アプリで作ること。
+   色は tokens/themes.css の変数だけを使う。ここに色を直接書かない */
+
+/* ── 幅や大きさのつまみ（列の間・ペインの間。サイドバーの .k-resizer と同じ作り） ─── */
+/* 普段は見えず、なぞる・フォーカス・ドラッグ中だけ真ん中に 2px の文字の色の線を出す */
+.k-split { position: relative; flex: none; width: 6px; cursor: col-resize; touch-action: none; --k-focus-offset: -2px; }
+.k-split::after { content: ""; position: absolute; top: 0; bottom: 0; left: calc(50% - 1px); width: 2px; background: transparent; transition: background-color .12s steps(2, end); }
+.k-split:hover::after, .k-split:focus-visible::after, .k-split.is-dragging::after { background: var(--color-text); }
+.k-split:focus-visible { outline-offset: 0; }
+body.is-resizing, body.is-resizing * { cursor: col-resize !important; user-select: none; }
+
+/* ── 1 日の予定を縦の時間軸に並べる表 ─────────── */
+.k-daygrid { position: relative; height: min(calc(100dvh - 220px), 560px); min-height: 320px; overflow-y: auto; border: var(--line) solid var(--color-border); border-radius: var(--radius); background: var(--color-base); user-select: none; overscroll-behavior: contain; }
+.k-daygrid__inner { position: relative; display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); }
+.k-daygrid__scale { position: relative; }
+.k-daygrid__tick { position: absolute; right: 8px; transform: translateY(-50%); font: 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--color-muted); }
+.k-daygrid__tick.is-sub { font-size: 11px; }
+/* 線: 1 時間ごとに border、刻みごとに点の格子の色（地に近い淡い線） */
+.k-daygrid__col { position: relative; border-left: var(--line) solid var(--color-border); cursor: crosshair; touch-action: pan-y;
+  background-image: linear-gradient(var(--color-border) 0 1px, transparent 1px), linear-gradient(var(--color-grid-dot) 0 1px, transparent 1px);
+  background-size: 100% var(--k-hour), 100% var(--k-step); }
+.k-event { position: absolute; display: grid; align-content: start; gap: 1px; min-height: 16px; padding: 2px 6px; overflow: hidden; text-align: left; font: inherit; color: var(--color-text); background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm); cursor: grab; --k-focus-offset: 1px; }
+.k-event__time { display: flex; align-items: center; gap: 4px; font: 11px/1.3 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--color-muted); white-space: nowrap; overflow: hidden; }
+.k-event__title { font-size: 12px; font-weight: 600; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.k-event.is-short { grid-auto-flow: column; justify-content: start; gap: 6px; align-items: center; padding-block: 0; }
+/* 引っ張っている間は浮かぶものなので影を付ける */
+.k-event.is-dragging { z-index: 3; cursor: grabbing; box-shadow: var(--shadow-float); }
+.k-event__grip { position: absolute; left: 0; right: 0; height: 6px; cursor: ns-resize; }
+.k-event__grip--top { top: 0; }
+.k-event__grip--bottom { bottom: 0; }
+.k-draft { position: absolute; left: 2px; right: 50px; padding: 0 6px; font: 11px/1.4 var(--font-mono); background: var(--color-sunken); border: var(--line) dashed var(--color-text); border-radius: var(--radius-sm); pointer-events: none; }
+/* 今の時刻: 差し色の 2px の線と、左端の四角 */
+.k-nowline { position: absolute; left: 0; right: 0; height: 2px; background: var(--color-accent); pointer-events: none; z-index: 2; }
+.k-nowline::before { content: ""; position: absolute; left: -4px; top: -3px; width: 8px; height: 8px; border-radius: 1px; background: var(--color-accent); }
+
+/* ── 欄の位置と列の幅を変えられるダッシュボード ─────────── */
+.k-board { display: flex; align-items: start; min-width: 0; }
+.k-board__col { flex: 1 1 0; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-content: start; }
+.k-board__col > * { grid-column: 1 / -1; }
+.k-board__col > .is-half.is-paired { grid-column: auto; }
+.k-board .k-split { align-self: stretch; width: 16px; }
+.k-board .k-section { position: relative; }
+.k-board__grip { position: absolute; top: 0; left: 50%; translate: -50% -50%; z-index: 1; width: 40px; min-height: 16px; height: 16px; padding: 0; color: var(--color-muted); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); cursor: grab; opacity: 0; transition: opacity .15s steps(2, end); }
+.k-board__grip .k-icon { width: 14px; height: 14px; rotate: 90deg; }
+.k-board .k-section:hover .k-board__grip, .k-board__grip:focus-visible, .k-board__grip[aria-expanded="true"] { opacity: 1; }
+.k-board__grip:hover, .k-board__grip:focus-visible { color: var(--color-text); border-color: var(--color-text); }
+@media (hover: none) { .k-board__grip { opacity: 1; } }
+.k-board .k-section.is-moving { outline: 1px dashed var(--color-border-strong); outline-offset: -1px; background: var(--color-sunken); color: var(--color-muted); }
+/* 置く位置の線: 並べ替えと同じ 2px の線と両端の四角 */
+.k-board__drop { height: 2px; margin: -9px 0 -9px; background: var(--color-text); position: relative; pointer-events: none; }
+.k-board__drop::before, .k-board__drop::after { content: ""; position: absolute; top: -2px; width: 6px; height: 6px; background: var(--color-text); border-radius: 1px; }
+.k-board__drop::before { left: 0; }
+.k-board__drop::after { right: 0; }
+
+/* ── 一覧・中身・補助の 3 ペイン ─────────────── */
+.k-panes { --k-aside: 320px; display: grid; grid-template-columns: clamp(14rem, 22%, 20rem) minmax(0, 1fr) 6px var(--k-aside); gap: 6px; height: 520px; min-width: 0; }
+.k-panes.is-folded { grid-template-columns: 44px minmax(0, 1fr) 6px var(--k-aside); }
+.k-pane { min-width: 0; min-height: 0; overflow-y: auto; background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+.k-pane--main { background: var(--color-base); padding: 0 var(--space-4) var(--space-4); }
+.k-pane__head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3); border-bottom: var(--line) solid var(--color-border); }
+.k-pane__head .k-label { flex: 1; }
+.k-pane__fold { display: grid; justify-items: center; gap: var(--space-2); padding: var(--space-2) 0; }
+.k-pane__fold-count { writing-mode: vertical-rl; font-size: 13px; color: var(--color-muted); }
+.k-pane .k-list { border-top: 0; padding: var(--space-1); }
+.k-pane .k-list > li { border-bottom: 0; }
+.k-pane--aside { padding: var(--space-3); display: grid; gap: var(--space-2); align-content: start; font-size: 14px; }
+.k-panes__bar { display: none; }
+/* スクロールしても上に残る見出しと操作の帯。下の文字が透けないよう地を塗る */
+.k-stickybar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; padding: 12px 0 8px; background: var(--color-base); border-bottom: var(--line) solid var(--color-border); }
+.k-stickybar h3 { flex: 1 1 16rem; font-size: 18px; min-width: 0; overflow-wrap: anywhere; }
+.k-stickybar h3 .k-num { color: var(--color-muted); font-weight: 400; margin-right: 6px; }
+.k-stickybar__actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-stickybar__nav { display: flex; gap: 2px; }
+.k-stickybar__note { flex-basis: 100%; font-size: 12px; color: var(--color-muted); }
+@media (max-width: 899px) {
+  .k-panes, .k-panes.is-folded { display: block; height: auto; }
+  .k-panes > .k-split, .k-pane__foldbtn { display: none; }
+  .k-pane { overflow: visible; }
+  .k-panes.is-picked > .k-pane--list, .k-panes:not(.is-picked) > .k-pane--main, .k-panes:not(.is-picked) > .k-pane--aside { display: none; }
+  .k-panes.is-picked[data-tab="main"] > .k-pane--aside, .k-panes.is-picked[data-tab="aside"] > .k-pane--main { display: none; }
+  .k-stickybar { position: static; }
+  .k-panes.is-picked > .k-panes__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); }
+  .k-panes__tabs { flex: 1 1 14rem; }
+}
+
+/* ── 書く欄と仕上がりを左右に並べる編集画面 ─────────── */
+.k-editsplit { display: grid; gap: var(--space-3); min-width: 0; }
+.k-editsplit__bar { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+.k-editsplit__state { margin-right: auto; font-size: 13px; color: var(--color-muted); }
+.k-editsplit__cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); align-items: start; }
+.k-editsplit__cols.is-left .k-editsplit__out { order: -1; }
+.k-editsplit__cols.is-none { grid-template-columns: minmax(0, 1fr); }
+.k-editsplit__cols.is-none .k-editsplit__out { display: none; }
+.k-editsplit__in { min-height: 18rem; font-size: 14px; tab-size: 2; }
+.k-editsplit__out { position: sticky; top: 72px; max-height: calc(100dvh - 96px); overflow-y: auto; padding: var(--space-3) var(--space-4); background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius); font-size: 15px; line-height: 1.8; display: grid; gap: var(--space-2); align-content: start; overflow-wrap: anywhere; }
+.k-editsplit__out h3, .k-editsplit__out h4 { font-size: 16px; }
+.k-editsplit__out ul { margin: 0; padding-left: 1.2em; list-style: square; }
+@media (max-width: 899px) { .k-editsplit__cols { grid-template-columns: minmax(0, 1fr); } .k-editsplit__out { position: static; max-height: none; } }
+
+/* ── 列ごとにカードを積む表示（カンバン） ─────────── */
+.k-kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(12rem, 1fr); gap: 10px; padding-bottom: 4px; overflow-x: auto; --k-focus-offset: 2px; }
+.k-kanban__col { display: grid; gap: 6px; align-content: start; padding: var(--space-2); background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+.k-kanban__head { display: flex; align-items: baseline; gap: var(--space-2); font-size: 13px; font-weight: 600; color: var(--color-muted); padding: 0 4px; }
+.k-kanban__head .k-num { font-size: 12px; font-weight: 400; }
+.k-kanban__card { display: grid; gap: 4px; padding: 6px 8px; background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); font-size: 14px; }
+/* 注意・失敗のカードは状態なので、知らせの欄と同じく左に役割の色の帯を出し、状態の名前も添える */
+.k-kanban__card[class*="k-role-"] { box-shadow: inset var(--bar) 0 0 var(--k-role); }
+.k-kanban__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; font-size: 12px; color: var(--color-muted); }
+.k-kanban__more, .k-kanban__none { font-size: 12px; color: var(--color-muted); padding: 0 4px; }
+
+/* ── 会話の吹き出しの一覧と入力欄 ─────────────── */
+.k-chat { position: relative; display: grid; gap: var(--space-2); min-width: 0; }
+.k-chat__log { display: flex; flex-direction: column; gap: var(--space-2); height: 300px; margin: 0; padding: var(--space-2); overflow-y: auto; overscroll-behavior: contain; list-style: none; background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius); --k-focus-offset: -2px; }
+.k-chat__msg { display: grid; gap: 2px; max-width: 85%; justify-items: start; }
+.k-chat__msg.is-mine { align-self: flex-end; justify-items: end; }
+.k-chat__bubble { padding: 6px 10px; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+/* 自分の吹き出しは一段沈めた地と強い枠（反転は選んだものの印なので使わない） */
+.k-chat__msg.is-mine .k-chat__bubble { background: var(--color-sunken); border-color: var(--color-border-strong); }
+.k-chat__msg.is-failed .k-chat__bubble { border-color: var(--color-alert); }
+.k-chat__msg time { font: 12px/1.4 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--color-muted); }
+.k-chat__fail { display: flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; font-size: 12px; color: var(--color-alert); }
+/* 相手が書いている最中: 順に灯る点（.k-loader）と文 */
+.k-chat__typing { display: flex; align-items: center; gap: var(--space-2); font-size: 12px; color: var(--color-muted); min-height: 1.5em; }
+/* 最新へ送るボタン: 一覧の右下に浮かぶので影を付ける */
+.k-chat__latest { position: absolute; right: 12px; bottom: 96px; box-shadow: var(--shadow-float); background: var(--color-surface); }
+.k-chat__form { display: flex; align-items: flex-end; gap: var(--space-2); }
+.k-chat__input { flex: 1; min-width: 0; min-height: 36px; max-height: calc(1.5em * 4 + 14px); resize: none; line-height: 1.5; font-size: 14px; }
+
+/* ── 右下に浮かぶ開け閉めできるパネル ─────────── */
+.k-dock { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 30; display: grid; justify-items: end; max-width: calc(100vw - 32px); pointer-events: none; }
+.k-dock > * { pointer-events: auto; }
+.k-dock__open { width: 48px; height: 48px; padding: 0; background: var(--color-surface); box-shadow: var(--shadow-float); --k-focus-offset: 3px; }
+.k-dock__open .k-icon { width: 22px; height: 22px; }
+.k-dock__panel { position: relative; display: grid; grid-template-rows: auto minmax(0, 1fr); width: var(--k-w, 360px); height: var(--k-h, 320px); max-width: calc(100vw - 32px); max-height: calc(100dvh - 160px); background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius); box-shadow: var(--shadow-float); }
+.k-dock__head { display: flex; align-items: center; gap: 2px; padding: 6px 6px 6px 14px; border-bottom: var(--line) solid var(--color-border); }
+.k-dock__head h3 { flex: 1; font-size: 14px; font-weight: 600; }
+.k-dock__body { padding: var(--space-3); display: grid; gap: var(--space-2); align-content: start; overflow-y: auto; font-size: 14px; }
+/* 大きさの取っ手: 左上の角に置く 24px の四角。中に四隅の鉤と同じ鉤を描く */
+.k-corner { position: absolute; top: -10px; left: -10px; width: 24px; height: 24px; padding: 0; background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); cursor: nwse-resize; touch-action: none; }
+.k-corner::before { content: ""; position: absolute; top: 6px; left: 6px; width: 8px; height: 8px; border-top: 2px solid currentColor; border-left: 2px solid currentColor; color: var(--color-muted); }
+.k-corner:hover, .k-corner:focus-visible, .k-corner.is-dragging { border-color: var(--color-text); }
+.k-corner:hover::before, .k-corner:focus-visible::before, .k-corner.is-dragging::before { color: var(--color-text); }
+body.is-resizing-corner, body.is-resizing-corner * { cursor: nwse-resize !important; user-select: none; }
+
+/* ── 図・画像を拡大して見る表示 ─────────────── */
+.k-zoomable { position: relative; display: block; margin: 0; cursor: zoom-in; border-radius: var(--radius); }
+.k-zoomable__hint { position: absolute; top: 6px; right: 8px; padding: 0 6px; font-size: 12px; color: var(--color-muted); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); opacity: 0; }
+.k-zoomable:hover .k-zoomable__hint, .k-zoomable:focus-visible .k-zoomable__hint { opacity: 1; }
+@media (hover: none) { .k-zoomable__hint { opacity: 1; } }
+.k-zoom { width: calc(100vw - 32px); height: calc(100dvh - 32px); max-width: none; max-height: none; }
+.k-zoom[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.k-zoom__bar { display: flex; align-items: center; gap: 4px; padding: 8px 10px 8px 16px; border-bottom: var(--line) solid var(--color-border); }
+.k-zoom__bar h3 { flex: 1; min-width: 0; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.k-zoom__pct { min-width: 4.5em; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.k-zoom__stage { overflow: hidden; cursor: grab; touch-action: none; user-select: none; background: var(--color-base); display: grid; place-items: center; }
+.k-zoom__stage.is-dragging { cursor: grabbing; }
+
+/* ── まとめて実行する操作の下見と結果 ─────────── */
+.k-batch { display: grid; gap: var(--space-3); min-width: 0; }
+.k-batch__group { display: grid; gap: var(--space-1); }
+.k-batch__group h3 { font-size: 14px; }
+.k-batch__group > p { font-size: 12px; color: var(--color-muted); }
+.k-batch__rows { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
+.k-batch__row { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr) auto; gap: 4px var(--space-3); align-items: center; padding: 6px 10px; background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); font-size: 14px; }
+.k-batch__change { font: 12px/1.4 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--color-muted); }
+.k-batch__skip { margin: 0; padding-left: 20px; font-size: 13px; color: var(--color-muted); }
+@media (max-width: 599px) { .k-batch__row { grid-template-columns: 6.5rem minmax(0, 1fr); } .k-batch__change { grid-column: 2; } }
+/* 反映の状態の小さな表示 */
+.k-syncmark { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 2px 6px; font: 12px/1 var(--font-sans); color: var(--k-role, var(--color-muted)); background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer; }
+.k-syncmark::before { content: ""; width: 7px; height: 7px; border-radius: 1px; background: currentColor; }
+.k-syncmark.is-none::before { background: transparent; box-shadow: inset 0 0 0 1px currentColor; }
+.k-syncmark:hover { background: var(--color-surface); }
+
+/* ── 録音のボタン ─────────────────────── */
+.k-rec { display: grid; justify-items: center; gap: var(--space-3); padding: var(--space-6) var(--space-4); text-align: center; }
+.k-rec__time { font-size: 56px; }
+.k-rec__state { font-size: 14px; color: var(--color-muted); min-height: 1.7em; }
+.k-rec__level { width: 12rem; }
+/* 大きいボタン 1 つ: 96px の四角。待っている間は主の操作（反転）、録音中は ALERT の地に止める印 */
+.k-rec__btn { width: 96px; height: 96px; padding: 0; border-radius: var(--radius); }
+.k-rec__btn .k-icon { width: 36px; height: 36px; }
+.k-rec__btn .k-loader i { width: 8px; height: 8px; }

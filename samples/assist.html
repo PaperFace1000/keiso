@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Assist</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/kit-records.css">
+<link rel="stylesheet" href="assets/kit-parts.css">
+<link rel="stylesheet" href="assets/kit-marks.css">
+<link rel="stylesheet" href="assets/work.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+/* 右下に浮かぶパネルのボタンの分、本文の下を空けて最後の行が隠れないようにする */
+.ax-page { padding-bottom: 96px; }
+.ax-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--space-5); align-items: start; }
+.ax-figure svg { display: block; width: 100%; height: auto; }
+.ax-figure text { font: 12px var(--font-sans); fill: var(--color-text); }
+.ax-figure rect { fill: var(--color-surface); stroke: var(--color-border-strong); }
+.ax-figure path { stroke: var(--color-text); fill: none; }
+.ax-pending { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
+.ax-pending li { display: flex; align-items: center; gap: var(--space-2) var(--space-3); flex-wrap: wrap; padding: var(--space-2) var(--space-3); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); font-size: 14px; }
+.ax-pending li > :first-child { flex: 1 1 8rem; }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page ax-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Assist</span>
+    <h1>会話・浮かぶパネル・まとめた操作</h1>
+    <p>会話の吹き出しと入力欄、右下に浮かぶ開け閉めできるパネル、図を拡大して見る表示、まとめて実行する操作の下見と結果、声を録って送る録音のボタンです。決まりは <code>docs/patterns.md</code>。右下の四角いボタンが浮かぶパネルです。</p>
+  </section>
+
+  <!-- 会話 -->
+  <section class="sample-section" aria-labelledby="chat-title">
+    <div class="k-heading"><h2 id="chat-title">会話の吹き出しの一覧と入力欄</h2><span class="k-label">.k-chat</span></div>
+    <p>Enter で送り、Shift+Enter で改行します（変換中の Enter は送りません）。一番下を見ているときだけ新しい吹き出しまで送り、上を読んでいる間は動かさずに右下に「最新へ送る」を出します。相手が書いている間は順に灯る点と文を出します。送れなかった吹き出しは枠を ALERT にし、「もう一度送る」を添えます。</p>
+    <div class="ax-two">
+      <div class="k-chat">
+        <ol class="k-chat__log" id="js-chat-log" role="log" aria-label="倉庫の係との会話" tabindex="0"></ol>
+        <button class="k-btn k-btn--icon k-btn--sm k-chat__latest k-tip--up" type="button" id="js-chat-latest" aria-label="最新へ送る" data-tip="最新へ送る" hidden><span data-icon="line:arrow-down" class="k-icon--16"></span></button>
+        <div class="k-chat__typing" id="js-chat-typing" aria-live="polite"></div>
+        <form class="k-chat__form" id="js-chat-form">
+          <label class="k-visually-hidden" for="js-chat-input">送る文</label>
+          <textarea class="k-textarea k-chat__input" id="js-chat-input" rows="1" enterkeyhint="send" placeholder="文を入れて Enter で送る"></textarea>
+          <button class="k-btn k-btn--primary" type="submit" id="js-chat-send" disabled>送る</button>
+        </form>
+      </div>
+      <div class="sample-stack">
+        <label class="k-switch"><input type="checkbox" id="js-chat-offline"><span>回線を切った状態にする</span><span class="k-switch__state" id="js-chat-offline-state">OFF</span></label>
+        <p class="k-field__hint">入にすると、次に送る文が「送れませんでした」になります。送る要求には冪等のキーを付け、送り直しでも同じキーを使います。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 浮かぶパネル -->
+  <section class="sample-section" aria-labelledby="dock-title">
+    <div class="k-heading"><h2 id="dock-title">右下に浮かぶ開け閉めできるパネル</h2><span class="k-label">.k-dock</span></div>
+    <p>どの画面にいても開けるメモのパネルです。畳んだときは 48px の四角いボタン（浮かぶので影を付けます）、新しい話があれば右上に未読の四角を出します。開いたら入力欄へ、畳んだらボタンへフォーカスを移します。左上の角の取っ手で大きさを変え（ドラッグ、←→ で幅・↑↓ で高さ、ダブルクリックで既定）、開け閉めと大きさは保存してほかのタブにも合わせます。頭のアイコンのボタンには、すぐ出るツールチップを使います。</p>
+    <div class="sample-row"><button class="k-btn k-btn--sm" type="button" id="js-dock-news">新しい話を届ける</button></div>
+  </section>
+
+  <!-- 図の拡大 -->
+  <section class="sample-section" aria-labelledby="zoom-title">
+    <div class="k-heading"><h2 id="zoom-title">図・画像を拡大して見る表示</h2><span class="k-label">.k-zoom</span></div>
+    <p>図を押す・Enter・Space で、画面いっぱいのダイアログに広げます。倍率は 50〜400% で、100% は画面に収まる大きさです。百分率のボタンを押すと 100% に戻り、ドラッグで中を送ります。−・＋（=）のキーでも倍率を変え、Esc か外側を押すと閉じます（入力が無いので外側で閉じてよい例外）。</p>
+    <figure class="k-zoomable ax-figure k-panel" id="js-zoom-fig" role="button" tabindex="0" aria-label="点検の流れの図（押すと拡大）" style="max-width: 32rem;">
+      <span class="k-zoomable__hint" aria-hidden="true">押すと拡大</span>
+      <svg viewBox="0 0 420 150" aria-hidden="true"><rect x="10" y="50" width="110" height="44" rx="4"/><text x="65" y="77" text-anchor="middle">予定を作る</text><path d="M120 72h30m-6-5 6 5-6 5"/><rect x="150" y="50" width="110" height="44" rx="4"/><text x="205" y="77" text-anchor="middle">現地で確かめる</text><path d="M260 72h30m-6-5 6 5-6 5"/><rect x="290" y="50" width="120" height="44" rx="4"/><text x="350" y="77" text-anchor="middle">記録を送る</text><path d="M350 94v30H205V94m-5 6 5-6 5 6"/><text x="278" y="140" text-anchor="middle">差があれば戻る</text></svg>
+    </figure>
+    <dialog class="k-dialog k-zoom" id="js-zoom" aria-labelledby="js-zoom-h">
+      <div class="k-zoom__bar">
+        <h3 id="js-zoom-h">点検の流れの図</h3>
+        <button class="k-btn k-btn--icon k-btn--sm" type="button" id="js-zoom-out" aria-label="小さくする"><span data-icon="line:minus" class="k-icon--16"></span></button>
+        <button class="k-btn k-btn--sm k-zoom__pct" type="button" id="js-zoom-pct">100%</button>
+        <button class="k-btn k-btn--icon k-btn--sm" type="button" id="js-zoom-in" aria-label="大きくする"><span data-icon="line:plus" class="k-icon--16"></span></button>
+        <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" id="js-zoom-close" aria-label="閉じる"><span data-icon="line:x" class="k-icon--16"></span></button>
+      </div>
+      <div class="k-zoom__stage ax-figure" id="js-zoom-stage"></div>
+    </dialog>
+  </section>
+
+  <!-- まとめて実行 -->
+  <section class="sample-section" aria-labelledby="batch-title">
+    <div class="k-heading"><h2 id="batch-title">まとめて実行する操作の下見と結果</h2><span class="k-label">.k-batch</span></div>
+    <p>下見 → 確認 → 実行 → 結果の順に進めます。下見は区分（作る・変える・飛ばす）ごとに件数を出し、飛ばすものには理由とどうすれば送れるかを書きます。送る前にその場の確認を出し、実行中は行ごとに状態を変えます。一部が断られたら WARNING の欄に件数と理由を出します。見出しの横の小さな表示は反映の状態です。</p>
+    <div class="k-batch" id="js-batch">
+      <div class="sample-row"><button class="k-btn" type="button" id="js-batch-preview"><span data-icon="line:eye"></span>下見する</button><button class="k-syncmark is-none" type="button" id="js-batch-mark">未反映</button></div>
+      <div id="js-batch-body" class="k-batch"></div>
+    </div>
+  </section>
+
+  <!-- 録音 -->
+  <section class="sample-section" aria-labelledby="rec-title">
+    <div class="k-heading"><h2 id="rec-title">録音のボタン</h2><span class="k-label">.k-rec</span></div>
+    <p>画面の真ん中に大きい四角いボタンを 1 つだけ置き、上の経過時間（ドットの数字）をこの画面の結論にします。録音中だけ音量の目安を動かし、「取り消す」を出します。止めたらすぐ端末に保存してから送り、送れなければ下の「まだ送っていない録音」に並べて送り直します。送る要求には端末で作った ID を付け、送り終えた直後の 1 秒はボタンを押せなくします（停止の 2 回押しで次の録音が始まらないように）。見本は声を録らず、時間だけを進めます。</p>
+    <div class="k-panel">
+      <div class="k-rec">
+        <span class="k-dot k-rec__time" id="js-rec-time">0:00</span>
+        <span class="k-rec__state" id="js-rec-state" role="status">押すと録音を始めます</span>
+        <div class="k-meter k-rec__level" id="js-rec-level" aria-hidden="true" hidden><div class="k-meter__track"><div class="k-meter__fill" id="js-rec-fill" style="width: 0%;"></div></div><span class="k-meter__value">LV</span></div>
+        <button class="k-btn k-btn--primary k-rec__btn" type="button" id="js-rec-btn" aria-label="録音を始める"><span data-icon="line:microphone"></span></button>
+        <button class="k-btn k-btn--ghost" type="button" id="js-rec-cancel" hidden><span data-icon="line:x" class="k-icon--16"></span>取り消す</button>
+      </div>
+      <div class="sample-stack">
+        <label class="k-switch"><input type="checkbox" id="js-rec-offline"><span>送れない状態にする</span><span class="k-switch__state" id="js-rec-offline-state">OFF</span></label>
+        <h3 style="font-size: 14px;">まだ送っていない録音</h3>
+        <ul class="ax-pending" id="js-rec-pending" aria-label="まだ送っていない録音"></ul>
+        <p class="k-muted" id="js-rec-none" style="font-size: 13px;">ありません。</p>
+      </div>
+    </div>
+    <dialog class="k-dialog" id="js-rec-confirm" role="alertdialog" aria-labelledby="js-rec-confirm-h" aria-describedby="js-rec-confirm-d">
+      <div class="k-dialog__head"><span data-icon="line:warning-octagon"></span><h3 id="js-rec-confirm-h">録音を取り消しますか</h3></div>
+      <div class="k-dialog__body"><p id="js-rec-confirm-d">録っている声を捨てます。元に戻せません。</p></div>
+      <div class="k-dialog__foot"><button class="k-btn" type="button" data-close>続ける</button><button class="k-btn k-btn--alert" type="button" id="js-rec-discard">捨てる</button></div>
+    </dialog>
+  </section>
+</main>
+
+<div class="k-dock" id="js-dock">
+  <div class="k-dock__panel" id="js-dock-panel" role="region" aria-labelledby="js-dock-h" hidden>
+    <button class="k-corner" type="button" id="js-dock-corner" aria-label="パネルの大きさを変える" title="ドラッグか矢印キーで大きさを変える。ダブルクリックで既定に戻す"></button>
+    <div class="k-dock__head"><h3 id="js-dock-h">メモ</h3><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" id="js-dock-fold" aria-label="畳む" data-tip="畳む"><span data-icon="line:minus" class="k-icon--16"></span></button></div>
+    <div class="k-dock__body"><p class="k-muted" id="js-dock-news-text" style="font-size: 13px;">新しい話はありません。</p><label class="k-visually-hidden" for="js-dock-memo">メモ</label><textarea class="k-textarea" id="js-dock-memo" placeholder="書き留めること"></textarea></div>
+  </div>
+  <button class="k-btn k-dock__open" type="button" id="js-dock-open" aria-expanded="false" aria-controls="js-dock-panel" aria-label="メモを開く"><span data-icon="line:chat-text"></span></button>
+</div>
+<script>
+(() => {
+  const { fill_icons, escape_html, hhmm, store } = window.keiso_sample;
+  const $ = (id) => document.getElementById(id);
+  const switch_state = (input, out) => input.addEventListener('change', () => { $(out).textContent = input.checked ? 'ON' : 'OFF'; });
+  switch_state($('js-chat-offline'), 'js-chat-offline-state');
+  switch_state($('js-rec-offline'), 'js-rec-offline-state');
+
+  // ══ 会話 ══
+  const log = $('js-chat-log'), input = $('js-chat-input'), send = $('js-chat-send'), latest = $('js-chat-latest'), typing = $('js-chat-typing');
+  const msgs = [
+    { mine: false, text: '倉庫 B の鍵は事務所の棚の上にあります。', at: '09:02' },
+    { mine: true, text: 'ありがとうございます。\n10 時ごろに取りに行きます。', at: '09:05' },
+    { mine: false, text: '棚卸しの紙も一緒に置いておきます。', at: '09:06' },
+  ];
+  for (let i = 0; i < 6; i += 1) msgs.unshift({ mine: i % 2 === 1, text: `前の日のやり取り ${6 - i}`, at: '11-25 17:0' + i });
+  const near_bottom = () => log.scrollHeight - log.scrollTop - log.clientHeight <= 48;
+  const draw_chat = (force_bottom) => {
+    const stick = force_bottom || near_bottom();
+    log.innerHTML = msgs.map((m, i) => `<li class="k-chat__msg${m.mine ? ' is-mine' : ''}${m.failed ? ' is-failed' : ''}"><span class="k-visually-hidden">${m.mine ? '自分' : '倉庫の係'}: </span><span class="k-chat__bubble">${escape_html(m.text)}</span><time>${m.at}</time>${m.failed ? `<span class="k-chat__fail" role="alert"><span data-icon="line:warning-octagon" class="k-icon--16"></span>送れませんでした<button class="k-btn k-btn--ghost k-btn--sm" type="button" data-retry="${i}">もう一度送る</button></span>` : ''}</li>`).join('');
+    fill_icons(log);
+    if (stick) log.scrollTop = log.scrollHeight;
+    latest.hidden = near_bottom();
+  };
+  const reply = () => {
+    typing.innerHTML = '<span class="k-loader" aria-hidden="true"><i></i><i></i><i></i><i></i></span>相手が書いています';
+    setTimeout(() => { typing.textContent = ''; msgs.push({ mine: false, text: '了解です。', at: hhmm(new Date()) }); draw_chat(false); }, 1500);
+  };
+  const deliver = (m) => {
+    m.key = m.key || crypto.getRandomValues(new Uint32Array(1))[0].toString(16);
+    m.failed = $('js-chat-offline').checked;
+    draw_chat(true);
+    if (!m.failed) reply();
+  };
+  const submit = () => {
+    const text = input.value.trim();
+    if (!text) return;
+    const m = { mine: true, text, at: hhmm(new Date()) };
+    msgs.push(m); input.value = ''; grow(); send.disabled = true;
+    deliver(m);
+  };
+  const grow = () => { input.style.height = 'auto'; input.style.height = `${input.scrollHeight + 2}px`; };
+  input.addEventListener('input', () => { send.disabled = !input.value.trim(); grow(); });
+  input.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.shiftKey || e.isComposing || e.keyCode === 229) return;
+    e.preventDefault(); submit();
+  });
+  $('js-chat-form').addEventListener('submit', (e) => { e.preventDefault(); submit(); });
+  log.addEventListener('scroll', () => { latest.hidden = near_bottom(); });
+  log.addEventListener('click', (e) => { const b = e.target.closest('[data-retry]'); if (b) deliver(msgs[b.dataset.retry]); });
+  latest.addEventListener('click', () => { log.scrollTop = log.scrollHeight; latest.hidden = true; input.focus(); });
+  draw_chat(true);
+
+  // ══ 浮かぶパネル ══
+  const dock_open = $('js-dock-open'), panel = $('js-dock-panel'), corner = $('js-dock-corner');
+  const SIZE = { w: 360, h: 320 }, KEY = 'keiso.dock';
+  const read_dock = () => { try { return JSON.parse(store.get(KEY)) || {}; } catch { return {}; } };
+  let dock = { open: false, ...SIZE, ...read_dock() };
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const apply_dock = (focus) => {
+    dock.w = clamp(dock.w, 280, 640); dock.h = clamp(dock.h, 240, 560);
+    panel.style.setProperty('--k-w', `${dock.w}px`); panel.style.setProperty('--k-h', `${dock.h}px`);
+    panel.hidden = !dock.open; dock_open.hidden = dock.open;
+    dock_open.setAttribute('aria-expanded', String(dock.open));
+    if (focus) (dock.open ? $('js-dock-memo') : dock_open).focus();
+  };
+  const save_dock = () => store.set(KEY, JSON.stringify(dock));
+  const set_open = (open) => {
+    dock.open = open;
+    if (open) { dock_open.classList.remove('k-unread'); dock_open.setAttribute('aria-label', 'メモを開く'); }
+    save_dock(); apply_dock(true);
+  };
+  dock_open.addEventListener('click', () => set_open(true));
+  $('js-dock-fold').addEventListener('click', () => set_open(false));
+  panel.addEventListener('keydown', (e) => { if (e.key === 'Escape') set_open(false); });
+  $('js-dock-news').addEventListener('click', () => {
+    $('js-dock-news-text').textContent = `${hhmm(new Date())} に新しい話が届きました。`;
+    if (!dock.open) { dock_open.classList.add('k-unread'); dock_open.setAttribute('aria-label', 'メモを開く（新しい話があります）'); }
+  });
+  corner.addEventListener('pointerdown', (e) => {
+    const x0 = e.clientX, y0 = e.clientY, w0 = dock.w, h0 = dock.h;
+    corner.setPointerCapture(e.pointerId); corner.classList.add('is-dragging'); document.body.classList.add('is-resizing-corner');
+    const move = (ev) => { dock.w = w0 - (ev.clientX - x0); dock.h = h0 - (ev.clientY - y0); apply_dock(); };
+    corner.addEventListener('pointermove', move);
+    corner.addEventListener('pointerup', () => { corner.classList.remove('is-dragging'); document.body.classList.remove('is-resizing-corner'); corner.removeEventListener('pointermove', move); save_dock(); }, { once: true });
+  });
+  corner.addEventListener('keydown', (e) => {
+    const d = { ArrowLeft: ['w', 24], ArrowRight: ['w', -24], ArrowUp: ['h', 24], ArrowDown: ['h', -24] }[e.key];
+    if (!d) return;
+    e.preventDefault(); dock[d[0]] += d[1]; apply_dock(); save_dock();
+  });
+  corner.addEventListener('dblclick', () => { Object.assign(dock, SIZE); apply_dock(); save_dock(); });
+  window.addEventListener('storage', (e) => { if (e.key === KEY) { dock = { ...dock, ...read_dock() }; apply_dock(); } });
+  apply_dock();
+
+  // ══ 図の拡大 ══
+  const fig = $('js-zoom-fig'), zoom = $('js-zoom'), stage = $('js-zoom-stage');
+  const STEPS = [50, 75, 100, 150, 200, 300, 400];
+  let level = 2, pan = { x: 0, y: 0 };
+  const svg = fig.querySelector('svg').cloneNode(true);
+  stage.append(svg);
+  const fit_width = () => Math.min(stage.clientWidth - 32, (stage.clientHeight - 32) * (420 / 150));
+  const draw_zoom = () => {
+    const pct = STEPS[level];
+    svg.style.width = `${fit_width() * pct / 100}px`;
+    svg.style.transform = `translate(${pan.x}px, ${pan.y}px)`;
+    $('js-zoom-pct').textContent = `${pct}%`;
+    $('js-zoom-pct').setAttribute('aria-label', `倍率 ${pct}%。押すと画面に合わせる`);
+    $('js-zoom-out').disabled = level === 0; $('js-zoom-in').disabled = level === STEPS.length - 1;
+  };
+  const step_zoom = (d) => { level = Math.max(0, Math.min(STEPS.length - 1, level + d)); draw_zoom(); };
+  const open_zoom = () => { level = 2; pan = { x: 0, y: 0 }; zoom.showModal(); draw_zoom(); $('js-zoom-close').focus(); };
+  fig.addEventListener('click', open_zoom);
+  fig.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open_zoom(); } });
+  $('js-zoom-out').addEventListener('click', () => step_zoom(-1));
+  $('js-zoom-in').addEventListener('click', () => step_zoom(1));
+  $('js-zoom-pct').addEventListener('click', () => { level = 2; pan = { x: 0, y: 0 }; draw_zoom(); });
+  $('js-zoom-close').addEventListener('click', () => zoom.close());
+  zoom.addEventListener('close', () => fig.focus());
+  zoom.addEventListener('click', (e) => { if (e.target === zoom) zoom.close(); });
+  zoom.addEventListener('keydown', (e) => { if (e.key === '-') step_zoom(-1); if (e.key === '+' || e.key === '=') step_zoom(1); });
+  stage.addEventListener('pointerdown', (e) => {
+    const x0 = e.clientX - pan.x, y0 = e.clientY - pan.y;
+    stage.setPointerCapture(e.pointerId); stage.classList.add('is-dragging');
+    const move = (ev) => { pan = { x: ev.clientX - x0, y: ev.clientY - y0 }; draw_zoom(); };
+    stage.addEventListener('pointermove', move);
+    stage.addEventListener('pointerup', () => { stage.classList.remove('is-dragging'); stage.removeEventListener('pointermove', move); }, { once: true });
+  });
+
+  // ══ まとめて実行 ══
+  const bbody = $('js-batch-body'), mark = $('js-batch-mark');
+  const PLAN = [
+    ['作る', '新しく送るもの', [['#131', '倉庫 C の照明の交換', '— → 0:30'], ['#132', '空調のフィルタの掃除', '— → 1:00']]],
+    ['変える', '送った後に中身が変わったもの', [['#128', '倉庫 B の棚卸し', '0:30 → 1:00']]],
+  ];
+  const STATE = { wait: ['k-status k-status--none', 'Waiting'], send: ['k-status k-role-info k-status--live', 'Sending'], done: ['k-status k-role-success', 'Done'], ng: ['k-status k-role-alert', 'Rejected'] };
+  const rows_html = () => PLAN.map(([kind, note, rows]) => `<div class="k-batch__group"><h3>${kind} ${rows.length} 件</h3><p>${note}</p><ul class="k-batch__rows">${rows.map(([no, t, ch]) => `<li class="k-batch__row" data-no="${no}"><span class="${STATE.wait[0]}">${STATE.wait[1]}</span><span><span class="k-num">${no}</span> ${t}</span><span class="k-batch__change">${ch}</span></li>`).join('')}</ul></div>`).join('')
+    + '<div class="k-batch__group"><h3>飛ばす 1 件</h3><ul class="k-batch__skip"><li>番号の無い記録 1 件（番号を付けると送れます）</li></ul></div>';
+  const actions = (html) => `<div class="sample-row" id="js-batch-actions">${html}</div>`;
+  $('js-batch-preview').addEventListener('click', (e) => {
+    e.currentTarget.disabled = true;
+    bbody.innerHTML = '<p class="k-section__state" role="status"><span class="k-loader" aria-hidden="true"><i></i><i></i><i></i><i></i></span>下見を作っています</p>';
+    setTimeout(() => {
+      $('js-batch-preview').disabled = false;
+      bbody.innerHTML = rows_html() + actions('<button class="k-btn k-btn--primary" type="button" id="js-batch-ask">送る…</button>');
+    }, 600);
+  });
+  const set_row = (no, s) => { const el = bbody.querySelector(`[data-no="${no}"] > span`); el.className = STATE[s][0]; el.textContent = STATE[s][1]; };
+  bbody.addEventListener('click', (e) => {
+    if (e.target.id === 'js-batch-ask') {
+      $('js-batch-actions').outerHTML = `<div class="k-confirm k-role-warning" id="js-batch-actions"><p tabindex="-1" id="js-batch-q">3 件を送ります。送った先の 1 件（#128）の時間が 1:00 に書き換わります。</p><div class="k-confirm__actions"><button class="k-btn k-btn--sm" type="button" id="js-batch-no">やめる</button><button class="k-btn k-btn--primary k-btn--sm" type="button" id="js-batch-go">送る</button></div></div>`;
+      $('js-batch-q').focus();
+    }
+    if (e.target.id === 'js-batch-no') { $('js-batch-actions').outerHTML = actions('<button class="k-btn k-btn--primary" type="button" id="js-batch-ask">送る…</button>'); $('js-batch-ask').focus(); }
+    if (e.target.id === 'js-batch-go') {
+      $('js-batch-actions').outerHTML = actions('');
+      $('js-batch-preview').disabled = true;
+      const nos = PLAN.flatMap((g) => g[2].map((r) => r[0]));
+      nos.forEach((no) => set_row(no, 'send'));
+      nos.forEach((no, i) => setTimeout(() => {
+        set_row(no, no === '#132' ? 'ng' : 'done');
+        if (i === nos.length - 1) {
+          $('js-batch-preview').disabled = false;
+          bbody.insertAdjacentHTML('beforeend', `<div class="k-notice k-role-warning" role="status"><span data-icon="line:warning"></span><span class="k-notice__title">Warning</span><span class="k-notice__body">3 件のうち 2 件を送りました。1 件は断られました。<ul style="margin: 4px 0 0; padding-left: 24px; font-size: 13px;"><li>#132: 送った先に同じ名前の作業があります</li></ul></span></div>`);
+          fill_icons(bbody);
+          mark.className = 'k-syncmark k-role-success'; mark.textContent = `反映済み ${hhmm(new Date())}`;
+        }
+      }, 400 * (i + 1)));
+    }
+  });
+  mark.addEventListener('click', () => $('js-batch-preview').click());
+
+  // ══ 録音 ══
+  const rec_btn = $('js-rec-btn'), rec_state = $('js-rec-state'), rec_time = $('js-rec-time'), cancel = $('js-rec-cancel'), level_el = $('js-rec-level');
+  let mode = 'idle', sec = 0, tick = 0, pending = [];
+  const set_btn = (icon, label, cls) => {
+    rec_btn.className = `k-btn k-rec__btn ${cls}`;
+    rec_btn.innerHTML = icon ? `<span data-icon="line:${icon}"></span>` : '<span class="k-loader" aria-hidden="true"><i></i><i></i><i></i><i></i></span>';
+    rec_btn.setAttribute('aria-label', label); fill_icons(rec_btn);
+  };
+  const fmt = (s) => (s >= 3600 ? `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}` : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`);
+  const draw_pending = () => {
+    $('js-rec-pending').innerHTML = pending.map((p, i) => `<li><span><span class="k-num">${p.at}</span>・${fmt(p.sec)}</span><span class="k-num k-muted" style="font-size: 12px;">${p.id}</span><button class="k-btn k-btn--sm" type="button" data-resend="${i}"><span data-icon="line:arrow-clockwise" class="k-icon--16"></span>送り直す</button></li>`).join('');
+    fill_icons($('js-rec-pending'));
+    $('js-rec-none').hidden = pending.length > 0;
+  };
+  const upload = (item, after) => setTimeout(() => {
+    const ok = !$('js-rec-offline').checked;
+    if (ok) pending = pending.filter((p) => p.id !== item.id);
+    else if (!pending.includes(item)) pending.push(item);
+    draw_pending(); after(ok);
+  }, 700);
+  const to_idle = (msg) => {
+    mode = 'idle'; sec = 0; rec_time.textContent = '0:00'; rec_state.textContent = msg;
+    set_btn('microphone', '録音を始める', 'k-btn--primary');
+    // 送り終えた直後の 1 秒は押せなくする
+    rec_btn.disabled = true; setTimeout(() => { rec_btn.disabled = false; }, 1000);
+  };
+  rec_btn.addEventListener('click', () => {
+    if (mode === 'idle') {
+      mode = 'rec'; sec = 0; rec_state.textContent = '録音中';
+      set_btn('stop', '録音を止めて送る', 'k-btn--alert');
+      cancel.hidden = false; level_el.hidden = false;
+      tick = setInterval(() => { sec += 1; rec_time.textContent = fmt(sec); }, 1000);
+      level_el.dataset.timer = setInterval(() => { $('js-rec-fill').style.width = `${20 + Math.floor(Math.random() * 6) * 12}%`; }, 250);
+    } else if (mode === 'rec') {
+      clearInterval(tick); clearInterval(Number(level_el.dataset.timer));
+      mode = 'busy'; cancel.hidden = true; level_el.hidden = true;
+      const item = { id: `rec-${Date.now().toString(36)}`, sec, at: hhmm(new Date()) };
+      rec_state.textContent = '端末に保存しています'; set_btn(null, '保存して送っています', ''); rec_btn.disabled = true;
+      setTimeout(() => { rec_state.textContent = '送っています'; upload(item, (ok) => to_idle(ok ? '送りました' : '送れませんでした。下の「まだ送っていない録音」から送り直せます')); }, 500);
+    }
+  });
+  const confirm = $('js-rec-confirm');
+  cancel.addEventListener('click', () => { confirm.showModal(); confirm.querySelector('[data-close]').focus(); });
+  confirm.addEventListener('click', (e) => {
+    if (e.target.closest('[data-close]')) { confirm.close(); cancel.focus(); }
+    if (e.target.id === 'js-rec-discard') { confirm.close(); clearInterval(tick); clearInterval(Number(level_el.dataset.timer)); cancel.hidden = true; level_el.hidden = true; to_idle('録音を捨てました'); rec_btn.focus(); }
+  });
+  $('js-rec-pending').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-resend]');
+    if (!b) return;
+    b.disabled = true; b.setAttribute('aria-busy', 'true');
+    upload(pending[b.dataset.resend], (ok) => { rec_state.textContent = ok ? '送り直しました' : 'まだ送れません。回線を確かめてください'; });
+  });
+  window.addEventListener('online', () => pending.forEach((p) => upload(p, () => {})));
+  draw_pending();
+})();
+</script>
+</body>
+</html>

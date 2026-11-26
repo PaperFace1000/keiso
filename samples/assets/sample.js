@@ -20,6 +20,10 @@
     { href: 'overlays.html', label: 'Overlays' },
     { href: 'records.html', label: 'Records' },
     { href: 'time.html', label: 'Time' },
+    { href: 'parts.html', label: 'Parts' },
+    { href: 'marks.html', label: 'Marks' },
+    { href: 'workspace.html', label: 'Workspace' },
+    { href: 'assist.html', label: 'Assist' },
     { href: 'layout.html', label: 'Layout' },
   ];
 
@@ -177,7 +181,40 @@
     });
   };
 
-  window.keiso_sample = { THEMES, fill_icons, icon_svg, apply_theme, popover, menu, copy_button };
+  // 利用者の書いた文字を HTML として解釈させずに入れるための置き換え
+  const escape_html = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // 見本のための小さな Markdown の描き方（見出し・箇条書き・太字・インラインのコードだけ）。
+  // 先に文字を置き換えてから印を付けるので、書いた HTML はそのまま描かれない。アプリでは消毒する仕組みを使うこと
+  const md_lite = (src) => {
+    const inline = (s) => escape_html(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    const out = [];
+    let list = null;
+    const close_list = () => { if (list) { out.push(`<ul>${list.join('')}</ul>`); list = null; } };
+    src.split('\n').forEach((line) => {
+      const h = line.match(/^(#{1,3})\s+(.*)$/);
+      const li = line.match(/^\s*[-*]\s+(.*)$/);
+      if (li) { (list = list || []).push(`<li>${inline(li[1])}</li>`); return; }
+      close_list();
+      if (h) out.push(`<h${h[1].length + 2}>${inline(h[2])}</h${h[1].length + 2}>`);
+      else if (line.trim()) out.push(`<p>${inline(line)}</p>`);
+    });
+    close_list();
+    return out.join('');
+  };
+
+  // 時刻の形をそろえる（HH:MM、経過時間は H:MM:SS）
+  const pad2 = (n) => String(n).padStart(2, '0');
+  const hhmm = (d) => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  const hms = (sec) => `${Math.floor(sec / 3600)}:${pad2(Math.floor(sec / 60) % 60)}:${pad2(sec % 60)}`;
+
+  // localStorage は使えない環境（プライベートな窓・保存の拒否）でも止まらないように読む・書く
+  const store = {
+    get: (key) => { try { return localStorage.getItem(key); } catch { return null; } },
+    set: (key, value) => { try { localStorage.setItem(key, value); return true; } catch { return false; } },
+  };
+
+  window.keiso_sample = { THEMES, fill_icons, icon_svg, apply_theme, popover, menu, copy_button, escape_html, md_lite, pad2, hhmm, hms, store };
 
   document.addEventListener('DOMContentLoaded', () => {
     build_header();

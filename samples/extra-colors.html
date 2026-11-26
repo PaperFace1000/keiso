@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="../tokens/extra-colors.css">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/kit-records.css">
+<link rel="stylesheet" href="assets/kit-marks.css">
 <link rel="stylesheet" href="assets/sample.css">
 <script src="assets/icons.js"></script>
 <script src="assets/sample.js"></script>
@@ -54,6 +56,22 @@
     </div>
   </section>
 
+  <section class="sample-section" aria-labelledby="mark-title">
+    <div class="k-heading"><h2 id="mark-title">分類のベタ塗りの印</h2><span class="k-label">.k-catmark</span></div>
+    <p>一覧の行頭や結論の数字の頭に置く 28px の四角。分類の色を反転して塗り（地が <code>--extra-text</code>、中のアイコンと文字が <code>--extra-bg</code>）、比は分類の色の文字と地の組と同じ 4.5 以上です。同じ画面に 10 個以上並ぶときは淡い版にします。順位の印は 32px に数字。丸い形は使いません。分類の名前は必ず文字でも出し、分類の色のマスの行と同じ一覧には混ぜません。</p>
+    <div class="tag-demo">
+      <span class="sample-caption">ベタ塗り（既定）</span>
+      <div class="sample-row" id="js-marks"></div>
+      <span class="sample-caption">淡い版・色なし・順位の印</span>
+      <div class="sample-row">
+        <span class="k-catmark k-catmark--soft" data-extra-color="blue" aria-hidden="true"><span data-icon="line:cube"></span></span><span>設備</span>
+        <span class="k-catmark k-catmark--soft" data-extra-color="ochre" aria-hidden="true"><span data-icon="line:archive"></span></span><span>倉庫</span>
+        <span class="k-catmark" aria-hidden="true"><span data-icon="line:tag"></span></span><span>分類なし</span>
+        <span class="k-catmark k-catmark--lg" data-extra-color="teal">1</span><span class="k-catmark k-catmark--lg" data-extra-color="teal">2</span><span class="k-catmark k-catmark--lg k-catmark--soft" data-extra-color="teal">3</span>
+      </div>
+    </div>
+  </section>
+
   <section class="sample-section" aria-labelledby="compare-title">
     <div class="k-heading"><h2 id="compare-title">明るいテーマと暗いテーマを並べて</h2><span class="k-label">shiro / kuro</span></div>
     <p>同じ <code>data-extra-color</code> でも、テーマで値が変わります。<code>data-theme</code> は要素にも付けられるので、白と黒の箱を並べて、分類のバッジとマスの塗りを見比べられます（上のボタンで選んだテーマには左右されません）。どの組も文字と地の比は 4.5 以上です。</p>
@@ -72,6 +90,8 @@
   document.querySelectorAll('[data-compare]').forEach((grid) => {
     grid.innerHTML = COLORS.map(([key, label]) => `<div class="compare__row" data-extra-color="${key}"><span class="k-cellrow__key" style="margin: 0; padding: 4px 8px; border-radius: var(--radius-sm); align-self: auto; min-width: 5.5em;">${key}</span><span class="k-catbadge"><span class="k-swatch-dot" aria-hidden="true"></span><span>${label}</span></span></div>`).join('');
   });
+  document.getElementById('js-marks').innerHTML = COLORS.map(([key, label]) => `<span class="sample-row" style="gap: 6px;"><span class="k-catmark" data-extra-color="${key}" aria-hidden="true"><span data-icon="line:folder"></span></span><span style="font-size: 13px;">${label}</span></span>`).join('');
+  window.keiso_sample.fill_icons(document.getElementById('js-marks'));
   document.getElementById('js-tags').innerHTML = COLORS.map(([key, label]) => `<span class="k-tag" data-extra-color="${key}">${key}</span>`).join('');
 })();
 </script>

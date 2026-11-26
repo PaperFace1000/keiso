@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="../tokens/extra-colors.css">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/kit-records.css">
 <link rel="stylesheet" href="assets/sample.css">
 <script src="assets/icons.js"></script>
 <script src="assets/sample.js"></script>
@@ -23,17 +24,8 @@
 @media (max-width: 60rem) { .lx-dash__charts { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 44rem) { .lx-dash { grid-template-columns: minmax(0, 1fr); } }
 
-/* 結論の数字 */
-.lx-hero { display: grid; gap: var(--space-2); padding: var(--space-5) var(--space-4); }
-.lx-hero__value { font-size: 72px; color: var(--color-text); }
-.lx-hero__value small { font: 500 14px/1 var(--font-mono); letter-spacing: .1em; margin-left: 8px; color: var(--color-muted); }
-
-/* 図の枠 */
-.lx-chart { display: grid; gap: var(--space-3); padding: var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); min-width: 0; border-radius: var(--radius); }
-.lx-chart__head { display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
-.lx-chart__head h3 { font-size: 15px; }
-.lx-chart__head .k-label { margin-left: auto; }
-.lx-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* 図 */
+.k-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
 .lx-grid-line { stroke: var(--color-border); stroke-width: 1; stroke-dasharray: 2 4; }
 .lx-axis { fill: var(--color-muted); font: 10px var(--font-mono); }
 .lx-series { fill: none; stroke: var(--color-text); stroke-width: 1.5; }
@@ -132,9 +124,9 @@
 
   <div class="lx-dash">
     <div class="lx-dash__side">
-      <div class="k-stat k-frame lx-hero">
+      <div class="k-stat k-stat--lead k-frame">
         <span class="k-label">Completion / 2026-11</span>
-        <span class="k-dot lx-hero__value">86<small>%</small></span>
+        <span class="k-dot k-stat__value">86<small>%</small></span>
         <span class="k-stat__delta k-role-success">▲ 4.0 pt　前月 82%</span>
       </div>
       <div class="k-stat">
@@ -157,8 +149,8 @@
 
     <div class="lx-dash__main">
       <div class="lx-dash__charts">
-        <figure class="lx-chart" style="margin: 0;">
-          <div class="lx-chart__head"><h3>週ごとの完了率</h3><span class="k-label">Last 8 weeks</span></div>
+        <figure class="k-chart" style="margin: 0;">
+          <div class="k-chart__head"><h3>週ごとの完了率</h3><span class="k-label">Last 8 weeks</span></div>
           <svg viewBox="0 0 340 160" role="img" aria-label="週ごとの完了率の推移。8 週前の 64% から今週の 86% まで上がった">
             <!-- 縦の目盛り: 50〜100%。y = 140 - (値 - 50) * 2.4 -->
             <line class="lx-grid-line" x1="34" x2="334" y1="20" y2="20"/>
@@ -189,8 +181,8 @@
           <figcaption class="lx-legend"><span><i></i>今期</span><span><i class="is-prev"></i>前期</span></figcaption>
         </figure>
 
-        <figure class="lx-chart" style="margin: 0;">
-          <div class="lx-chart__head"><h3>状態の内訳</h3><span class="k-label">50 checks</span></div>
+        <figure class="k-chart" style="margin: 0;">
+          <div class="k-chart__head"><h3>状態の内訳</h3><span class="k-label">50 checks</span></div>
           <div class="lx-donut">
             <div class="lx-donut__center">
               <svg viewBox="0 0 42 42" role="img" aria-label="50 件のうち 完了 43 件（86%）、確認待ち 3 件（6%）、進行中 2 件（4%）、異常 2 件（4%）。点 1 つが 1 件">
@@ -222,6 +214,18 @@
       </div>
     </div>
   </div>
+</section>
+
+<!-- 図の枠と色 -->
+<section class="sx" aria-labelledby="h-chart">
+  <div class="k-heading"><h2 id="h-chart">図の枠と色・結論の数字</h2><span class="k-label">.k-chart / .k-stat--lead</span></div>
+  <p class="sx__lead">図を描く道具（canvas に描くもの）に任せる図は、入れ物の高さだけを決め、表題に単位と期間を入れます。道具は CSS 変数を読めないので、計算後の色を返す関数を 1 つ作ってそこから色を配り、テーマが変わったら描き直します。図には分類の色の文字の色（<code>--extra-text</code>、いちばん濃い色）を使い、淡い地の色は使いません。結論の数字は上のダッシュボードの左上の 1 つだけを主役版（四隅の鉤・72px）にし、ほかは 2 番手の数字の欄（44px）にします。分類の色の左の帯は付けません。</p>
+  <figure class="k-chart" style="max-width: 40rem;">
+    <div class="k-chart__head"><h3 id="js-bars-h">分類ごとの作業の時間（時間・2026 年 11 月）</h3></div>
+    <div class="k-chart__box"><canvas id="js-bars" role="img" aria-label="倉庫 12.5 時間、設備 8.5 時間、書類 3.0 時間、その他 1.5 時間。合計 25.5 時間"></canvas></div>
+    <ul class="k-chart__legend" id="js-bars-legend"></ul>
+    <figcaption class="k-chart__note">合計 25.5 時間。目安の 30 時間に 4.5 時間足りません。</figcaption>
+  </figure>
 </section>
 
 <!-- ドーナツの場合 -->
@@ -379,9 +383,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const summary = `${c.title}。合計 ${hm(total)}、${over > 0 ? `目安を ${hm(over)} 超えた` : `目安まであと ${hm(-over)}`}。${cats.map((x) => `${x[0]} ${hm(x[2])}（${pct(x)}%）`).join('、')}。点 1 つが ${unit} 分`;
     const center_default = `<span class="k-dot" style="font-size: 26px;">${hm(total)}</span><span class="k-num">${over > 0 ? `(+${hm(over)})` : `/ ${hm(c.target)}`}</span>`;
     const fig = document.createElement('figure');
-    fig.className = 'lx-chart';
+    fig.className = 'k-chart';
     fig.style.margin = '0';
-    fig.innerHTML = `<div class="lx-chart__head"><h3 id="js-donut-h-${n}">${c.title}</h3></div><p class="lx-donut__case">${c.note}</p>
+    fig.innerHTML = `<div class="k-chart__head"><h3 id="js-donut-h-${n}">${c.title}</h3></div><p class="lx-donut__case">${c.note}</p>
       <div class="lx-donut"><div class="lx-donut__center"><svg viewBox="0 0 42 42" role="img" aria-label="${summary}"><circle class="lx-donut__track" cx="21" cy="21" r="13.5"/>${groups}${rest_slots}</svg><div class="lx-donut__label" aria-hidden="true">${center_default}</div></div>
       <ul aria-labelledby="js-donut-h-${n}">${cats.map((x, i) => `<li class="lx-legend-row" tabindex="0" data-cat="${i}"${x[1] ? ` data-extra-color="${x[1]}"` : ''}${x[3] ? ` title="その他: ${x[3]}"` : ''}><i style="background: ${x[1] ? 'var(--extra-text)' : 'color-mix(in srgb, var(--color-muted) 55%, var(--color-base))'};"></i><span>${x[0]}</span><span class="k-num">${hm(x[2])} · ${pct(x)}%</span></li>`).join('')}</ul></div>`;
     root.append(fig);
@@ -398,6 +402,42 @@ document.addEventListener('DOMContentLoaded', () => {
     donut.addEventListener('focusout', (e) => { if (!donut.contains(e.relatedTarget)) focus_cat(null); });
   });
 });
+</script>
+<script>
+// 図を描く道具に渡す色: CSS 変数を計算後の値にして返す関数を 1 つだけ持ち、テーマが変わったら描き直す
+(() => {
+  const canvas = document.getElementById('js-bars');
+  const DATA = [['倉庫', 'ochre', 12.5], ['設備', 'blue', 8.5], ['書類', 'violet', 3], ['その他', null, 1.5]];
+  const probe = document.createElement('span');
+  probe.hidden = true; document.body.append(probe);
+  const color_of = (extra, name) => {
+    if (extra) probe.setAttribute('data-extra-color', extra); else probe.removeAttribute('data-extra-color');
+    return getComputedStyle(probe).getPropertyValue(name).trim();
+  };
+  document.getElementById('js-bars-legend').innerHTML = DATA.map(([n, c, v]) => `<li><span class="k-swatch-dot"${c ? ` data-extra-color="${c}"` : ''}></span>${n} <span class="k-num">${v.toFixed(1)}</span></li>`).join('');
+  const draw = () => {
+    const ratio = window.devicePixelRatio || 1, w = canvas.clientWidth, h = canvas.clientHeight;
+    canvas.width = w * ratio; canvas.height = h * ratio;
+    const g = canvas.getContext('2d');
+    g.scale(ratio, ratio); g.clearRect(0, 0, w, h);
+    const text = color_of(null, '--color-text'), muted = color_of(null, '--color-muted'), line = color_of(null, '--color-border');
+    const left = 64, right = 40, max = 15, row = (h - 24) / DATA.length;
+    g.font = '12px "Hiragino Sans", sans-serif'; g.textBaseline = 'middle';
+    [0, 5, 10, 15].forEach((v) => { const x = left + (w - left - right) * v / max; g.fillStyle = line; g.fillRect(Math.round(x), 0, 1, h - 20); g.fillStyle = muted; g.textAlign = 'center'; g.fillText(String(v), x, h - 8); });
+    DATA.forEach(([n, c, v], i) => {
+      const y = i * row + row / 2;
+      g.fillStyle = text; g.textAlign = 'right'; g.fillText(n, left - 8, y);
+      g.fillStyle = c ? color_of(c, '--extra-text') : muted;
+      const bw = (w - left - right) * v / max;
+      g.fillRect(left, y - 9, bw, 18);
+      g.fillStyle = text; g.textAlign = 'left'; g.fillText(v.toFixed(1), left + bw + 6, y);
+    });
+  };
+  draw();
+  document.addEventListener('keiso:theme', draw);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  new ResizeObserver(draw).observe(canvas);
+})();
 </script>
 </body>
 </html>

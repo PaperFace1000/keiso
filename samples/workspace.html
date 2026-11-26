@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Workspace</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/kit-float.css">
+<link rel="stylesheet" href="assets/kit-records.css">
+<link rel="stylesheet" href="assets/work.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+.wx-live { font-size: 13px; color: var(--color-muted); min-height: 1.7em; }
+.wx-rows { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; font-size: 14px; }
+.wx-rows li { padding: 6px var(--space-3); background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Workspace</span>
+    <h1>作業の画面</h1>
+    <p>1 日の予定を時間軸に並べる表、欄を並べ替えられるダッシュボード、一覧・中身・補助の 3 ペインと上に残る帯、幅のつまみ、書く欄と仕上がりを並べる編集画面、カンバンです。決まりは <code>docs/patterns.md</code>。</p>
+  </section>
+
+  <!-- 1 日の予定 -->
+  <section class="sample-section" aria-labelledby="day-title">
+    <div class="k-heading"><h2 id="day-title">1 日の予定を縦の時間軸に並べる表</h2><span class="k-label">.k-daygrid</span></div>
+    <p>予定をドラッグで動かし、上下の端で伸び縮みさせ、空いた所をドラッグして作ります（5 分に吸い付きます。押しただけなら 30 分）。キーボードでは予定にフォーカスして ↑↓ で 5 分ずつ動かし、Shift+↑↓ で終わりを伸び縮みさせ、Enter で編集を開きます。分類の色は予定の頭の四角い点にだけ使い、左の帯にはしません。今の時刻（見本では 10:40 に固定）は差し色の線です。</p>
+    <div class="k-periodbar">
+      <div class="k-periodbar__title"><strong>2026-11-26 THU</strong><span class="k-periodbar__sub">今日</span></div>
+      <div class="k-segment" role="group" aria-label="刻み" id="js-step"><button type="button" data-step="30">30 min</button><button type="button" data-step="15">15 min</button><button type="button" data-step="5">5 min</button></div>
+      <button class="k-btn k-btn--sm" type="button" id="js-day-add"><span data-icon="line:plus" class="k-icon--16"></span>作る</button>
+    </div>
+    <div class="k-daygrid" id="js-day"><div class="k-daygrid__inner" id="js-day-inner"><div class="k-daygrid__scale" aria-hidden="true" id="js-day-scale"></div><div class="k-daygrid__col" role="group" aria-label="2026-11-26 の予定" id="js-day-col"></div></div></div>
+    <p class="wx-live" id="js-day-live" aria-live="polite"></p>
+  </section>
+
+  <!-- ダッシュボード -->
+  <section class="sample-section" aria-labelledby="board-title">
+    <div class="k-heading"><h2 id="board-title">欄の位置と列の幅を変えられるダッシュボード</h2><span class="k-label">.k-board</span></div>
+    <p>1200px 以上は 3 列。欄をなぞると上の縁の中央に取っ手が出て、ドラッグで動かせます。取っ手を押すとメニューで上へ・下へ・左右の列へ・半分の幅に切り替えられます。列の間のつまみで幅を変え（15〜70%、←→ で 2%、ダブルクリックで等分）、半分の幅の欄は 2 つ続いたときだけ左右に並びます。900〜1199px は 2 列（3 : 2）、899px 以下は 1 列で「今日の要約」を先頭に出し、どちらも並べ替えはしません。</p>
+    <div class="k-board" id="js-board"></div>
+    <div class="k-popover k-menu" id="js-board-menu" role="menu" hidden></div>
+    <p class="wx-live" id="js-board-live" role="status"></p>
+  </section>
+
+  <!-- 3 ペイン -->
+  <section class="sample-section" aria-labelledby="panes-title">
+    <div class="k-heading"><h2 id="panes-title">一覧・中身・補助の 3 ペインと、上に残る帯</h2><span class="k-label">.k-panes / .k-stickybar</span></div>
+    <p>左の一覧で選んだものを真ん中に出し、右に補助（メモ）を置きます。一覧は見出しのボタンか <kbd>[</kbd> で 44px の帯に畳みます。補助の幅は間のつまみで変えます（左へ引くと広がる。280〜720px）。中身の上の帯は送っても残り、今押せない操作は隠さずに押せない形にします。899px 以下は 1 ペインにし、選ぶと「中身・補助」のタブと「一覧へ戻る」を出します。</p>
+    <div class="k-panes" id="js-panes">
+      <div class="k-panes__bar"><button class="k-btn k-btn--ghost k-btn--sm" type="button" data-back><span data-icon="line:arrow-left" class="k-icon--16"></span>一覧へ戻る</button>
+        <div class="k-tabs k-panes__tabs" role="tablist" aria-label="表示"><button type="button" role="tab" aria-selected="true" data-tab="main" aria-controls="js-panes-main">中身</button><button type="button" role="tab" aria-selected="false" data-tab="aside" aria-controls="js-panes-aside" tabindex="-1">補助</button></div></div>
+      <div class="k-pane k-pane--list" id="js-panes-list"></div>
+      <div class="k-pane k-pane--main" id="js-panes-main" tabindex="-1"></div>
+      <div class="k-split" id="js-panes-split" role="separator" aria-orientation="vertical" aria-label="補助の幅" aria-controls="js-panes-aside" aria-valuemin="280" aria-valuemax="720" tabindex="0" title="ドラッグか ←→ で幅を変える。ダブルクリックで既定に戻す"></div>
+      <div class="k-pane k-pane--aside" id="js-panes-aside" role="tabpanel"><span class="k-label">Memo</span><label class="k-visually-hidden" for="js-panes-memo">メモ</label><textarea class="k-textarea" id="js-panes-memo">鍵は事務所の棚の上。</textarea></div>
+    </div>
+  </section>
+
+  <!-- 編集画面 -->
+  <section class="sample-section" aria-labelledby="edit-title">
+    <div class="k-heading"><h2 id="edit-title">書く欄と仕上がりを左右に並べる編集画面</h2><span class="k-label">.k-editsplit</span></div>
+    <p>書くのが止まったら自動で保存し（見本では 2 秒）、Ctrl（mac は Cmd）+ S・Enter と保存のボタンですぐ保存します。仕上がりは左・右・出さないから選べ、HTML の順は書く欄が先のままです。899px 以下では 1 列に積みます。</p>
+    <div class="k-editsplit">
+      <div class="k-editsplit__bar">
+        <span class="k-editsplit__state" id="js-ed-state" role="status">保存済み（09:12）</span>
+        <span class="k-label">Preview</span>
+        <div class="k-segment" role="group" aria-label="仕上がりの位置" id="js-ed-pos"><button type="button" data-pos="left">Left</button><button type="button" data-pos="right" aria-pressed="true">Right</button><button type="button" data-pos="none">Off</button></div>
+        <button class="k-btn k-btn--primary k-btn--sm" type="button" id="js-ed-save" disabled><span data-icon="line:floppy-disk" class="k-icon--16"></span>保存</button>
+      </div>
+      <div class="k-editsplit__cols" id="js-ed-cols">
+        <div class="k-field"><label class="k-visually-hidden" for="js-ed-in">本文</label><textarea class="k-textarea k-editsplit__in" id="js-ed-in">## 月の点検の手引き
+- 倉庫は **上の段** から数える
+- 空調は `運転` の表示を確かめる
+- 差が出たら写真を撮る
+
+終わったら記録に時刻を書きます。</textarea></div>
+        <div class="k-editsplit__out" id="js-ed-out" aria-label="仕上がり" role="region"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- カンバン -->
+  <section class="sample-section" aria-labelledby="kan-title">
+    <div class="k-heading"><h2 id="kan-title">列ごとにカードを積む表示（カンバン）</h2><span class="k-label">.k-kanban</span></div>
+    <p>状態ごとの列にカードを積み、全体の進み具合を読ませます（ドラッグで状態は変えません）。狭い幅では折り返さず、並びの中だけ横に送ります。注意・失敗のカードは状態なので左に役割の色の帯を出し、状態の名前も添えます。</p>
+    <div class="k-kanban" tabindex="0" aria-label="作業の進み具合">
+      <section class="k-kanban__col" aria-label="まだ 3 件"><h3 class="k-kanban__head">まだ<span class="k-num">3</span></h3>
+        <div class="k-kanban__card"><a href="#kan-title">照明の交換</a><span class="k-kanban__meta"><span class="k-tag" data-extra-color="teal">設備</span>12-03</span></div>
+        <div class="k-kanban__card"><a href="#kan-title">月の報告を送る</a><span class="k-kanban__meta"><span class="k-tag" data-extra-color="violet">書類</span>11-30</span></div>
+        <p class="k-kanban__more">ほか 1 件</p></section>
+      <section class="k-kanban__col" aria-label="進めている 2 件"><h3 class="k-kanban__head">進めている<span class="k-num">2</span></h3>
+        <div class="k-kanban__card k-role-warning"><a href="#kan-title">倉庫 B の棚卸し</a><span class="k-kanban__meta"><span class="k-status k-role-warning">Late</span>11-24</span></div>
+        <div class="k-kanban__card"><a href="#kan-title">空調の点検</a><span class="k-kanban__meta"><span class="k-tag" data-extra-color="teal">設備</span>11-28</span></div></section>
+      <section class="k-kanban__col" aria-label="止まっている 1 件"><h3 class="k-kanban__head">止まっている<span class="k-num">1</span></h3>
+        <div class="k-kanban__card k-role-alert"><a href="#kan-title">温度の記録の取り込み</a><span class="k-kanban__meta"><span class="k-status k-role-alert">Failed</span>読み込めませんでした</span></div></section>
+      <section class="k-kanban__col" aria-label="終わった 0 件"><h3 class="k-kanban__head">終わった<span class="k-num">0</span></h3><p class="k-kanban__none">ありません</p></section>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  const { fill_icons, escape_html, md_lite, hhmm, pad2, store } = window.keiso_sample;
+  const $ = (id) => document.getElementById(id);
+  const hm = (m) => `${pad2(Math.floor(m / 60))}:${pad2(m % 60)}`;
+
+  // ══ 1 日の予定 ══
+  const NOW = 10 * 60 + 40;
+  const events = [
+    { id: 1, start: 9 * 60, end: 10 * 60 + 30, title: '倉庫 A の温度の確認', color: 'ochre' },
+    { id: 2, start: 9 * 60 + 30, end: 10 * 60, title: '朝の打ち合わせ', color: 'blue' },
+    { id: 3, start: 11 * 60, end: 11 * 60 + 15, title: '鍵の受け取り', color: null },
+    { id: 4, start: 13 * 60, end: 15 * 60, title: '倉庫 B の棚卸し', color: 'ochre' },
+  ];
+  let next_id = 5, step = Number(store.get('keiso.day.step')) || 15;
+  if (![30, 15, 5].includes(step)) step = 15;
+  const day = $('js-day'), col = $('js-day-col'), live = $('js-day-live');
+  const ppm = () => 24 / step;
+  // 重なる予定のかたまりごとに、空いている一番左の列へ置く。右に 48px 空けて、重なる時間にも押して足せるようにする
+  const layout = () => {
+    const sorted = [...events].sort((a, b) => a.start - b.start || (b.end - b.start) - (a.end - a.start));
+    const place = new Map();
+    let group = [], group_end = -1;
+    const flush = () => { const n = Math.max(...group.map((g) => place.get(g).c)) + 1; group.forEach((g) => { place.get(g).n = n; }); group = []; };
+    sorted.forEach((e) => {
+      if (e.start >= group_end && group.length) flush();
+      const used = group.filter((g) => g.end > e.start).map((g) => place.get(g).c);
+      let c = 0; while (used.includes(c)) c += 1;
+      place.set(e, { c, n: 1 }); group.push(e); group_end = Math.max(group_end, e.end);
+    });
+    if (group.length) flush();
+    return place;
+  };
+  const draw_day = (focus_id) => {
+    const p = ppm();
+    $('js-day-inner').style.height = `${24 * 60 * p}px`;
+    col.style.setProperty('--k-hour', `${60 * p}px`);
+    col.style.setProperty('--k-step', `${step * p}px`);
+    const every = { 30: 60, 15: 30, 5: 15 }[step];
+    $('js-day-scale').innerHTML = Array.from({ length: 24 * 60 / every - 1 }, (_, i) => (i + 1) * every)
+      .map((m) => `<span class="k-daygrid__tick${m % 60 ? ' is-sub' : ''}" style="top: ${m * p}px;">${hm(m)}</span>`).join('');
+    const place = layout();
+    col.innerHTML = events.map((e) => {
+      const { c, n } = place.get(e);
+      const h = (e.end - e.start) * p;
+      return `<button class="k-event${h < 30 ? ' is-short' : ''}" type="button" data-id="${e.id}" style="top: ${e.start * p}px; height: ${Math.max(16, h)}px; left: calc((100% - 48px) * ${c} / ${n} + 2px); width: calc((100% - 48px) / ${n} - 4px);" aria-label="${hm(e.start)}〜${hm(e.end)} ${escape_html(e.title)}">
+        <span class="k-event__time">${e.color ? `<span class="k-swatch-dot" data-extra-color="${e.color}"></span>` : ''}${hm(e.start)}–${hm(e.end)}</span><span class="k-event__title">${escape_html(e.title)}</span>
+        <span class="k-event__grip k-event__grip--top" data-grip="top" aria-hidden="true"></span><span class="k-event__grip k-event__grip--bottom" data-grip="bottom" aria-hidden="true"></span></button>`;
+    }).join('') + `<span class="k-nowline" style="top: ${NOW * p}px;" aria-hidden="true"></span>`;
+    document.querySelectorAll('#js-step button').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.step) === step)));
+    if (focus_id) col.querySelector(`[data-id="${focus_id}"]`).focus();
+  };
+  const snap = (m, s = 5) => Math.round(m / s) * s;
+  let drag = null, creating = false;
+  col.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    const y = e.clientY - col.getBoundingClientRect().top;
+    const el = e.target.closest('.k-event');
+    if (el) {
+      const ev = events.find((x) => x.id === Number(el.dataset.id));
+      const grip = e.target.closest('[data-grip]');
+      drag = { kind: grip ? grip.dataset.grip : 'move', ev, el, y0: e.clientY, s0: ev.start, e0: ev.end, moved: false };
+    } else {
+      if (creating) return;
+      const small = Math.min(15, step);
+      const start = Math.floor(y / ppm() / small) * small;
+      drag = { kind: 'new', y0: e.clientY, start, end: start + small, small, moved: false, touch: e.pointerType === 'touch' };
+    }
+    if (!(drag.kind === 'new' && drag.touch)) col.setPointerCapture(e.pointerId);
+  });
+  col.addEventListener('pointermove', (e) => {
+    if (!drag || (drag.kind === 'new' && drag.touch)) return;
+    const dy = e.clientY - drag.y0;
+    if (!drag.moved && Math.abs(dy) < 4) return;
+    drag.moved = true;
+    const dm = snap(dy / ppm());
+    const p = ppm();
+    if (drag.kind === 'new') {
+      const y = e.clientY - col.getBoundingClientRect().top;
+      drag.end = Math.max(drag.start + drag.small, Math.min(24 * 60, snap(y / p, drag.small)));
+      let d = col.querySelector('.k-draft');
+      if (!d) { d = document.createElement('span'); d.className = 'k-draft'; d.setAttribute('aria-hidden', 'true'); col.append(d); }
+      d.style.top = `${drag.start * p}px`; d.style.height = `${(drag.end - drag.start) * p}px`;
+      d.textContent = `${hm(drag.start)}–${hm(drag.end)}`;
+      return;
+    }
+    const { ev, el, s0, e0 } = drag;
+    if (drag.kind === 'move') { const len = e0 - s0; ev.start = Math.max(0, Math.min(24 * 60 - len, s0 + dm)); ev.end = ev.start + len; }
+    if (drag.kind === 'top') ev.start = Math.max(0, Math.min(e0 - 5, s0 + dm));
+    if (drag.kind === 'bottom') ev.end = Math.min(24 * 60, Math.max(s0 + 5, e0 + dm));
+    el.classList.add('is-dragging');
+    el.style.top = `${ev.start * p}px`; el.style.height = `${Math.max(16, (ev.end - ev.start) * p)}px`;
+    el.querySelector('.k-event__time').lastChild.textContent = `${hm(ev.start)}–${hm(ev.end)}`;
+  });
+  const end_drag = () => {
+    if (!drag) return;
+    const d = drag; drag = null;
+    if (d.kind === 'new') {
+      creating = true;
+      const start = d.moved ? d.start : d.start;
+      const end = d.moved ? d.end : Math.min(24 * 60, start + 30);
+      const ev = { id: next_id++, start, end, title: '新しい予定', color: null };
+      events.push(ev);
+      draw_day(ev.id);
+      live.textContent = `${hm(start)}〜${hm(end)} に「新しい予定」を作りました`;
+      setTimeout(() => { creating = false; }, 300);
+      return;
+    }
+    if (!d.moved) { live.textContent = `「${d.ev.title}」の編集を開きます（見本ではここまで）`; return; }
+    draw_day(d.ev.id);
+    live.textContent = `「${d.ev.title}」を ${hm(d.ev.start)}〜${hm(d.ev.end)} にしました`;
+  };
+  col.addEventListener('pointerup', end_drag);
+  col.addEventListener('pointercancel', () => { drag = null; draw_day(); });
+  col.addEventListener('keydown', (e) => {
+    const el = e.target.closest('.k-event');
+    if (!el) return;
+    const ev = events.find((x) => x.id === Number(el.dataset.id));
+    if (e.key === 'Enter') { e.preventDefault(); live.textContent = `「${ev.title}」の編集を開きます（見本ではここまで）`; return; }
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+    e.preventDefault();
+    const d = e.key === 'ArrowUp' ? -5 : 5;
+    if (e.shiftKey) ev.end = Math.min(24 * 60, Math.max(ev.start + 5, ev.end + d));
+    else if (ev.start + d >= 0 && ev.end + d <= 24 * 60) { ev.start += d; ev.end += d; }
+    draw_day(ev.id);
+    live.textContent = `「${ev.title}」を ${hm(ev.start)}〜${hm(ev.end)} にしました`;
+  });
+  $('js-step').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-step]');
+    if (!b) return;
+    const mid = (day.scrollTop + day.clientHeight / 2) / ppm();
+    step = Number(b.dataset.step); store.set('keiso.day.step', String(step));
+    draw_day();
+    day.scrollTop = mid * ppm() - day.clientHeight / 2;
+  });
+  $('js-day-add').addEventListener('click', () => {
+    if (creating) return;
+    creating = true;
+    const ev = { id: next_id++, start: snap(NOW, 15) + 15, end: snap(NOW, 15) + 45, title: '新しい予定', color: null };
+    events.push(ev); draw_day(ev.id);
+    live.textContent = `${hm(ev.start)}〜${hm(ev.end)} に「新しい予定」を作りました`;
+    setTimeout(() => { creating = false; }, 300);
+  });
+  draw_day();
+  day.scrollTop = (NOW - 120) * ppm();
+
+  // ══ ダッシュボード ══
+  const SECTIONS = {
+    today: ['tray', '今日の要約', '<ul class="wx-rows"><li>点検 3 件のうち 1 件が済み</li><li>期日を過ぎた作業が 1 件</li></ul>'],
+    alerts: ['bell', '知らせ', '<ul class="wx-rows"><li>倉庫 B の湿度が上限に近い</li></ul>'],
+    stock: ['database', '在庫', '<p class="k-muted" style="font-size: 13px;">棚 42 か所・差 2 件</p>'],
+    temp: ['cpu', '温度', '<p class="k-num">倉庫 A 18.2°C</p>'],
+    hum: ['cloud', '湿度', '<p class="k-num">倉庫 B 68%</p>'],
+    week: ['calendar', '今週の予定', '<ul class="wx-rows"><li>11-27 空調の点検</li><li>11-28 照明の交換</li></ul>'],
+    memo: ['file-text', 'メモ', '<p style="font-size: 14px;">鍵は事務所の棚の上。</p>'],
+  };
+  const board = { cols: [[{ id: 'today' }, { id: 'alerts' }], [{ id: 'temp', half: true }, { id: 'hum', half: true }, { id: 'stock' }], [{ id: 'week' }, { id: 'memo' }]], widths: [34, 33, 33] };
+  const board_el = $('js-board'), board_live = $('js-board-live'), bmenu = $('js-board-menu');
+  const mode = () => (matchMedia('(min-width: 1200px)').matches ? 'wide' : matchMedia('(min-width: 900px)').matches ? 'mid' : 'narrow');
+  const find = (id) => { for (let c = 0; c < board.cols.length; c += 1) { const i = board.cols[c].findIndex((s) => s.id === id); if (i >= 0) return [c, i]; } return null; };
+  const section_html = (s, can_move) => {
+    const [icon, title, body] = SECTIONS[s.id];
+    return `<div class="k-panel k-section${s.half ? ' is-half' : ''}" data-sec="${s.id}">${can_move ? `<button class="k-btn k-board__grip" type="button" draggable="true" data-grip="${s.id}" aria-haspopup="menu" aria-expanded="false" aria-label="${title}を動かす"><span data-icon="line:dots-six-vertical"></span></button>` : ''}
+      <div class="k-section__head"><span data-icon="line:${icon}"></span><h3>${title}</h3></div>${body}</div>`;
+  };
+  const pair = (list) => { const out = list.map((s) => ({ ...s, paired: false })); for (let i = 0; i < out.length - 1; i += 1) { if (out[i].half && out[i + 1].half) { out[i].paired = out[i + 1].paired = true; i += 1; } } return out; };
+  const col_html = (list, can_move, flex) => `<div class="k-board__col" style="flex: ${flex};">${pair(list).map((s) => section_html(s, can_move).replace('k-section', `k-section${s.paired ? ' is-paired' : ''}`)).join('')}</div>`;
+  const draw_board = (focus_id) => {
+    const m = mode();
+    if (m === 'wide') {
+      board_el.innerHTML = board.cols.map((list, c) => col_html(list, true, `${board.widths[c]} 1 0`)
+        + (c < 2 ? `<div class="k-split" role="separator" aria-orientation="vertical" tabindex="0" data-split="${c}" aria-label="${c + 1} 列目の幅" aria-valuemin="15" aria-valuemax="70" aria-valuenow="${board.widths[c]}" aria-valuetext="${c + 1} 列目は ${board.widths[c]}%" title="ドラッグか ←→ で幅を変える。ダブルクリックで等分に戻す"></div>` : '')).join('');
+    } else if (m === 'mid') {
+      board_el.innerHTML = col_html(board.cols[0], false, '3 1 0') + '<div style="width: 16px; flex: none;"></div>' + col_html([...board.cols[1], ...board.cols[2]], false, '2 1 0');
+    } else {
+      const all = board.cols.flat();
+      board_el.innerHTML = col_html([...all.filter((s) => s.id === 'today'), ...all.filter((s) => s.id !== 'today').map((s) => ({ id: s.id }))], false, '1 1 0');
+    }
+    fill_icons(board_el);
+    if (focus_id) board_el.querySelector(`[data-grip="${focus_id}"]`).focus();
+  };
+  const move_to = (id, c, i) => {
+    const [c0, i0] = find(id);
+    const [s] = board.cols[c0].splice(i0, 1);
+    if (c0 === c && i0 < i) i -= 1;
+    board.cols[c].splice(Math.min(i, board.cols[c].length), 0, s);
+    draw_board(id);
+    const [c1, i1] = find(id);
+    board_live.textContent = `${SECTIONS[id][1]}を ${c1 + 1} 列目の ${i1 + 1} 番目に動かしました`;
+  };
+  // 取っ手のメニュー
+  let menu_id = null, menu_btn = null;
+  const close_bmenu = (focus) => { if (bmenu.hidden) return; bmenu.hidden = true; menu_btn.setAttribute('aria-expanded', 'false'); if (focus) menu_btn.focus(); };
+  board_el.addEventListener('click', (e) => {
+    const g = e.target.closest('[data-grip]');
+    if (!g) return;
+    menu_id = g.dataset.grip; menu_btn = g;
+    const [c, i] = find(menu_id), s = board.cols[c][i];
+    const acts = [['up', 'arrow-up', '上へ', i === 0], ['down', 'arrow-down', '下へ', i === board.cols[c].length - 1], ['left', 'arrow-left', '左の列へ', c === 0], ['right', 'arrow-right', '右の列へ', c === 2], ['half', 'sidebar', s.half ? '全幅にする' : '半分の幅にする', false]];
+    bmenu.innerHTML = acts.map(([k, ic, t, off]) => `<button class="k-option" type="button" role="menuitem" tabindex="-1" data-act="${k}" aria-disabled="${off}"><span data-icon="line:${ic}"></span><span class="k-option__main">${t}</span></button>`).join('');
+    fill_icons(bmenu);
+    g.closest('.k-section').append(bmenu);
+    bmenu.style.top = '12px'; bmenu.style.left = 'calc(50% - 6rem)';
+    bmenu.hidden = false; g.setAttribute('aria-expanded', 'true');
+    bmenu.querySelector('[aria-disabled="false"]').focus();
+  });
+  bmenu.addEventListener('keydown', (e) => {
+    const list = [...bmenu.querySelectorAll('[role="menuitem"]:not([aria-disabled="true"])')], i = list.indexOf(document.activeElement);
+    const go = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: list.length - 1 }[e.key];
+    if (go !== undefined) { e.preventDefault(); list[(go + list.length) % list.length].focus(); }
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close_bmenu(true); }
+    if (e.key === 'Tab') close_bmenu(false);
+  });
+  bmenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const item = e.target.closest('[data-act]');
+    if (!item || item.getAttribute('aria-disabled') === 'true') return;
+    const [c, i] = find(menu_id), act = item.dataset.act;
+    bmenu.hidden = true; document.body.append(bmenu);
+    if (act === 'up') move_to(menu_id, c, i - 1);
+    if (act === 'down') move_to(menu_id, c, i + 2);
+    if (act === 'left' || act === 'right') move_to(menu_id, act === 'left' ? c - 1 : c + 1, i);
+    if (act === 'half') { const s = board.cols[c][i]; s.half = !s.half; draw_board(menu_id); board_live.textContent = `${SECTIONS[menu_id][1]}を${s.half ? '半分の幅' : '全幅'}にしました`; }
+  });
+  document.addEventListener('pointerdown', (e) => { if (!bmenu.hidden && !bmenu.contains(e.target) && !menu_btn.contains(e.target)) close_bmenu(false); });
+  // ドラッグ（HTML のドラッグ・アンド・ドロップ。つかんだ絵は欄の全体）
+  let dragging_id = null, drop_at = null;
+  const drop_line = document.createElement('div'); drop_line.className = 'k-board__drop'; drop_line.setAttribute('aria-hidden', 'true');
+  board_el.addEventListener('dragstart', (e) => {
+    const g = e.target.closest('[data-grip]');
+    if (!g) return;
+    dragging_id = g.dataset.grip;
+    const sec = g.closest('.k-section');
+    e.dataTransfer.setData('text/plain', dragging_id); e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setDragImage(sec, sec.offsetWidth / 2, 8);
+    requestAnimationFrame(() => sec.classList.add('is-moving'));
+  });
+  board_el.addEventListener('dragover', (e) => {
+    if (!dragging_id) return;
+    const cols = [...board_el.querySelectorAll('.k-board__col')];
+    const c = cols.findIndex((el) => { const r = el.getBoundingClientRect(); return e.clientX >= r.left - 8 && e.clientX <= r.right + 8; });
+    if (c < 0) return;
+    e.preventDefault();
+    const secs = [...cols[c].querySelectorAll('.k-section')];
+    let i = secs.findIndex((s) => { const r = s.getBoundingClientRect(); return s.classList.contains('is-paired') && e.clientY >= r.top && e.clientY <= r.bottom ? e.clientX < r.left + r.width / 2 : e.clientY < r.top + r.height / 2; });
+    if (i < 0) i = secs.length;
+    const [c0, i0] = find(dragging_id);
+    if (c0 === c && (i === i0 || i === i0 + 1)) { drop_line.remove(); drop_at = null; return; }
+    drop_at = [c, i];
+    if (i < secs.length) cols[c].insertBefore(drop_line, secs[i]); else cols[c].append(drop_line);
+  });
+  board_el.addEventListener('drop', (e) => { e.preventDefault(); if (drop_at) move_to(dragging_id, ...drop_at); });
+  board_el.addEventListener('dragend', () => { drop_line.remove(); drop_at = null; dragging_id = null; board_el.querySelectorAll('.is-moving').forEach((s) => s.classList.remove('is-moving')); });
+  // 列の幅のつまみ
+  const set_width = (c, w) => {
+    const total = board.widths[c] + board.widths[c + 1];
+    const a = Math.round(Math.max(15, Math.min(70, total - 15, w)) * 10) / 10;
+    board.widths[c] = a; board.widths[c + 1] = Math.round((total - a) * 10) / 10;
+    const cols = board_el.querySelectorAll('.k-board__col');
+    cols[c].style.flex = `${a} 1 0`; cols[c + 1].style.flex = `${board.widths[c + 1]} 1 0`;
+    const sp = board_el.querySelector(`[data-split="${c}"]`);
+    sp.setAttribute('aria-valuenow', a); sp.setAttribute('aria-valuetext', `${c + 1} 列目は ${a}%`);
+  };
+  board_el.addEventListener('pointerdown', (e) => {
+    const sp = e.target.closest('[data-split]');
+    if (!sp) return;
+    const c = Number(sp.dataset.split), x0 = e.clientX, w0 = board.widths[c], full = board_el.offsetWidth;
+    sp.setPointerCapture(e.pointerId); sp.classList.add('is-dragging'); document.body.classList.add('is-resizing');
+    const move = (ev) => set_width(c, w0 + (ev.clientX - x0) / full * 100);
+    const up = () => { sp.classList.remove('is-dragging'); document.body.classList.remove('is-resizing'); sp.removeEventListener('pointermove', move); };
+    sp.addEventListener('pointermove', move); sp.addEventListener('pointerup', up, { once: true });
+  });
+  board_el.addEventListener('keydown', (e) => {
+    const sp = e.target.closest('[data-split]');
+    if (!sp || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    e.preventDefault(); const c = Number(sp.dataset.split); set_width(c, board.widths[c] + (e.key === 'ArrowLeft' ? -2 : 2));
+  });
+  board_el.addEventListener('dblclick', (e) => { const sp = e.target.closest('[data-split]'); if (sp) { board.widths = [33.4, 33.3, 33.3]; draw_board(); } });
+  ['(min-width: 1200px)', '(min-width: 900px)'].forEach((q) => matchMedia(q).addEventListener('change', () => draw_board()));
+  draw_board();
+
+  // ══ 3 ペイン ══
+  const ITEMS = [
+    ['#121', '倉庫 A の温度の確認', 'success', 'Done'], ['#122', '倉庫 B の棚卸し', 'warning', 'Waiting'], ['#123', '空調の点検', 'info', 'Running'],
+    ['#124', '照明の交換', null, 'Todo'], ['#125', '月の報告を送る', null, 'Todo'], ['#126', '温度の記録の取り込み', 'alert', 'Failed'],
+  ];
+  const panes = $('js-panes'), plist = $('js-panes-list'), pmain = $('js-panes-main'), split = $('js-panes-split');
+  let current = 1, folded = false, picked = false, aside_w = 320, held = false;
+  const draw_list = () => {
+    panes.classList.toggle('is-folded', folded);
+    plist.innerHTML = folded
+      ? `<div class="k-pane__fold"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-pane__foldbtn" type="button" aria-expanded="false" aria-controls="js-panes-list" aria-label="一覧を開く" title="一覧を開く（[）"><span data-icon="line:caret-right" class="k-icon--16"></span></button><span class="k-pane__fold-count">${ITEMS.length} 件</span></div>`
+      : `<div class="k-pane__head"><span class="k-label">Tasks ${ITEMS.length}</span><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-pane__foldbtn" type="button" aria-expanded="true" aria-controls="js-panes-list" aria-label="一覧を畳む" title="一覧を畳む（[）"><span data-icon="line:caret-left" class="k-icon--16"></span></button></div>
+        <ul class="k-list" role="listbox" aria-label="作業" tabindex="0" aria-activedescendant="js-pi-${current}">${ITEMS.map(([no, t, , st], i) => `<li><div class="k-row" id="js-pi-${i}" role="option" aria-selected="${i === current}"><span class="k-row__main"><span class="k-row__title">${t}</span><span class="k-row__meta">${no}・${st}</span></span></div></li>`).join('')}</ul>`;
+    fill_icons(plist);
+  };
+  const draw_main = () => {
+    const [no, t, role, st] = ITEMS[current];
+    const done = st === 'Done';
+    pmain.innerHTML = `<div class="k-stickybar"><h3><span class="k-num">${no}</span>${t}</h3><span class="k-badge${role ? ` k-role-${role}` : ' k-badge--none'}">${st}</span>
+        <div class="k-stickybar__actions"><button class="k-btn k-btn--sm" type="button" data-hold ${done ? 'disabled title="済んだ作業は保留にできません"' : ''}>${held ? '再開' : '保留'}</button><button class="k-btn k-btn--primary k-btn--sm" type="button" ${done ? 'disabled title="もう済んでいます"' : ''}>済みにする</button></div>
+        <div class="k-stickybar__nav"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-go="-1" aria-label="前の項目へ" ${current === 0 ? 'disabled' : ''}><span data-icon="line:arrow-up" class="k-icon--16"></span></button><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-go="1" aria-label="次の項目へ" ${current === ITEMS.length - 1 ? 'disabled' : ''}><span data-icon="line:arrow-down" class="k-icon--16"></span></button></div>
+        ${done ? '<p class="k-stickybar__note">済んだ作業なので、保留と「済みにする」は押せません。</p>' : ''}</div>
+      ${Array.from({ length: 16 }, (_, i) => `<p style="font-size: 14px; margin-top: 12px;">${i + 1}. 手順の説明がここに続きます。中身を送っても、上の帯は残ります。</p>`).join('')}`;
+    fill_icons(pmain); pmain.scrollTop = 0;
+  };
+  const pick = (i, focus_list) => { current = i; held = false; draw_list(); draw_main(); if (focus_list) plist.querySelector('[role="listbox"]').focus(); };
+  plist.addEventListener('click', (e) => {
+    if (e.target.closest('.k-pane__foldbtn')) { folded = !folded; draw_list(); plist.querySelector('.k-pane__foldbtn').focus(); return; }
+    const row = e.target.closest('[role="option"]');
+    if (row) { pick(Number(row.id.slice(6))); picked = true; panes.classList.add('is-picked'); panes.querySelector('[data-tab="main"]').click(); if (matchMedia('(min-width: 900px)').matches) plist.querySelector('[role="listbox"]').focus(); else pmain.focus(); }
+  });
+  plist.addEventListener('keydown', (e) => {
+    if (!e.target.matches('[role="listbox"]')) return;
+    const go = { ArrowDown: current + 1, ArrowUp: current - 1 }[e.key];
+    if (go === undefined) return;
+    e.preventDefault(); if (go >= 0 && go < ITEMS.length) pick(go, true);
+  });
+  panes.querySelector('.k-panes__bar').addEventListener('click', (e) => {
+    if (e.target.closest('[data-back]')) { picked = false; panes.classList.remove('is-picked'); plist.querySelector('[role="listbox"]').focus(); }
+    const tab = e.target.closest('[data-tab]');
+    if (!tab) return;
+    panes.dataset.tab = tab.dataset.tab;
+    panes.querySelectorAll('[data-tab]').forEach((x) => { x.setAttribute('aria-selected', String(x === tab)); x.tabIndex = x === tab ? 0 : -1; });
+  });
+  pmain.addEventListener('click', (e) => {
+    const go = e.target.closest('[data-go]');
+    if (go) { pick(current + Number(go.dataset.go)); pmain.querySelector(`[data-go="${go.dataset.go}"]:not(:disabled)`)?.focus(); }
+    if (e.target.closest('[data-hold]')) { held = !held; draw_main(); pmain.querySelector('[data-hold]').focus(); }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== '[' || e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+    folded = !folded; draw_list();
+  });
+  const set_aside = (w) => {
+    aside_w = Math.max(280, Math.min(720, Math.round(w)));
+    panes.style.setProperty('--k-aside', `${aside_w}px`);
+    split.setAttribute('aria-valuenow', aside_w); split.setAttribute('aria-valuetext', aside_w === 320 ? '既定の幅' : `${aside_w}px`);
+  };
+  split.addEventListener('pointerdown', (e) => {
+    const x0 = e.clientX, w0 = aside_w;
+    split.setPointerCapture(e.pointerId); split.classList.add('is-dragging'); document.body.classList.add('is-resizing');
+    const move = (ev) => set_aside(w0 - (ev.clientX - x0));
+    split.addEventListener('pointermove', move);
+    split.addEventListener('pointerup', () => { split.classList.remove('is-dragging'); document.body.classList.remove('is-resizing'); split.removeEventListener('pointermove', move); }, { once: true });
+  });
+  split.addEventListener('keydown', (e) => {
+    const d = { ArrowLeft: 24, ArrowRight: -24 }[e.key];
+    if (d) { e.preventDefault(); set_aside(aside_w + d); }
+    if (e.key === 'Home') set_aside(280);
+    if (e.key === 'End') set_aside(720);
+  });
+  split.addEventListener('dblclick', () => set_aside(320));
+  panes.classList.toggle('is-picked', picked);
+  set_aside(320); pick(current);
+
+  // ══ 編集画面 ══
+  const ed_in = $('js-ed-in'), ed_out = $('js-ed-out'), ed_state = $('js-ed-state'), ed_save = $('js-ed-save');
+  let dirty = false, idle = 0, saving = false;
+  const render_out = () => { ed_out.innerHTML = md_lite(ed_in.value); };
+  const save = () => {
+    clearTimeout(idle);
+    if (!dirty || saving) return;
+    saving = true; dirty = false; ed_save.disabled = true; ed_save.setAttribute('aria-busy', 'true');
+    ed_state.textContent = '保存中…';
+    setTimeout(() => {
+      saving = false; ed_save.removeAttribute('aria-busy');
+      ed_state.textContent = dirty ? '保存していない変更があります（書くのが止まると自動で保存します）' : `保存済み（${hhmm(new Date())}）`;
+      ed_save.disabled = !dirty;
+      if (dirty) idle = setTimeout(save, 2000);
+    }, 500);
+  };
+  ed_in.addEventListener('input', () => {
+    dirty = true; ed_save.disabled = saving; render_out();
+    ed_state.textContent = '保存していない変更があります（書くのが止まると自動で保存します）';
+    clearTimeout(idle); idle = setTimeout(save, 2000);
+  });
+  ed_in.addEventListener('keydown', (e) => { if ((e.metaKey || e.ctrlKey) && (e.key === 's' || e.key === 'Enter')) { e.preventDefault(); save(); } });
+  ed_save.addEventListener('click', save);
+  window.addEventListener('beforeunload', (e) => { if (dirty) e.preventDefault(); });
+  $('js-ed-pos').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-pos]');
+    if (!b) return;
+    document.querySelectorAll('#js-ed-pos button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    const cols = $('js-ed-cols');
+    cols.classList.toggle('is-left', b.dataset.pos === 'left'); cols.classList.toggle('is-none', b.dataset.pos === 'none');
+    store.set('keiso.edit.preview', b.dataset.pos);
+  });
+  const saved_pos = store.get('keiso.edit.preview');
+  if (saved_pos) document.querySelector(`#js-ed-pos [data-pos="${saved_pos}"]`)?.click();
+  document.querySelectorAll('#js-ed-pos button:not([aria-pressed])').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+  render_out();
+})();
+</script>
+</body>
+</html>

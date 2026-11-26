@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="../tokens/extra-colors.css">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/kit-records.css">
+<link rel="stylesheet" href="assets/kit-marks.css">
 <link rel="stylesheet" href="assets/sample.css">
 <script src="assets/icons.js"></script>
 <script src="assets/sample.js"></script>
@@ -74,6 +76,20 @@
       </table>
       <h4 id="js-hol-title" style="font-size: 16px; margin-top: var(--space-3);"></h4>
       <ul class="k-holidays" id="js-hol-list" aria-labelledby="js-hol-title"></ul>
+    </div>
+  </section>
+
+  <!-- 年表 -->
+  <section class="sample-section" aria-labelledby="years-title">
+    <div class="k-heading"><h2 id="years-title">年表</h2><span class="k-label">.k-years</span></div>
+    <p>年や歳の順に出来事を縦に並べます。左に 1px の線、節は四角い点。色や塗りを変えるのは特別な節だけで、何が特別かは札の文字でも示します。長い年表では、今見ている節を上に残る帯で出してよく、1 つの節の中身は 2〜3 行までにします。</p>
+    <div class="k-panel" style="max-width: 40rem;">
+      <ol class="k-years" aria-label="倉庫の年表">
+        <li><div class="k-years__head"><span class="k-years__age">0<small>年目</small></span><span class="k-years__year">2019</span></div><p class="k-years__body">倉庫 A を借りる。棚は 12 か所。</p></li>
+        <li class="is-key"><div class="k-years__head"><span class="k-years__age">3<small>年目</small></span><span class="k-years__year">2022</span><span class="k-badge k-badge--none">Turning point</span></div><p class="k-years__body">倉庫 B を足し、記録を紙から画面に移す。</p></li>
+        <li><div class="k-years__head"><span class="k-years__age">5<small>年目</small></span><span class="k-years__year">2024</span></div><p class="k-years__body">空調を入れ替える。</p></li>
+        <li class="is-key"><div class="k-years__head"><span class="k-years__age">7<small>年目</small></span><span class="k-years__year">2026</span><span class="k-badge k-role-info">Now</span></div><p class="k-years__body">倉庫 C の照明を交換している。</p></li>
+      </ol>
     </div>
   </section>
 

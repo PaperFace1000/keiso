@@ -101,3 +101,15 @@ body.is-resizing, body.is-resizing * { cursor: col-resize !important; user-selec
   .k-search { margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border: 0; border-radius: 0; }
   .k-search__help { display: none; }
 }
+
+/* ── パンくず ─────────────────────── */
+/* 区切りは右向きの線のアイコン。今いるページはリンクにせず太くする。折り返し、横には送らない */
+.k-crumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.k-crumbs li { display: inline-flex; align-items: center; gap: 4px; min-width: 0; max-width: 100%; }
+.k-crumbs li + li::before { content: ""; flex: none; width: 5px; height: 5px; margin: 0 4px 0 1px; border-top: 1.5px solid var(--color-muted); border-right: 1.5px solid var(--color-muted); transform: rotate(45deg); }
+.k-crumbs a, .k-crumbs [aria-current="page"] { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.k-crumbs a { color: var(--color-accent-strong); }
+.k-crumbs a .k-icon { width: 14px; height: 14px; }
+.k-crumbs [aria-current="page"] { font-weight: 600; }
+.k-crumbs__text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.k-crumbs__gap { color: var(--color-muted); }

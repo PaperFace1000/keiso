@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="../tokens/extra-colors.css">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/kit-pick.css">
+<link rel="stylesheet" href="assets/kit-records.css">
 <link rel="stylesheet" href="assets/sample.css">
 <script src="assets/icons.js"></script>
 <script src="assets/sample.js"></script>
@@ -66,7 +68,7 @@
 .px-prose tbody tr:nth-child(even) { background: color-mix(in srgb, var(--color-sunken) 60%, transparent); }
 .px-prose .is-num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .px-prose details { border: var(--line) solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); padding: 6px var(--space-3); }
-.px-prose summary { font-weight: 600; cursor: pointer; --k-focus-offset: 2px; }
+.px-prose summary { font-weight: 600; --k-focus-offset: 2px; }
 .px-prose details[open] summary { margin-bottom: var(--space-2); }
 .px-prose .px-footnotes { border-top: var(--line) solid var(--color-border); padding-top: var(--space-3); font-size: .9em; color: var(--color-muted); }
 .px-prose .px-footnotes ol { margin: 0; padding-left: 1.4em; }
@@ -189,7 +191,7 @@
         <thead><tr><th scope="col">場所</th><th scope="col">測るもの</th><th scope="col" class="is-num">基準</th></tr></thead>
         <tbody><tr><td>倉庫 A</td><td>温度</td><td class="is-num">15〜25℃</td></tr><tr><td>倉庫 B</td><td>湿度</td><td class="is-num">40〜60%</td></tr><tr><td>空調</td><td>風の強さ</td><td class="is-num">3 段以上</td></tr></tbody>
       </table>
-      <details><summary>前回うまくいかなかったこと</summary><p>測る棚が毎回ちがい、値を比べられなかった。</p></details>
+      <details class="k-details"><summary>前回うまくいかなかったこと</summary><p>測る棚が毎回ちがい、値を比べられなかった。</p></details>
       <section class="px-footnotes" aria-labelledby="js-fn-label">
         <h4 id="js-fn-label" class="k-visually-hidden">脚注</h4>
         <ol><li id="js-fn-1">夜間は送れないので、朝 7:00 にまとめて送られます。<a href="#js-fnref-1">本文に戻る</a></li></ol>
@@ -276,6 +278,26 @@
   </div>
 </section>
 
+<!-- 絞り込みの欄 -->
+<section class="sx" aria-labelledby="h-filter">
+  <div class="k-heading"><h2 id="h-filter">絞り込みの欄</h2><span class="k-label">.k-filterbox</span></div>
+  <p class="sx__lead">一覧の上に置く、期間や分類で絞り込む欄です。900px 以上は開いたままで頭を隠し、899px 以下は閉じた箱にして、頭に効いている条件（期間は必ず）を出します。開け閉めは <code>&lt;details&gt;</code> で作り、三角は開け閉めする欄と同じ矢印に替えます。よく使う期間は入力欄より前にボタンで並べ、結果の件数と合計は欄の外（一覧の直前）に出します。</p>
+  <details class="k-details k-filterbox is-wide" id="js-filter" open>
+    <summary><span data-icon="line:funnel"></span><span>絞り込み</span><span class="k-filterbox__conds" id="js-filter-conds"></span></summary>
+    <form class="k-filterbox__body" id="js-filter-form">
+      <div class="sample-row" role="group" aria-label="よく使う期間"><button class="k-btn k-btn--sm" type="button" data-period="this" aria-pressed="true">今月</button><button class="k-btn k-btn--sm" type="button" data-period="last" aria-pressed="false">先月</button><button class="k-btn k-btn--sm" type="button" data-period="year" aria-pressed="false">直近 12 か月</button></div>
+      <div class="k-filterbox__fields">
+        <div class="k-field"><label for="js-f-from">開始</label><input class="k-input" id="js-f-from" type="date" value="2026-11-01"></div>
+        <div class="k-field"><label for="js-f-to">終了</label><input class="k-input" id="js-f-to" type="date" value="2026-11-30"></div>
+        <div class="k-field"><label for="js-f-cat">分類</label><select class="k-select" id="js-f-cat"><option value="">すべて</option><option>倉庫</option><option>設備</option></select></div>
+        <div class="k-field"><label for="js-f-q">語</label><input class="k-input" id="js-f-q" placeholder="題名に含む語"></div>
+      </div>
+      <div class="k-filterbox__foot"><button class="k-btn k-btn--ghost" type="reset">条件をクリア</button><button class="k-btn k-btn--primary" type="submit">絞り込む</button></div>
+    </form>
+  </details>
+  <p class="k-muted" id="js-filter-result" role="status" style="font-size: 13px;">12 件・合計 18:30</p>
+</section>
+
 <!-- ページ送り -->
 <section class="sx" aria-labelledby="h-pager">
   <div class="k-heading"><h2 id="h-pager">ページ送り</h2><span class="k-label">Pagination</span></div>
@@ -293,6 +315,32 @@
 </section>
 
 </main>
+<script>
+// 絞り込みの欄: 狭い画面では閉じた箱から始め、頭に効いている条件を出す。広い画面では開いたままにする
+(() => {
+  const box = document.getElementById('js-filter'), form = document.getElementById('js-filter-form');
+  const wide = matchMedia('(min-width: 900px)');
+  const conds = () => {
+    const from = document.getElementById('js-f-from').value, to = document.getElementById('js-f-to').value;
+    const cat = document.getElementById('js-f-cat').value, q = document.getElementById('js-f-q').value.trim();
+    const chips = [`${from.slice(5)}〜${to.slice(5)}`, cat, q && `「${q}」`].filter(Boolean);
+    document.getElementById('js-filter-conds').innerHTML = chips.map((c) => `<span class="k-chip"><span></span></span>`).join('');
+    document.querySelectorAll('#js-filter-conds .k-chip > span').forEach((s, i) => { s.textContent = chips[i]; });
+  };
+  const fit = () => { box.open = wide.matches; };
+  wide.addEventListener('change', fit); fit();
+  form.addEventListener('input', conds);
+  form.addEventListener('reset', () => setTimeout(conds));
+  form.addEventListener('submit', (e) => { e.preventDefault(); conds(); document.getElementById('js-filter-result').textContent = '絞り込みました: 12 件・合計 18:30'; });
+  const PERIODS = { this: ['2026-11-01', '2026-11-30'], last: ['2026-10-01', '2026-10-31'], year: ['2025-12-01', '2026-11-30'] };
+  form.querySelectorAll('[data-period]').forEach((b) => b.addEventListener('click', () => {
+    form.querySelectorAll('[data-period]').forEach((x) => { const on = x === b; x.setAttribute('aria-pressed', String(on)); });
+    [document.getElementById('js-f-from').value, document.getElementById('js-f-to').value] = PERIODS[b.dataset.period];
+    conds();
+  }));
+  conds();
+})();
+</script>
 <script>
 // 見本の操作: 並べ替え・ログイン・コピーを試すだけ（送信はしない）
 document.addEventListener('DOMContentLoaded', () => {

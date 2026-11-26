@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Parts</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/kit-float.css">
+<link rel="stylesheet" href="assets/kit-pick.css">
+<link rel="stylesheet" href="assets/kit-parts.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+.px-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--space-5); align-items: start; }
+.px-result { font-size: 13px; color: var(--color-muted); }
+.px-result.is-error { color: var(--color-alert); }
+.px-secrets { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
+.px-secrets li { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2) var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); font-size: 14px; }
+.px-secrets li > :first-child { flex: 1 1 8rem; }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Parts</span>
+    <h1>入力の部品</h1>
+    <p>範囲から選ぶスライダー、Markdown を書く欄、自動で入った値を人が直せる表、その場で直すポップオーバー、行を足し引きする並び、一度だけ見せる値、作成の完了の欄、その場の確認です。決まりは <code>docs/components.md</code>。</p>
+  </section>
+
+  <!-- スライダー -->
+  <section class="sample-section" aria-labelledby="slider-title">
+    <div class="k-heading"><h2 id="slider-title">範囲から数を選ぶスライダー</h2><span class="k-label">.k-slider</span></div>
+    <p>溝は目盛りと同じ区切った帯で、値までを文字の色で塗ります。つまみは四角で、動かしている間は反転します。動かしている間は画面だけを変え、離したときに保存します。正確な値を打つもの（金額・時間）には使いません。</p>
+    <div class="px-two">
+      <div class="sample-stack">
+        <div class="k-slider">
+          <div class="k-slider__head"><label for="js-vol">知らせの音の大きさ</label><output class="k-slider__value" id="js-vol-out" for="js-vol">40%</output></div>
+          <input class="k-slider__input" id="js-vol" type="range" min="0" max="100" step="1" value="40" data-unit="%">
+        </div>
+        <span class="px-result" id="js-vol-saved" role="status"></span>
+      </div>
+      <div class="k-slider">
+        <div class="k-slider__head"><label for="js-vol-off">読み上げの速さ</label><output class="k-slider__value" for="js-vol-off">1.0 倍</output></div>
+        <input class="k-slider__input" id="js-vol-off" type="range" min="0.5" max="2" step="0.1" value="1" disabled aria-describedby="js-vol-off-hint" data-unit=" 倍">
+        <span class="k-field__hint" id="js-vol-off-hint">読み上げを切っている間は変えられません。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Markdown を書く欄 -->
+  <section class="sample-section" aria-labelledby="md-title">
+    <div class="k-heading"><h2 id="md-title">Markdown を書く欄</h2><span class="k-label">.k-mdedit</span></div>
+    <p>上で「編集」と「プレビュー」を切り替えます。Tab は 2 文字の字下げ、Shift+Tab は行頭の字下げを戻し、Esc を押した直後の Tab で欄から出ます。Ctrl（mac は Cmd）+ Enter で保存します。残りが上限の 1 割を切ったら残りの字数を出し、超えたら保存を止めます。</p>
+    <div class="k-mdedit" style="max-width: 44rem;">
+      <div class="k-mdedit__bar">
+        <div class="k-segment" role="group" aria-label="表示"><button type="button" aria-pressed="true" data-md-mode="edit">Edit</button><button type="button" aria-pressed="false" data-md-mode="preview">Preview</button></div>
+        <span class="k-mdedit__help" id="js-md-help"><kbd>Tab</kbd> 字下げ・<kbd>Esc</kbd> → <kbd>Tab</kbd> 次へ・<kbd>Ctrl</kbd> + <kbd>Enter</kbd> 保存</span>
+      </div>
+      <label class="k-visually-hidden" for="js-md">点検のメモ</label>
+      <textarea class="k-textarea k-mdedit__input" id="js-md" aria-describedby="js-md-help js-md-count">## 倉庫 B の棚卸し
+- **上の段**から数える
+  - 箱の数を `記録` に書く
+- 差が出たら写真を撮る</textarea>
+      <div class="k-mdedit__preview" id="js-md-preview" role="region" aria-label="プレビュー" tabindex="0" hidden></div>
+      <div class="k-mdedit__foot"><span id="js-md-saved" role="status"></span><span class="k-mdedit__count" id="js-md-count" role="status"></span></div>
+    </div>
+  </section>
+
+  <!-- 入力できる表 -->
+  <section class="sample-section" aria-labelledby="auto-title">
+    <div class="k-heading"><h2 id="auto-title">入力できる表と「自動に戻す」・自動で入った値の印</h2><span class="k-label">.k-auto</span></div>
+    <p>自動で入れた値は文字を muted にし、点線の枠の <span class="k-auto">Auto</span> を添えます（地を塗る状態のバッジと形で見分けます）。人が直すと印を消し、「自動に戻す」を出します。保存するのは人が直した値だけです。699px 以下では行をカードに崩します。</p>
+    <div class="k-table-wrap k-table-wrap--cards">
+      <table class="k-table k-table--cards" aria-labelledby="auto-title">
+        <thead><tr><th scope="col">作業</th><th scope="col">見込み（分）</th><th scope="col">担当の棚</th></tr></thead>
+        <tbody id="js-auto-body"></tbody>
+      </table>
+    </div>
+    <span class="k-visually-hidden" id="js-auto-live" aria-live="polite"></span>
+  </section>
+
+  <!-- その場で直す・文の中の数 -->
+  <section class="sample-section" aria-labelledby="quick-title">
+    <div class="k-heading"><h2 id="quick-title">1 つの値をその場で直すポップオーバー・文の中に置く数の入力欄</h2><span class="k-label">.k-quickedit / .k-sentence</span></div>
+    <p>一覧の中の値を 1 つだけ、ページを移らずに直します。開くたびに今の値を選んだ状態にし、Enter で保存、Esc・外側を押すと閉じます。文の途中に置く数の欄は、見えるラベルが無いので <code>aria-label</code> に意味を入れます。</p>
+    <div class="px-two">
+      <div class="k-panel" style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+        <span class="k-label">Remind</span><span>期日の</span><strong class="k-num" id="js-qe-value">3</strong><span>日前に知らせる</span>
+        <span class="k-pop" style="margin-left: auto;">
+          <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" id="js-qe-btn" type="button" aria-label="知らせる日を変える" title="知らせる日を変える"><span data-icon="line:pencil-simple" class="k-icon--16"></span></button>
+          <div class="k-popover k-popover--end k-quickedit" id="js-qe" role="dialog" aria-label="知らせる日" hidden>
+            <h4>知らせる日</h4>
+            <p class="k-quickedit__desc">期日の何日前に知らせるか。1〜30 日。空にすると既定の 3 日に戻ります。</p>
+            <p class="k-quickedit__error" id="js-qe-error" role="alert" hidden></p>
+            <div class="k-quickedit__row">
+              <input class="k-input" id="js-qe-input" type="text" inputmode="numeric" aria-label="期日の何日前" aria-describedby="js-qe-error"><span>日前</span>
+              <button class="k-btn k-btn--ghost k-btn--sm" type="button" id="js-qe-reset">既定に戻す</button>
+              <button class="k-btn k-btn--primary k-btn--sm" type="button" id="js-qe-save">保存</button>
+            </div>
+          </div>
+        </span>
+      </div>
+      <div class="sample-stack">
+        <div class="k-sentence"><span>毎月</span><input class="k-input" id="js-day" type="number" min="1" max="31" value="1" aria-label="毎月の日" aria-describedby="js-day-error"><span>日に点検の記録を作る</span></div>
+        <div class="k-sentence"><span>第</span><input class="k-input" type="number" min="1" max="5" value="2" aria-label="何番目の日"><select class="k-select" aria-label="日の種類"><option>営業日</option><option>月曜</option></select><span>に報告を送る</span></div>
+        <span class="k-field__error" id="js-day-error" hidden><span data-icon="line:warning-octagon" class="k-icon--16"></span>日は 1〜31 の整数で入れてください。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 行を足し引き -->
+  <section class="sample-section" aria-labelledby="rows-title">
+    <div class="k-heading"><h2 id="rows-title">行を足し引きできる入力の並び</h2><span class="k-label">.k-rowsedit</span></div>
+    <p>足したら新しい行の最初の欄へ、消したら次の行の同じ欄（無ければ前の行、それも無ければ「行を足す」）へフォーカスを移します。上限の 5 行で「行を足す」を押せなくし、理由を文で書きます。</p>
+    <div class="sample-stack" style="max-width: 40rem;">
+      <ul class="k-rowsedit" id="js-rows" aria-label="休みの日"></ul>
+      <p class="k-rowsedit__empty" id="js-rows-empty" hidden>まだありません。</p>
+      <div class="sample-row"><button class="k-btn k-btn--ghost k-btn--sm" type="button" id="js-rows-add"><span data-icon="line:plus" class="k-icon--16"></span>行を足す</button><span class="px-result" id="js-rows-status" role="status"></span></div>
+    </div>
+  </section>
+
+  <!-- 一度だけ見せる値 -->
+  <section class="sample-section" aria-labelledby="secret-title">
+    <div class="k-heading"><h2 id="secret-title">一度だけ見せる値</h2><span class="k-label">.k-secret</span></div>
+    <p>作った直後に一度だけ見せ、二度と表示できない値（つなぐための鍵など）。作るダイアログの中身を、作ったあとの画面に入れ替えます（ダイアログを重ねません）。一覧では頭の数文字だけを出します。見本の値はその場で作るでたらめな文字です。</p>
+    <div class="sample-stack" style="max-width: 40rem;">
+      <div class="sample-row"><button class="k-btn" type="button" id="js-secret-open"><span data-icon="line:key"></span>鍵を作る</button></div>
+      <ul class="px-secrets" id="js-secret-list" aria-label="作った鍵"></ul>
+    </div>
+    <dialog class="k-dialog" id="js-secret-dialog" aria-labelledby="js-secret-h">
+      <div class="k-dialog__head"><span data-icon="line:key"></span><h3 id="js-secret-h">鍵を作る</h3><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-close aria-label="閉じる"><span data-icon="line:x" class="k-icon--16"></span></button></div>
+      <div class="k-dialog__body" id="js-secret-body"></div>
+      <div class="k-dialog__foot" id="js-secret-foot"></div>
+    </dialog>
+    <dialog class="k-dialog" id="js-revoke" role="alertdialog" aria-labelledby="js-revoke-h" aria-describedby="js-revoke-d">
+      <div class="k-dialog__head"><span data-icon="line:warning-octagon"></span><h3 id="js-revoke-h">鍵を使えなくしますか</h3></div>
+      <div class="k-dialog__body"><p id="js-revoke-d"></p></div>
+      <div class="k-dialog__foot"><button class="k-btn" type="button" data-close>やめる</button><button class="k-btn k-btn--alert" type="button" id="js-revoke-ok">使えなくする</button></div>
+    </dialog>
+  </section>
+
+  <!-- 作成の完了・その場の確認 -->
+  <section class="sample-section" aria-labelledby="done-title">
+    <div class="k-heading"><h2 id="done-title">作成の完了と次の操作の欄・ダイアログを重ねずにその場で確認する</h2><span class="k-label">.k-done / .k-confirm</span></div>
+    <p>作ったあとは入力の欄の代わりに完了の欄を出し、題にフォーカスを移します。取り消しにくい操作は、押したボタンの場所を確認の箱に替えます。どちらも状態の欄なので、知らせの欄と同じく左に役割の色の帯を出します。</p>
+    <div class="px-two">
+      <div id="js-create" class="sample-stack"></div>
+      <div id="js-confirm" class="sample-stack"></div>
+    </div>
+  </section>
+
+  <!-- 中くらいのダイアログ -->
+  <section class="sample-section" aria-labelledby="medium-title">
+    <div class="k-heading"><h2 id="medium-title">中くらいのダイアログ</h2><span class="k-label">.k-dialog--medium</span></div>
+    <p>普通の幅（32rem）では日時の組を 2 列に並べると窮屈なときだけ、40rem の中くらいの幅にします。項目の数の決まり（3 項目まで。組は 1 項目と数える）は変えません。599px 以下では組を 1 列にします。</p>
+    <div class="sample-row"><button class="k-btn" type="button" id="js-medium-open"><span data-icon="line:calendar"></span>点検の予定を作る</button><span class="px-result" id="js-medium-result" role="status"></span></div>
+    <dialog class="k-dialog k-dialog--medium" id="js-medium" aria-labelledby="js-medium-h">
+      <div class="k-dialog__head"><span data-icon="line:calendar"></span><h3 id="js-medium-h">点検の予定を作る</h3><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-close aria-label="閉じる"><span data-icon="line:x" class="k-icon--16"></span></button></div>
+      <form class="k-dialog__body" id="js-medium-form" method="dialog">
+        <div class="k-field"><label for="js-m-name">名前</label><input class="k-input" id="js-m-name" required value="倉庫 A の温度の確認"></div>
+        <div class="k-range" role="group" aria-labelledby="js-m-when">
+          <span class="k-visually-hidden" id="js-m-when">期間</span>
+          <div class="k-field"><label for="js-m-start">開始</label><input class="k-input" id="js-m-start" type="datetime-local" value="2026-11-26T09:00"></div>
+          <div class="k-field"><label for="js-m-end">終了</label><input class="k-input" id="js-m-end" type="datetime-local" value="2026-11-26T10:30"></div>
+        </div>
+        <div class="k-field"><label for="js-m-place">場所</label><input class="k-input" id="js-m-place" value="倉庫 A"></div>
+      </form>
+      <div class="k-dialog__foot"><button class="k-btn" type="button" data-close>やめる</button><button class="k-btn k-btn--primary" type="submit" form="js-medium-form">作る</button></div>
+    </dialog>
+  </section>
+</main>
+<script>
+(() => {
+  const { fill_icons, md_lite, hhmm, escape_html } = window.keiso_sample;
+  const $ = (id) => document.getElementById(id);
+  const now = () => hhmm(new Date());
+
+  // ── スライダー: 動かしている間は画面だけ、離したら保存 ──
+  document.querySelectorAll('.k-slider__input').forEach((input) => {
+    const out = input.closest('.k-slider').querySelector('output');
+    const paint = () => {
+      const ratio = (input.value - input.min) / (input.max - input.min);
+      input.style.setProperty('--k-fill', `${ratio * 100}%`);
+      const text = `${Number(input.step) < 1 ? Number(input.value).toFixed(1) : input.value}${input.dataset.unit}`;
+      out.textContent = text;
+      input.setAttribute('aria-valuetext', text);
+    };
+    input.addEventListener('input', paint);
+    input.addEventListener('change', () => { const s = $('js-vol-saved'); if (s && input.id === 'js-vol') s.textContent = `保存しました（${now()}）`; });
+    paint();
+  });
+
+  // ── Markdown を書く欄 ──
+  const md = $('js-md'), preview = $('js-md-preview'), count = $('js-md-count'), LIMIT = 200;
+  let after_escape = false;
+  const show_count = () => {
+    const rest = LIMIT - md.value.length;
+    const over = rest < 0;
+    count.classList.toggle('is-over', over);
+    count.setAttribute('role', over ? 'alert' : 'status');
+    count.textContent = over ? `${-rest} 字多すぎます` : rest < LIMIT * 0.1 ? `残り ${rest} 字 / ${LIMIT}` : '';
+    md.toggleAttribute('aria-invalid', over);
+    if (over) md.setAttribute('aria-invalid', 'true');
+  };
+  document.querySelectorAll('[data-md-mode]').forEach((btn) => btn.addEventListener('click', () => {
+    const is_preview = btn.dataset.mdMode === 'preview';
+    document.querySelectorAll('[data-md-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    md.hidden = is_preview; preview.hidden = !is_preview;
+    if (is_preview) preview.innerHTML = md_lite(md.value);
+  }));
+  md.addEventListener('keydown', (e) => {
+    if (e.isComposing || e.keyCode === 229) return;
+    if (e.key === 'Escape') { after_escape = true; return; }
+    if (e.key === 'Tab' && !after_escape) {
+      e.preventDefault();
+      const { selectionStart: s, value: v } = md;
+      const line_start = v.lastIndexOf('\n', s - 1) + 1;
+      if (e.shiftKey) {
+        const cut = v.slice(line_start, line_start + 2).match(/^ {0,2}/)[0].length;
+        md.setRangeText('', line_start, line_start + cut, 'end');
+        md.setSelectionRange(Math.max(line_start, s - cut), Math.max(line_start, s - cut));
+      } else {
+        md.setRangeText('  ', s, md.selectionEnd, 'end');
+      }
+      show_count();
+    }
+    after_escape = false;
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      $('js-md-saved').textContent = md.getAttribute('aria-invalid') === 'true' ? '字数が上限を超えているので保存していません' : `保存しました（${now()}）`;
+    }
+  });
+  md.addEventListener('input', show_count);
+  show_count();
+
+  // ── 入力できる表と「自動に戻す」 ──
+  const rows = [
+    { name: '倉庫 A の温度の確認', mins: { auto: 15, mine: null }, shelf: { auto: 'A-1', mine: null } },
+    { name: '倉庫 B の棚卸し', mins: { auto: 90, mine: 120 }, shelf: { auto: 'B-3', mine: null } },
+    { name: '空調の点検', mins: { auto: 30, mine: null }, shelf: { auto: '—', mine: '屋上' } },
+  ];
+  const cols = [['mins', '見込み（分）', true], ['shelf', '担当の棚', false]];
+  const cell = (row, i, key, label, is_num) => {
+    const v = row[key];
+    const auto = v.mine === null;
+    const tail = auto
+      ? `<span class="k-auto" title="自動で入れた値です。直すと、入れた値に替わります">Auto</span>`
+      : `<button class="k-btn k-btn--ghost k-btn--sm" type="button" data-reset="${i}:${key}" aria-label="${row.name}の${label}を自動に戻す" title="自動の値: ${v.auto}">自動に戻す</button>`;
+    return `<td data-label="${label}"><span class="k-cellinput"><input class="k-input${is_num ? ' is-num' : ''}${auto ? ' is-auto' : ''}" data-cell="${i}:${key}" value="${escape_html(auto ? v.auto : v.mine)}" aria-label="${row.name}の${label}"${is_num ? ' inputmode="numeric"' : ''}>${tail}</span></td>`;
+  };
+  const body = $('js-auto-body');
+  const draw_auto = (focus) => {
+    body.innerHTML = rows.map((row, i) => `<tr><td data-label="作業">${row.name}</td>${cols.map(([k, l, n]) => cell(row, i, k, l, n)).join('')}</tr>`).join('');
+    if (focus) body.querySelector(`[data-cell="${focus}"]`).focus();
+  };
+  body.addEventListener('change', (e) => {
+    const [i, key] = (e.target.dataset.cell || '').split(':');
+    if (!key) return;
+    rows[i][key].mine = e.target.value.trim() === '' ? null : e.target.value.trim();
+    draw_auto();
+  });
+  body.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing && e.target.dataset.cell) { e.preventDefault(); e.target.blur(); } });
+  body.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-reset]');
+    if (!btn) return;
+    const [i, key] = btn.dataset.reset.split(':');
+    rows[i][key].mine = null;
+    draw_auto(btn.dataset.reset);
+    $('js-auto-live').textContent = `${rows[i].name}を自動の値に戻しました`;
+  });
+  draw_auto();
+
+  // ── その場で直すポップオーバー ──
+  const qe_input = $('js-qe-input'), qe_error = $('js-qe-error');
+  const qe = window.keiso_sample.popover($('js-qe-btn'), $('js-qe'), {
+    on_open: () => { qe_input.value = $('js-qe-value').textContent; qe_error.hidden = true; qe_input.removeAttribute('aria-invalid'); qe_input.focus(); qe_input.select(); },
+  });
+  const qe_save = () => {
+    const raw = qe_input.value.trim();
+    const n = raw === '' ? 3 : Number(raw);
+    if (!Number.isInteger(n) || n < 1 || n > 30) {
+      qe_error.textContent = '1〜30 の整数で入れてください。';
+      qe_error.hidden = false; qe_input.setAttribute('aria-invalid', 'true'); qe_input.focus();
+      return;
+    }
+    $('js-qe-value').textContent = String(n);
+    qe.close();
+  };
+  $('js-qe-save').addEventListener('click', qe_save);
+  $('js-qe-reset').addEventListener('click', () => { qe_input.value = '3'; qe_input.focus(); });
+  qe_input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); qe_save(); } });
+
+  // ── 文の中の数 ──
+  const day = $('js-day');
+  day.addEventListener('input', () => {
+    const n = Number(day.value);
+    const bad = day.value !== '' && (!Number.isInteger(n) || n < 1 || n > 31);
+    $('js-day-error').hidden = !bad;
+    if (bad) day.setAttribute('aria-invalid', 'true'); else day.removeAttribute('aria-invalid');
+  });
+
+  // ── 行を足し引き ──
+  const MAX_ROWS = 5;
+  const list = $('js-rows'), add = $('js-rows-add'), status = $('js-rows-status');
+  let rows_data = [{ date: '2026-12-29', name: '年末の休み' }, { date: '2027-01-02', name: '年始の休み' }];
+  const draw_rows = () => {
+    list.innerHTML = rows_data.map((r, i) => `<li>
+      <input class="k-input" type="date" value="${r.date}" aria-label="${i + 1} 行目の日付" data-row="${i}" data-key="date">
+      <input class="k-input" value="${escape_html(r.name)}" aria-label="${i + 1} 行目の名前" data-row="${i}" data-key="name">
+      <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" data-remove="${i}" aria-label="${i + 1} 行目を消す"><span data-icon="line:x" class="k-icon--16"></span></button></li>`).join('');
+    fill_icons(list);
+    $('js-rows-empty').hidden = rows_data.length > 0;
+    const full = rows_data.length >= MAX_ROWS;
+    add.disabled = full;
+    add.title = full ? `${MAX_ROWS} 行までです` : '';
+    if (full) status.textContent = `${MAX_ROWS} 行までです。足すときは、どれかの行を消してください。`;
+  };
+  list.addEventListener('input', (e) => { const t = e.target; if (t.dataset.row) rows_data[t.dataset.row][t.dataset.key] = t.value; });
+  add.addEventListener('click', () => {
+    rows_data.push({ date: '', name: '' });
+    draw_rows();
+    status.textContent = rows_data.length < MAX_ROWS ? '' : status.textContent;
+    list.lastElementChild.querySelector('input').focus();
+  });
+  list.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-remove]');
+    if (!btn) return;
+    const i = Number(btn.dataset.remove);
+    rows_data.splice(i, 1);
+    draw_rows();
+    status.textContent = `${i + 1} 行目を消しました`;
+    const next = list.children[i] || list.children[i - 1];
+    (next ? next.querySelector('input') : add).focus();
+  });
+  draw_rows();
+
+  // ── 一度だけ見せる値 ──
+  const dialog = $('js-secret-dialog'), sbody = $('js-secret-body'), sfoot = $('js-secret-foot');
+  const keys = [{ name: '在庫の取り込み', head: 'ksk_7Hq2', expired: false }, { name: '古い報告の送り先', head: 'ksk_Lm90', expired: true }];
+  const draw_keys = () => {
+    $('js-secret-list').innerHTML = keys.map((k, i) => `<li><span>${escape_html(k.name)}</span><span class="k-secret__head">${k.head}…</span>${k.expired ? '<span class="k-badge k-role-warning">Expired</span>' : ''}<button class="k-btn k-btn--ghost k-btn--sm k-btn--ghost-alert" type="button" data-revoke="${i}">使えなくする</button></li>`).join('');
+  };
+  const random_text = () => { const a = new Uint8Array(18); crypto.getRandomValues(a); return 'ksk_' + [...a].map((b) => 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789'[b % 56]).join(''); };
+  const show_form = () => {
+    sbody.innerHTML = `<div class="k-field"><label for="js-s-name">鍵の名前</label><input class="k-input" id="js-s-name" value="棚の記録の書き出し"><span class="k-field__hint">何に使う鍵かが分かる名前にします。</span></div>`;
+    sfoot.innerHTML = `<button class="k-btn" type="button" data-close>やめる</button><button class="k-btn k-btn--primary" type="button" id="js-s-make">作る</button>`;
+  };
+  const show_secret = (name) => {
+    const value = random_text();
+    keys.unshift({ name, head: value.slice(0, 8), expired: false });
+    draw_keys();
+    sbody.innerHTML = `<div class="k-notice k-role-warning" role="alert"><span data-icon="line:warning"></span><span class="k-notice__title">Warning</span><span class="k-notice__body">この鍵は今だけ表示します。閉じると二度と表示できません。コピーして控えてください。</span></div>
+      <div class="k-field"><label for="js-s-value">「${escape_html(name)}」の鍵</label><div class="k-field__row"><input class="k-input k-secret__value" id="js-s-value" readonly value="${value}"><button class="k-btn" type="button" id="js-s-copy"><span data-icon="line:copy"></span>コピー</button></div><span class="k-field__hint" id="js-s-result" role="status"></span></div>`;
+    sfoot.innerHTML = `<button class="k-btn k-btn--primary" type="button" data-close>閉じる</button>`;
+    fill_icons(sbody);
+    const field = $('js-s-value');
+    field.addEventListener('focus', () => field.select());
+    $('js-s-copy').addEventListener('click', () => {
+      const done = (ok) => { const r = $('js-s-result'); r.textContent = ok ? 'コピーしました' : 'コピーできませんでした。欄を選んでコピーしてください。'; r.style.color = ok ? 'var(--color-success)' : 'var(--color-alert)'; };
+      if (!navigator.clipboard) { done(false); return; }
+      navigator.clipboard.writeText(field.value).then(() => done(true), () => done(false));
+    });
+    field.focus();
+  };
+  $('js-secret-open').addEventListener('click', () => { show_form(); dialog.showModal(); $('js-s-name').focus(); });
+  dialog.addEventListener('click', (e) => {
+    if (e.target.closest('[data-close]')) { dialog.close(); $('js-secret-open').focus(); }
+    if (e.target.id === 'js-s-make') {
+      const name = $('js-s-name').value.trim() || '名前のない鍵';
+      e.target.disabled = true;
+      show_secret(name);
+    }
+  });
+  dialog.addEventListener('cancel', () => setTimeout(() => $('js-secret-open').focus()));
+  const revoke = $('js-revoke');
+  let revoke_index = -1, revoke_from = null;
+  $('js-secret-list').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-revoke]');
+    if (!btn) return;
+    revoke_index = Number(btn.dataset.revoke); revoke_from = btn;
+    const k = keys[revoke_index];
+    $('js-revoke-d').textContent = `「${k.name}」（${k.head}…）を使えなくします。元に戻せません。この鍵でつないでいる仕組みは止まります。`;
+    revoke.showModal();
+    revoke.querySelector('[data-close]').focus();
+  });
+  revoke.addEventListener('click', (e) => {
+    if (e.target.closest('[data-close]')) { revoke.close(); revoke_from.focus(); }
+    if (e.target.id === 'js-revoke-ok') { keys.splice(revoke_index, 1); draw_keys(); revoke.close(); $('js-secret-open').focus(); }
+  });
+  draw_keys();
+
+  // ── 作成の完了 ──
+  const create = $('js-create');
+  const show_create_form = () => {
+    create.innerHTML = `<form class="k-panel sample-stack" id="js-c-form"><div class="k-field"><label for="js-c-title">記録の題名</label><input class="k-input" id="js-c-title" value="倉庫 C の照明の交換" required></div><div class="sample-row"><button class="k-btn k-btn--primary" type="submit">作る</button></div></form>`;
+  };
+  create.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const title = $('js-c-title').value.trim();
+    create.innerHTML = `<section class="k-done k-role-success" aria-labelledby="js-done-h">
+      <h3 class="k-done__title" id="js-done-h" tabindex="-1" role="status"><span data-icon="line:check-circle"></span>記録を作りました</h3>
+      <div class="k-done__item"><span class="k-tag" data-extra-color="teal">設備</span><span class="k-num">#128</span><span>${escape_html(title)}</span></div>
+      <div class="k-done__actions">
+        <a class="k-btn k-btn--sm" href="#done-title"><span data-icon="line:file-text" class="k-icon--16"></span>開く</a>
+        <button class="k-btn k-btn--sm k-steady" type="button" id="js-c-fav"><span class="is-current">よく使う作業に加える</span><span aria-hidden="true">加えました</span></button>
+        <button class="k-btn k-btn--primary k-btn--sm" type="button" id="js-c-again"><span data-icon="line:plus" class="k-icon--16"></span>続けて作る</button>
+      </div></section>`;
+    fill_icons(create);
+    $('js-done-h').focus();
+  });
+  create.addEventListener('click', (e) => {
+    if (e.target.closest('#js-c-again')) { show_create_form(); $('js-c-title').focus(); }
+    const fav = e.target.closest('#js-c-fav');
+    if (fav) { const [a, b] = fav.children; a.classList.remove('is-current'); a.setAttribute('aria-hidden', 'true'); b.classList.add('is-current'); b.removeAttribute('aria-hidden'); fav.disabled = true; $('js-c-again').focus(); }
+  });
+  show_create_form();
+
+  // ── その場で確認 ──
+  const confirm_box = $('js-confirm');
+  const show_trigger = () => {
+    confirm_box.innerHTML = `<div class="k-panel sample-stack"><span class="k-label">Draft</span><p>倉庫 B の棚卸しの下書き（3 日前に保存）</p><div class="sample-row"><button class="k-btn k-btn--ghost k-btn--sm k-btn--ghost-alert" type="button" id="js-cf-open">下書きを消す</button></div></div>`;
+  };
+  confirm_box.addEventListener('click', (e) => {
+    if (e.target.closest('#js-cf-open')) {
+      confirm_box.innerHTML = `<div class="k-confirm k-role-warning"><p id="js-cf-desc" tabindex="-1">下書きを消すと、書いた中身は戻せません。作った記録は残ります。</p><div class="k-confirm__actions"><button class="k-btn k-btn--sm" type="button" id="js-cf-cancel">やめる</button><button class="k-btn k-btn--alert k-btn--sm" type="button" id="js-cf-ok">消す</button></div></div>`;
+      $('js-cf-desc').focus();
+    }
+    if (e.target.closest('#js-cf-cancel')) { show_trigger(); $('js-cf-open').focus(); }
+    if (e.target.closest('#js-cf-ok')) {
+      confirm_box.innerHTML = `<div class="k-notice k-role-success" role="status"><span data-icon="line:check-circle"></span><span class="k-notice__title">Success</span><span class="k-notice__body">下書きを消しました。</span></div>`;
+      fill_icons(confirm_box);
+    }
+  });
+  confirm_box.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('js-cf-cancel')) { show_trigger(); $('js-cf-open').focus(); } });
+  show_trigger();
+
+  // ── 中くらいのダイアログ ──
+  const medium = $('js-medium');
+  $('js-medium-open').addEventListener('click', () => { medium.showModal(); $('js-m-name').focus(); });
+  medium.addEventListener('click', (e) => { if (e.target.closest('[data-close]')) { medium.close(); $('js-medium-open').focus(); } });
+  $('js-medium-form').addEventListener('submit', () => { $('js-medium-result').textContent = `「${$('js-m-name').value}」を作りました`; setTimeout(() => $('js-medium-open').focus()); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Marks</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/kit-float.css">
+<link rel="stylesheet" href="assets/kit-parts.css">
+<link rel="stylesheet" href="assets/kit-marks.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+.mx-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--space-5); align-items: start; }
+.mx-table td { vertical-align: middle; }
+.mx-doc { padding: var(--space-4) var(--space-4) var(--space-4) 48px; background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); display: grid; gap: var(--space-3); font-size: 14px; position: relative; }
+.mx-doc h3 { font-size: 16px; }
+.mx-bubble { padding: 6px 10px; background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); overflow-wrap: anywhere; }
+.mx-list { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
+.mx-list li { display: flex; align-items: center; gap: var(--space-2); padding: 8px var(--space-3); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); font-size: 14px; }
+.mx-head { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; padding: var(--space-2) var(--space-3); background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+.mx-head .k-logo { margin-right: auto; }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Marks</span>
+    <h1>印と小さな操作</h1>
+    <p>状態の 5 つの色合い、未読の印、なぞると出る操作、経過時間と開始・停止、設定の横の見本、スピードダイヤル、期間の点、縦のタブ、動いている処理の札、一覧の上の簡易な絞り込み、すぐ出るツールチップ、ページが見つからない画面です。決まりは <code>docs/components.md</code> と <code>docs/patterns.md</code>。</p>
+  </section>
+
+  <!-- 状態の 5 つの色合い -->
+  <section class="sample-section" aria-labelledby="tone-title">
+    <div class="k-heading"><h2 id="tone-title">状態の 5 つの色合い</h2><span class="k-label">.k-status / .k-badge</span></div>
+    <p>状態の印と状態のバッジは、役割の色 4 つと、色を持たない 1 つ（まだ始めていない・止めてある）の 5 つにします。5 つ目は点を塗らずに枠だけにして、色が無くても形で見分けます。状態の一覧（状態 → 色合い → 名前）はアプリに 1 か所だけ置き、画面ごとに決めません。5 つで足りなくても色を増やさず、名前で分けます。</p>
+    <div class="k-table-wrap"><table class="k-table mx-table" aria-labelledby="tone-title">
+      <thead><tr><th scope="col">色合い</th><th scope="col">行の中</th><th scope="col">目を留めさせる所</th><th scope="col">例</th></tr></thead>
+      <tbody>
+        <tr><td>SUCCESS</td><td><span class="k-status k-role-success">Done</span></td><td><span class="k-badge k-role-success">Done</span></td><td>済み・反映した</td></tr>
+        <tr><td>INFO</td><td><span class="k-status k-role-info k-status--live">Running</span></td><td><span class="k-badge k-role-info">Planned</span></td><td>動いている・予定</td></tr>
+        <tr><td>WARNING</td><td><span class="k-status k-role-warning">Waiting</span></td><td><span class="k-badge k-role-warning">Expired</span></td><td>確かめ待ち・期限切れ</td></tr>
+        <tr><td>ALERT</td><td><span class="k-status k-role-alert">Failed</span></td><td><span class="k-badge k-role-alert">Down</span></td><td>失敗・止まった</td></tr>
+        <tr><td>なし</td><td><span class="k-status k-status--none">Todo</span></td><td><span class="k-badge k-badge--none">On hold</span></td><td>まだ・保留・対象外</td></tr>
+      </tbody>
+    </table></div>
+    <p>種別（不具合・要望・調べもの）は、左の線の色で見せる札にせず、分類のバッジで出します。左の帯は状態の印なので、種別に使うと状態と取り違えます。状態は大文字の英語の名前、種別は日本語の名前なので、同じ行に並べても見分けられます。</p>
+    <ul class="mx-list" aria-label="種別と状態を並べた行">
+      <li><span class="k-catbadge" data-extra-color="red"><span class="k-swatch-dot"></span><span><span class="k-visually-hidden">種類: </span>不具合</span></span><span style="flex: 1;">棚の記録が 2 回保存される</span><span class="k-status k-role-warning">Waiting</span></li>
+      <li><span class="k-catbadge" data-extra-color="blue"><span class="k-swatch-dot"></span><span><span class="k-visually-hidden">種類: </span>要望</span></span><span style="flex: 1;">期日の前の日に知らせてほしい</span><span class="k-status k-status--none">Todo</span></li>
+    </ul>
+  </section>
+
+  <!-- 未読・新着 -->
+  <section class="sample-section" aria-labelledby="unread-title">
+    <div class="k-heading"><h2 id="unread-title">未読・新着の印</h2><span class="k-label">.k-unread / .k-new</span></div>
+    <p>赤（差し色・ALERT）にせず、文字の色の四角で出します。点滅させず、読んだら消します。点は読み上げないので、ボタンの名前と行に文で「新しい話があります」「未読」を入れます。</p>
+    <div class="sample-row">
+      <button class="k-btn k-btn--icon k-unread" type="button" aria-label="メモを開く（新しい話があります）" id="js-unread-btn"><span data-icon="line:chat-text"></span></button>
+      <ul class="mx-list" style="flex: 1 1 18rem;" aria-label="知らせ">
+        <li><span class="k-unread-dot" aria-hidden="true"></span><span class="k-visually-hidden">（未読）</span>倉庫 B の湿度が上限に近い<span class="k-new" style="margin-left: auto;">New</span></li>
+        <li><span style="width: 7px;"></span>照明の交換の部品が届いた</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- なぞると出る操作 -->
+  <section class="sample-section" aria-labelledby="hover-title">
+    <div class="k-heading"><h2 id="hover-title">なぞると出る小さな操作と、選んだ文字に添える操作</h2><span class="k-label">.k-hoverbtn / .k-selbtn</span></div>
+    <p>段落や見出しをなぞる・中にフォーカスがあるときだけ、左上に小さなボタンを出します。なぞれない端末ではいつも出します。本文の文字を選ぶと、選んだ範囲の下に「メモに引く」を出します（浮かぶので影を付けます）。キーボードだけの人のために、同じ操作を書く欄からもできるようにします。</p>
+    <div class="mx-doc" id="js-doc">
+      <div class="k-hoverable"><div class="k-hoverbtn-slot"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-hoverbtn" type="button" aria-label="この見出しへのリンクをコピー" title="この見出しへのリンクをコピー"><span data-icon="line:link" class="k-icon--16"></span></button></div><h3>棚卸しの手順</h3></div>
+      <div class="k-hoverable"><div class="k-hoverbtn-slot"><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-hoverbtn" type="button" aria-label="この段落にメモを足す" title="この段落にメモを足す"><span data-icon="line:pencil-simple" class="k-icon--16"></span></button></div><p id="js-doc-text">上の段から順に箱を数え、数を記録に書きます。差が出たら、箱を開けずに写真を撮ってから、もう一度数え直します。</p></div>
+      <span class="k-muted" id="js-sel-result" role="status" style="font-size: 13px;"></span>
+    </div>
+  </section>
+
+  <!-- 経過時間 -->
+  <section class="sample-section" aria-labelledby="timer-title">
+    <div class="k-heading"><h2 id="timer-title">経過時間の欄と、開始・停止のボタン</h2><span class="k-label">.k-timer</span></div>
+    <p>経過時間はドットの数字（28px）で <code>H:MM:SS</code>。開始・停止は 48px の四角いボタンで、止まっている間は普通のボタンに再生の印、動いている間は反転に止める印にします。動いている間は欄の枠を文字の色にし、経過時間を押すと開始時刻を直せます。</p>
+    <div class="k-timer" id="js-timer">
+      <div class="k-timer__main"><span class="k-label">Timer</span><span>倉庫 B の棚卸し</span><span class="k-status" id="js-timer-status">Idle</span></div>
+      <span class="k-timer__time" id="js-timer-time"><span class="k-dot k-timer__digits" id="js-timer-digits">0:00:00</span></span>
+      <button class="k-btn k-bigbtn" type="button" id="js-timer-btn" aria-label="開始"><span data-icon="line:play"></span></button>
+    </div>
+  </section>
+
+  <!-- 設定の横の見本 -->
+  <section class="sample-section" aria-labelledby="pv-title">
+    <div class="k-heading"><h2 id="pv-title">設定の横にその場で変わる見本</h2><span class="k-label">.k-preview-pair</span></div>
+    <p>見た目の設定を変えるときは、横に実際の置き場所と同じ見た目の見本を置きます。動かしている間は見本だけを変え、離したときに保存します。狭い幅では見本を下に回します。</p>
+    <div class="k-preview-pair">
+      <div class="k-preview-pair__form">
+        <div class="k-slider"><div class="k-slider__head"><label for="js-pv-size">吹き出しの文字の大きさ</label><output class="k-slider__value" for="js-pv-size">14px</output></div>
+          <input class="k-slider__input" id="js-pv-size" type="range" min="12" max="20" step="1" value="14" data-unit="px" aria-controls="js-pv-sample"></div>
+        <span class="k-muted" id="js-pv-saved" role="status" style="font-size: 13px;"></span>
+      </div>
+      <div class="k-preview-pair__sample"><span class="k-label">Preview</span><p class="mx-bubble" id="js-pv-sample">明日の点検は 9 時からです。倉庫の鍵を忘れずに持ってきてください。</p></div>
+    </div>
+  </section>
+
+  <!-- スピードダイヤル -->
+  <section class="sample-section" aria-labelledby="dial-title">
+    <div class="k-heading"><h2 id="dial-title">スピードダイヤルのタイル</h2><span class="k-label">.k-dial</span></div>
+    <p>よく開くページを印と名前で並べます。印は、保存したページの画像 → 選んだ線のアイコン → 頭文字（反転の四角）の順に代えます。絵文字は使いません。右上の操作はなぞる・フォーカスのときだけ出し、メニューで前へ・後へ動かせます。</p>
+    <ul class="k-dial" id="js-dial" aria-label="よく開くページ"></ul>
+    <div class="k-popover k-menu" id="js-dial-menu" role="menu" hidden>
+      <button class="k-option" type="button" role="menuitem" tabindex="-1" data-dial="-1"><span data-icon="line:arrow-left"></span><span class="k-option__main">前へ</span></button>
+      <button class="k-option" type="button" role="menuitem" tabindex="-1" data-dial="1"><span data-icon="line:arrow-right"></span><span class="k-option__main">後へ</span></button>
+    </div>
+    <span class="k-visually-hidden" id="js-dial-live" aria-live="polite"></span>
+  </section>
+
+  <!-- 期間の点 -->
+  <section class="sample-section" aria-labelledby="days-title">
+    <div class="k-heading"><h2 id="days-title">期間の進み具合を点で見せる表</h2><span class="k-label">.k-days</span></div>
+    <p>月のうち、どこまで過ぎたかを四角い点で見せます。過ぎた日は塗り、今日は塗りに輪、これからは枠だけ、休みは ×。色だけでなく形で見分け、下に凡例を置きます。</p>
+    <div class="k-panel k-days">
+      <div class="k-days__text"><span class="k-dot k-days__date">11-26</span><span class="k-days__sub">30 日のうち 26 日目</span></div>
+      <div class="k-days__grid" id="js-days" role="img" aria-label="11 月 30 日のうち 26 日目"></div>
+      <ul class="k-days__legend" aria-hidden="true">
+        <li><span class="k-days__grid"><span class="is-past"></span></span>過ぎた日</li>
+        <li><span class="k-days__grid"><span class="is-today"></span></span>今日</li>
+        <li><span class="k-days__grid"><span class="is-future"></span></span>これから</li>
+        <li><span class="k-days__grid"><span class="is-future is-off"></span></span>休み</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 縦のタブ -->
+  <section class="sample-section" aria-labelledby="vtab-title">
+    <div class="k-heading"><h2 id="vtab-title">縦のタブ</h2><span class="k-label">.k-vtabs</span></div>
+    <p>5 個を超える切り替えを左に縦に並べます。選んだタブは反転して <code>▸</code> を出し、↑↓ で移ります。899px 以下では上の横並び（下線のタブと同じ見た目）にして ←→ で移ります。</p>
+    <div class="k-vtabs" id="js-vtabs">
+      <div class="k-vtabs__list" role="tablist" aria-label="道具" aria-orientation="vertical"></div>
+      <div class="k-vtabs__panel" role="tabpanel" id="js-vtab-panel" tabindex="0"></div>
+    </div>
+  </section>
+
+  <!-- 動いている処理の札・簡易な絞り込み -->
+  <section class="sample-section" aria-labelledby="run-title">
+    <div class="k-heading"><h2 id="run-title">ヘッダーの動いている処理の札・一覧の上の簡易な絞り込み</h2><span class="k-label">.k-runchip / .k-quickfilter</span></div>
+    <p>動いている処理があるあいだだけ、ヘッダーに経過時間の札を出し、押すとそのページへ移ります。いつも出す状態の小ボタン（押すとその場で詳しく見せる）とは別のもので、並べるときは札を左に置きます。点は状態の印の「動いている最中」と同じく点滅させます。経過時間の書き換えは読み上げません。</p>
+    <div class="mx-head"><span class="k-logo"><span data-icon="solid:keiso"></span>keiso</span><a class="k-runchip" href="#timer-title" title="タイマーのページへ移る"><span class="k-visually-hidden">動いている処理 </span><span id="js-run">0:12:05</span></a><button class="k-statusbtn k-role-success" type="button"><span class="k-statusbtn__text">Sync 09:12</span></button></div>
+    <div class="k-quickfilter" role="search" aria-label="作業を絞り込む">
+      <select class="k-select" id="js-qf-cat" aria-label="分類"></select>
+      <span class="k-quickfilter__search"><span data-icon="line:magnifying-glass"></span><input class="k-input" id="js-qf-q" type="search" placeholder="作業の名前" aria-label="作業の名前で絞り込む"></span>
+      <span class="k-quickfilter__count" id="js-qf-count" role="status"></span>
+      <button class="k-btn k-btn--ghost k-btn--sm" type="button" id="js-qf-clear" hidden><span data-icon="line:x" class="k-icon--16"></span>条件を消す</button>
+    </div>
+    <ul class="mx-list" id="js-qf-list" aria-label="作業"></ul>
+    <div class="k-empty k-empty--sm" id="js-qf-empty" hidden><span class="k-icon" data-icon="solid:search"></span><p id="js-qf-empty-text"></p></div>
+  </section>
+
+  <!-- すぐ出るツールチップ・見つからない -->
+  <section class="sample-section" aria-labelledby="tip-title">
+    <div class="k-heading"><h2 id="tip-title">すぐ出るツールチップ・ページが見つからない画面</h2><span class="k-label">[data-tip] / .k-empty</span></div>
+    <p>画面の端に浮かぶパネルの中など、<code>title</code> が遅れて出る・出ない所のアイコンだけのボタンにだけ、反転の小さな札をすぐ出します（なぞる・フォーカス）。普通の画面のボタンは <code>title</code> で済ませます。ページが見つからない画面は専用の部品を作らず、空の表示を見出し <code>h1</code> で出し、トップへ戻るリンクを 1 つ置きます。</p>
+    <div class="mx-two">
+      <div class="k-panel sample-row" style="justify-content: flex-end;">
+        <span class="k-label" style="margin-right: auto;">Panel</span>
+        <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" aria-label="畳む" data-tip="畳む"><span data-icon="line:minus" class="k-icon--16"></span></button>
+        <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" aria-label="閉じる" data-tip="閉じる"><span data-icon="line:x" class="k-icon--16"></span></button>
+      </div>
+      <div class="k-empty"><span class="k-icon k-icon--48" data-icon="solid:question"></span><h1 style="font-size: 16px;">このページは見つかりません</h1><p>消されたか、アドレスが変わった可能性があります。</p><a class="k-btn" href="index.html"><span data-icon="line:house"></span>トップへ戻る</a></div>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  const { fill_icons, hms, hhmm, escape_html } = window.keiso_sample;
+  const $ = (id) => document.getElementById(id);
+
+  // 未読: 開いたら消す
+  $('js-unread-btn').addEventListener('click', (e) => { e.currentTarget.classList.remove('k-unread'); e.currentTarget.setAttribute('aria-label', 'メモを開く'); });
+
+  // 選んだ文字に添えるボタン: 本文の中の選択だけ。mousedown を止めて選択を保つ
+  const doc = $('js-doc');
+  let sel_btn = null;
+  const hide_sel = () => { if (sel_btn) { sel_btn.remove(); sel_btn = null; } };
+  document.addEventListener('selectionchange', () => {
+    const sel = document.getSelection();
+    if (!sel.rangeCount || sel.isCollapsed || !$('js-doc-text').contains(sel.anchorNode)) { hide_sel(); return; }
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    const box = doc.getBoundingClientRect();
+    if (!sel_btn) {
+      sel_btn = document.createElement('button');
+      sel_btn.type = 'button'; sel_btn.className = 'k-selbtn';
+      sel_btn.innerHTML = '<span data-icon="line:pencil-simple"></span>メモに引く';
+      fill_icons(sel_btn);
+      sel_btn.addEventListener('mousedown', (e) => e.preventDefault());
+      sel_btn.addEventListener('click', () => { $('js-sel-result').textContent = `「${document.getSelection().toString().slice(0, 20)}」をメモに引きました`; document.getSelection().removeAllRanges(); hide_sel(); });
+      doc.append(sel_btn);
+    }
+    sel_btn.style.left = `${Math.max(0, Math.min(rect.left - box.left, box.width - 120))}px`;
+    sel_btn.style.top = `${rect.bottom - box.top + 6}px`;
+  });
+
+  // 経過時間と開始・停止
+  let started = null, tick = 0;
+  const timer = $('js-timer'), btn = $('js-timer-btn');
+  const draw_timer = () => { $('js-timer-digits').textContent = started ? hms(Math.floor((Date.now() - started) / 1000)) : '0:00:00'; };
+  btn.addEventListener('click', () => {
+    const run = !started;
+    started = run ? Date.now() - 725000 : null;
+    clearInterval(tick);
+    if (run) tick = setInterval(draw_timer, 1000);
+    timer.classList.toggle('is-running', run);
+    btn.classList.toggle('k-btn--primary', run);
+    btn.setAttribute('aria-label', run ? '停止' : '開始');
+    btn.innerHTML = `<span data-icon="line:${run ? 'stop' : 'play'}"></span>`;
+    fill_icons(btn);
+    const status = $('js-timer-status');
+    status.textContent = run ? 'Running' : 'Idle';
+    status.className = run ? 'k-status k-role-info k-status--live' : 'k-status';
+    const time = $('js-timer-time');
+    const fresh = document.createElement(run ? 'button' : 'span');
+    fresh.className = 'k-timer__time'; fresh.id = 'js-timer-time';
+    if (run) {
+      const at = hhmm(new Date(started));
+      fresh.type = 'button';
+      fresh.setAttribute('aria-label', `経過時間。${at} 開始。押すと開始時刻を直せます`);
+      fresh.innerHTML = `<span class="k-dot k-timer__digits" id="js-timer-digits"></span><span class="k-timer__start" aria-hidden="true"><span data-icon="line:pencil-simple" style="width: 10px; height: 10px;"></span>${at} 開始</span>`;
+    } else fresh.innerHTML = '<span class="k-dot k-timer__digits" id="js-timer-digits"></span>';
+    time.replaceWith(fresh); fill_icons(fresh); draw_timer();
+  });
+
+  // 設定の横の見本
+  const size = $('js-pv-size');
+  const paint_size = () => { $('js-pv-sample').style.fontSize = `${size.value}px`; size.style.setProperty('--k-fill', `${(size.value - 12) / 8 * 100}%`); size.closest('.k-slider').querySelector('output').textContent = `${size.value}px`; size.setAttribute('aria-valuetext', `${size.value}px`); };
+  size.addEventListener('input', paint_size);
+  size.addEventListener('change', () => { $('js-pv-saved').textContent = `保存しました（${hhmm(new Date())}）`; });
+  paint_size();
+
+  // スピードダイヤル
+  const dial = [
+    { name: '在庫の台帳', icon: 'database' }, { name: '点検の予定', icon: 'calendar' }, { name: '倉庫の地図', icon: 'map-pin' },
+    { name: 'ゴミの出し方', icon: null }, { name: '近所のパン屋の営業日', icon: null },
+  ];
+  const dial_list = $('js-dial');
+  let dial_index = -1;
+  const draw_dial = (focus) => {
+    dial_list.innerHTML = dial.map((d, i) => `<li><a class="k-dial__link" href="#dial-title" title="${d.name}"><span class="k-dial__mark" aria-hidden="true">${d.icon ? `<span data-icon="line:${d.icon}"></span>` : `<span class="k-dial__initial">${escape_html(d.name[0])}</span>`}</span><span class="k-dial__name">${d.name}</span></a>
+      <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-dial__more" type="button" data-more="${i}" aria-label="${d.name}の操作"><span data-icon="line:dots-three" class="k-icon--16"></span></button></li>`).join('');
+    fill_icons(dial_list);
+    if (focus !== undefined) dial_list.querySelector(`[data-more="${focus}"]`).focus();
+  };
+  draw_dial();
+  // 「…」のメニューは 1 つを作り、押したタイルへ動かして開く
+  const dial_menu = $('js-dial-menu');
+  let dial_trigger = null;
+  const close_dial = (focus) => {
+    if (dial_menu.hidden) return;
+    dial_menu.hidden = true; dial_trigger.setAttribute('aria-expanded', 'false');
+    if (focus) dial_trigger.focus();
+  };
+  const dial_items = () => [...dial_menu.querySelectorAll('[role="menuitem"]')];
+  dial_list.addEventListener('click', (e) => {
+    const more = e.target.closest('[data-more]');
+    if (!more) return;
+    if (!dial_menu.hidden && dial_trigger === more) { close_dial(true); return; }
+    dial_index = Number(more.dataset.more); dial_trigger = more;
+    more.setAttribute('aria-haspopup', 'menu'); more.setAttribute('aria-expanded', 'true');
+    more.closest('li').append(dial_menu);
+    dial_items()[0].setAttribute('aria-disabled', String(dial_index === 0));
+    dial_items()[1].setAttribute('aria-disabled', String(dial_index === dial.length - 1));
+    dial_menu.hidden = false;
+    dial_items().find((i) => i.getAttribute('aria-disabled') !== 'true').focus();
+  });
+  dial_menu.addEventListener('keydown', (e) => {
+    const list = dial_items(), i = list.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); list[(i + (e.key === 'ArrowDown' ? 1 : -1) + list.length) % list.length].focus(); }
+    if (e.key === 'Escape') { e.preventDefault(); close_dial(true); }
+    if (e.key === 'Tab') close_dial(false);
+  });
+  dial_menu.addEventListener('click', (e) => {
+    const item = e.target.closest('[role="menuitem"]');
+    if (!item || item.getAttribute('aria-disabled') === 'true') return;
+    const to = dial_index + Number(item.dataset.dial);
+    [dial[dial_index], dial[to]] = [dial[to], dial[dial_index]];
+    dial_menu.hidden = true; document.body.append(dial_menu);
+    draw_dial(to);
+    $('js-dial-live').textContent = `${dial[to].name}を ${to + 1} 番目に動かしました`;
+  });
+  document.addEventListener('pointerdown', (e) => { if (!dial_menu.hidden && !dial_menu.contains(e.target) && !dial_trigger.contains(e.target)) close_dial(false); });
+
+  // 期間の点: 2026-11 は日曜始まり。休みは 3 日と 23 日
+  const days = $('js-days');
+  days.innerHTML = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((w) => `<span class="k-days__wd">${w}</span>`).join('')
+    + Array.from({ length: 30 }, (_, i) => {
+      const d = i + 1, off = d === 3 || d === 23;
+      const kind = d < 26 ? 'is-past' : d === 26 ? 'is-today' : 'is-future';
+      return `<span class="${kind}${off ? ' is-off' : ''}" title="11-${String(d).padStart(2, '0')}${off ? '（休み）' : ''}"></span>`;
+    }).join('');
+
+  // 縦のタブ
+  const TABS = [['calendar', '日付の計算'], ['hash', '数の変換'], ['clock', '時刻の差'], ['key', '文字列を作る'], ['code', '形の変換'], ['terminal', 'コマンドの早見表']];
+  const vlist = document.querySelector('#js-vtabs [role="tablist"]'), vpanel = $('js-vtab-panel');
+  vlist.innerHTML = TABS.map(([icon, name], i) => `<button type="button" role="tab" id="js-vtab-${i}" aria-controls="js-vtab-panel" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}"><span data-icon="line:${icon}"></span>${name}</button>`).join('');
+  fill_icons(vlist);
+  const pick_tab = (i, focus) => {
+    vlist.querySelectorAll('[role="tab"]').forEach((t, n) => { t.setAttribute('aria-selected', String(n === i)); t.tabIndex = n === i ? 0 : -1; });
+    vpanel.setAttribute('aria-labelledby', `js-vtab-${i}`);
+    vpanel.innerHTML = `<h3 style="font-size: 16px;">${TABS[i][1]}</h3><p class="k-muted">ここに「${TABS[i][1]}」の道具が入ります。選んだタブは URL に残します。</p>`;
+    if (focus) vlist.children[i].focus();
+  };
+  vlist.addEventListener('click', (e) => { const t = e.target.closest('[role="tab"]'); if (t) pick_tab([...vlist.children].indexOf(t)); });
+  vlist.addEventListener('keydown', (e) => {
+    const i = [...vlist.children].indexOf(document.activeElement), n = TABS.length;
+    const go = { ArrowDown: i + 1, ArrowRight: i + 1, ArrowUp: i - 1, ArrowLeft: i - 1, Home: 0, End: n - 1 }[e.key];
+    if (go === undefined) return;
+    e.preventDefault(); pick_tab((go + n) % n, true);
+  });
+  pick_tab(0);
+
+  // 動いている処理の札: 1 秒ごとに書き換える（読み上げない）
+  let run_sec = 725;
+  setInterval(() => { run_sec += 1; $('js-run').textContent = hms(run_sec); }, 1000);
+
+  // 一覧の上の簡易な絞り込み
+  const ITEMS = [['倉庫', '倉庫 A の温度の確認'], ['倉庫', '倉庫 B の棚卸し'], ['設備', '空調の点検'], ['設備', '照明の交換'], ['書類', '月の報告を送る']];
+  const cats = ['倉庫', '設備', '書類'];
+  const cat = $('js-qf-cat'), q = $('js-qf-q');
+  cat.innerHTML = `<option value="">すべて（${ITEMS.length}）</option>` + cats.map((c) => `<option value="${c}">${c}（${ITEMS.filter((x) => x[0] === c).length}）</option>`).join('');
+  const draw_qf = () => {
+    const word = q.value.trim();
+    const hit = ITEMS.filter(([c, n]) => (!cat.value || c === cat.value) && n.includes(word));
+    const on = Boolean(word || cat.value);
+    $('js-qf-list').innerHTML = hit.map(([c, n]) => `<li><span class="k-tag">${c}</span>${escape_html(n)}</li>`).join('');
+    $('js-qf-count').textContent = on ? `${hit.length} / ${ITEMS.length} 件` : '';
+    $('js-qf-clear').hidden = !on;
+    $('js-qf-empty').hidden = hit.length > 0;
+    $('js-qf-empty-text').textContent = `「${word || cat.value}」に合う作業はありません。`;
+  };
+  cat.addEventListener('change', draw_qf); q.addEventListener('input', draw_qf);
+  q.addEventListener('keydown', (e) => { if (e.key === 'Escape' && q.value) { e.stopPropagation(); q.value = ''; draw_qf(); } });
+  $('js-qf-clear').addEventListener('click', () => { q.value = ''; cat.value = ''; draw_qf(); q.focus(); });
+  draw_qf();
+})();
+</script>
+</body>
+</html>

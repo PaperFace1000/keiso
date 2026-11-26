@@ -1,0 +1,144 @@
+/* keiso の選ぶ・入れる部品（選択肢のボタン・日付・選ぶ欄・段階的に絞る選択・色とアイコンの選び手・開け閉めする欄・セレクト・探して選ぶ欄・タグ）の見本の CSS。
+   kit.css・kit-float.css の後に読み込む（ポップオーバーの値を上書きするため）。アプリへはこのファイルを配らない。
+   色は tokens/themes.css の変数だけを使う。ここに色を直接書かない */
+
+/* ── 選択肢のボタン（フォームの値を 2〜4 個から選ぶ） ─────────── */
+.k-choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr)); gap: var(--space-2); border: 0; margin: 0; padding: 0; min-width: 0; }
+.k-choice legend { font-size: 13px; font-weight: 500; padding: 0; margin-bottom: var(--space-1); }
+.k-choice label {
+  position: relative; display: flex; align-items: center; gap: var(--space-2); min-height: 36px; padding: 6px var(--space-3);
+  font-size: 14px; background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm); cursor: pointer;
+}
+.k-choice label:hover { background: var(--color-sunken); }
+.k-choice input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+/* 先頭のひし形はラジオボタンと同じ印。選ぶと中を塗り、ボタン全体を反転させる */
+.k-choice label::before { content: ""; flex: none; width: 9px; height: 9px; border: var(--line) solid currentColor; border-radius: 1px; transform: rotate(45deg); margin-right: 2px; }
+.k-choice label:has(input:checked) { background: var(--color-text); border-color: var(--color-text); color: var(--color-base); }
+.k-choice label:has(input:checked)::before { background: currentColor; }
+.k-choice label:has(input:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 2px; animation: k-lock-on .18s steps(3, end), k-focus-blink 1.2s steps(1, end) .18s infinite; }
+.k-choice label:has(input:disabled) { cursor: not-allowed; color: var(--color-muted); border-style: dashed; background: var(--color-surface); }
+.k-choice .k-icon { width: 16px; height: 16px; }
+
+/* ── 日付・時刻の入力 ─────────────────────── */
+.k-input[type="date"], .k-input[type="time"], .k-input[type="datetime-local"] { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: left; }
+.k-input::-webkit-date-and-time-value { text-align: left; }
+.k-input::-webkit-datetime-edit-fields-wrapper { padding: 0; }
+.k-input::-webkit-calendar-picker-indicator { cursor: pointer; }
+.k-range { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+@media (max-width: 599px) { .k-range { grid-template-columns: minmax(0, 1fr); } }
+
+/* ── 選ぶ欄のボタン（段階的に絞る選択・項目を選ぶダイアログを開く） ── */
+.k-picker-btn {
+  display: flex; align-items: center; gap: var(--space-2); width: 100%; min-height: 36px; padding: 6px 32px 6px var(--space-3);
+  font: 15px/1.5 var(--font-sans); color: var(--color-text); text-align: left; cursor: pointer;
+  background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm);
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-text) 50%), linear-gradient(-45deg, transparent 50%, var(--color-text) 50%);
+  background-size: 5px 5px; background-position: right 16px center, right 11px center; background-repeat: no-repeat;
+}
+.k-picker-btn__value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.k-picker-btn.is-empty .k-picker-btn__value { color: var(--color-muted); }
+.k-picker-btn .k-icon { width: 16px; height: 16px; }
+
+
+/* 段階的に絞る選択のポップオーバー */
+.k-cascade { width: min(28rem, calc(100vw - 32px)); max-width: none; padding: var(--space-2); gap: var(--space-2); }
+.k-cascade__list { display: grid; gap: 0; max-height: min(24rem, 50vh); overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+.k-cascade__pinned { display: grid; padding-bottom: var(--space-2); border-bottom: var(--line) solid var(--color-border); margin: 0; list-style: none; padding-left: 0; }
+.k-cascade__head { position: sticky; top: 0; z-index: 1; background: var(--color-surface); padding: var(--space-2) var(--space-3) var(--space-1); }
+.k-cascade__note { font-size: 12px; color: var(--color-muted); padding: var(--space-1) var(--space-3); }
+.k-prompt--sm input { padding: 5px 0; font-size: 14px; }
+
+/* ── 色の選び手・アイコンの選び手 ─────────── */
+.k-swatch-btn { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 36px; padding: 0 var(--space-2); background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm); color: var(--color-text); cursor: pointer; font-size: 14px; }
+.k-swatch-btn:hover { background: var(--color-sunken); }
+/* 色の見本: 分類の色の地と枠、真ん中に文字の色の四角い点 */
+.k-swatch { width: 20px; height: 20px; flex: none; display: grid; place-items: center; background: var(--extra-bg); border: var(--line) solid var(--extra-border); border-radius: 2px; }
+.k-swatch::after { content: ""; width: 8px; height: 8px; border-radius: 1px; background: var(--extra-text); }
+/* 色なし: 点線の枠だけ（斜線は押せないボタンの印なので使わない） */
+.k-swatch--none { background: transparent; border: var(--line) dashed var(--color-border-strong); }
+.k-swatch--none::after { display: none; }
+.k-cells { display: grid; grid-template-columns: repeat(6, 32px); gap: var(--space-1); }
+.k-cells--icons { grid-template-columns: repeat(auto-fill, 32px); width: min(19rem, calc(100vw - 64px)); max-height: min(16rem, 45vh); overflow-y: auto; }
+.k-cell { width: 32px; height: 32px; display: grid; place-items: center; padding: 0; background: transparent; color: var(--color-text); border: var(--line) solid transparent; border-radius: var(--radius-sm); cursor: pointer; }
+.k-cell:hover { border-color: var(--color-border-strong); }
+.k-cell .k-icon { width: 20px; height: 20px; }
+/* 選んでいるマスは反転する。色のマスは地と点の色を入れ替える */
+.k-cell[aria-pressed="true"] { background: var(--color-text); color: var(--color-base); border-color: var(--color-text); }
+.k-cell[aria-pressed="true"] .k-swatch { background: var(--extra-text); border-color: var(--color-base); }
+.k-cell[aria-pressed="true"] .k-swatch::after { background: var(--extra-bg); }
+.k-cell--wide { width: 100%; grid-column: 1 / -1; display: flex; justify-content: flex-start; gap: var(--space-2); padding: 0 var(--space-2); font-size: 13px; }
+
+/* ── 開け閉めする欄 ───────────────────────── */
+.k-disclosure { border: var(--line) solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+.k-disclosure__head { margin: 0; font-size: 14px; }
+.k-disclosure__btn {
+  display: flex; align-items: center; gap: var(--space-2); width: 100%; min-height: 36px; padding: 6px var(--space-3);
+  font: 600 14px/1.4 var(--font-sans); color: inherit; background: transparent; border: 0; border-radius: var(--radius); cursor: pointer; text-align: left;
+  --k-focus-offset: -2px;
+}
+.k-disclosure__btn:hover { background: var(--color-sunken); }
+.k-disclosure__btn .k-icon { width: 16px; height: 16px; color: var(--color-muted); transition: transform .12s steps(2, end); }
+.k-disclosure__btn[aria-expanded="true"] .k-icon { transform: rotate(90deg); }
+.k-disclosure__meta { margin-left: auto; font: 400 12px/1 var(--font-mono); color: var(--color-muted); }
+.k-disclosure__panel { padding: var(--space-1) var(--space-3) var(--space-3) calc(var(--space-3) + 24px); font-size: 14px; display: grid; gap: var(--space-2); }
+.k-disclosure__panel[hidden] { display: none; }
+.k-disclosure--quiet { border: 0; background: transparent; }
+.k-disclosure--quiet .k-disclosure__btn { width: fit-content; min-height: 28px; padding: 2px 0; font: 500 13px/1.4 var(--font-sans); color: var(--color-muted); --k-focus-offset: 2px; }
+.k-disclosure--quiet .k-disclosure__btn:hover { background: transparent; color: var(--color-text); }
+.k-disclosure--quiet .k-disclosure__panel { padding: var(--space-1) 0 0 24px; }
+.k-disclosures { display: grid; gap: var(--space-2); }
+
+/* ── 独自のセレクト・探して選ぶ欄 ─────────────── */
+.k-picker-btn:disabled { cursor: not-allowed; color: var(--color-muted); border-style: dashed; background-color: transparent; }
+.k-picker-btn[aria-expanded="true"] { border-color: var(--color-text); }
+.k-picker-btn .k-catbadge { flex: none; }
+/* 選択肢の箱: 幅は押すボタンに合わせ、高さ 320px を超えたら箱の中だけスクロール */
+.k-listbox { left: 0; right: 0; width: auto; min-width: 0; max-width: none; padding: var(--space-1); gap: 0; max-height: 320px; overflow-y: auto; }
+.k-listbox:focus-visible { outline: none; animation: none; }
+.k-combo { width: min(28rem, calc(100vw - 32px)); max-width: none; padding: var(--space-2); gap: var(--space-2); }
+.k-combo__list { display: grid; max-height: min(24rem, 50vh); overflow-y: auto; }
+.k-combo__head { position: sticky; top: 0; z-index: 1; background: var(--color-surface); padding: var(--space-2) var(--space-3) var(--space-1); }
+.k-combo__note { display: flex; align-items: center; gap: var(--space-2); font-size: 12px; color: var(--color-muted); padding: var(--space-1) var(--space-3); }
+.k-combo__note:empty { display: none; }
+.k-combo__note.is-error { color: var(--color-alert); }
+/* 前の結果を残したまま読み込んでいる間は、一覧を薄くする代わりに地を点線で区切る */
+.k-combo__list[aria-busy="true"] .k-option { color: var(--color-muted); }
+
+/* ── タグで絞り込む（いくつでも選べる札）・タグを付ける ─────── */
+.k-tagfilter { display: flex; flex-wrap: wrap; gap: var(--space-2); border: 0; margin: 0; padding: 0; min-width: 0; }
+.k-tagfilter legend { font-size: 13px; font-weight: 500; padding: 0; margin-bottom: var(--space-1); }
+.k-tagfilter label { position: relative; display: inline-flex; align-items: center; gap: var(--space-2); min-height: 32px; padding: 0 var(--space-3); font-size: 13px; background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm); cursor: pointer; }
+.k-tagfilter label:hover { background: var(--color-sunken); }
+.k-tagfilter input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+/* 先頭の四角はチェックボックスと同じ印。選ぶと中を塗り、札ごと反転させる */
+.k-tagfilter label::before { content: ""; flex: none; width: 9px; height: 9px; border: var(--line) solid currentColor; border-radius: 1px; }
+.k-tagfilter label:has(input:checked) { background: var(--color-text); border-color: var(--color-text); color: var(--color-base); }
+.k-tagfilter label:has(input:checked)::before { background: currentColor; }
+.k-tagfilter label:has(input:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 2px; animation: k-lock-on .18s steps(3, end), k-focus-blink 1.2s steps(1, end) .18s infinite; }
+.k-tagpick { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.k-tagpick:empty { display: none; }
+.k-tagpick li { display: inline-flex; align-items: center; gap: 2px; min-height: 32px; padding: 0 2px 0 var(--space-3); font-size: 13px; background: var(--color-surface); border: var(--line) solid var(--color-text); border-radius: var(--radius-sm); }
+.k-tagpick .k-btn { width: 26px; min-height: 26px; --k-focus-offset: -1px; }
+.k-tagpick .k-icon { width: 14px; height: 14px; }
+.k-tagcands { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+
+/* ── <details> で作る開け閉め ─────────────── */
+/* summary の既定の三角を消し、開け閉めする欄と同じ右向きの矢印（線で描く）を置いて、開くと 2 段で下へ向ける */
+.k-details > summary { display: flex; align-items: center; gap: var(--space-2); list-style: none; cursor: pointer; }
+.k-details > summary::-webkit-details-marker { display: none; }
+.k-details > summary::before { content: ""; flex: none; width: 6px; height: 6px; margin: 0 5px 0 3px; border-top: 1.5px solid var(--color-muted); border-right: 1.5px solid var(--color-muted); transform: rotate(45deg); transition: transform .12s steps(2, end); }
+.k-details[open] > summary::before { transform: rotate(135deg); }
+
+/* ── 絞り込みの欄 ─────────────────────── */
+/* 899px 以下は閉じた箱にし、頭に効いている条件を出す。900px 以上は開いたままにして頭を隠す */
+.k-filterbox { background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); min-width: 0; }
+.k-filterbox > summary { min-height: 44px; padding: 6px var(--space-3); flex-wrap: wrap; font-size: 14px; border-radius: var(--radius); --k-focus-offset: -2px; }
+.k-filterbox > summary .k-icon { width: 16px; height: 16px; color: var(--color-muted); }
+.k-filterbox[open] > summary { border-bottom: var(--line) solid var(--color-border); border-radius: var(--radius) var(--radius) 0 0; }
+.k-filterbox__conds { display: flex; flex-wrap: wrap; gap: 4px; }
+.k-filterbox__body { display: grid; gap: var(--space-3); padding: var(--space-3) var(--space-4) var(--space-4); }
+.k-filterbox__fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: var(--space-3); }
+.k-filterbox__foot { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+@media (min-width: 900px) {
+  .k-filterbox.is-wide > summary { display: none; }
+}

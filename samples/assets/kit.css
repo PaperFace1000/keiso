@@ -1,5 +1,8 @@
-/* keiso の部品の見本の CSS。アプリへはこのファイルを配らず、docs/ の決まりとこの見た目に合わせて各アプリで作ること。
-   色は tokens/themes.css の変数だけを使う。ここに色を直接書かない */
+/* keiso の土台と基本の部品の見本の CSS。アプリへはこのファイルを配らず、docs/ の決まりとこの見た目に合わせて各アプリで作ること。
+   色は tokens/themes.css の変数だけを使う。ここに色を直接書かない。
+   役割ごとにファイルを分けている。要るものだけを、この順に読み込む:
+   kit.css（土台・基本の部品）→ kit-float.css（浮かぶ部品）→ kit-pick.css（選ぶ・入れる部品）→ kit-records.css（欄・一覧・日付）
+   → kit-parts.css（入力と印の部品）→ kit-marks.css（印・小さな操作）→ shell.css・work.css（画面の骨組み・大きな画面） */
 
 /* ── 土台 ───────────────────────────── */
 :root {
@@ -121,7 +124,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
   min-height: 36px; padding: 0 var(--space-4);
   font: 500 14px/1 var(--font-sans); letter-spacing: 0.02em;
   border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm);
-  background: transparent; color: var(--color-text); cursor: pointer;
+  background: transparent; color: var(--color-text); cursor: pointer; white-space: nowrap;
   transition: background-color .12s var(--ease), color .12s var(--ease);
 }
 .k-btn:hover { background: var(--color-sunken); }
@@ -289,6 +292,10 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-stat__value { font-size: 44px; }
 .k-stat__value small { font: 500 13px/1 var(--font-mono); letter-spacing: .08em; margin-left: 6px; color: var(--color-muted); }
 .k-stat__delta { font: 500 12px/1 var(--font-mono); color: var(--k-role, var(--color-muted)); }
+/* 結論の数字（主役版）: 四隅の鉤（.k-frame）と合わせ、数字を 72px にする。1 画面に 1 つだけ */
+.k-stat--lead { padding: var(--space-5) var(--space-4); }
+.k-stat--lead .k-stat__value { font-size: 72px; color: var(--color-text); }
+.k-stat--lead .k-stat__value small { font-size: 14px; letter-spacing: .1em; margin-left: 8px; }
 
 /* 進み具合: 区切った目盛り。数字を必ず横に出す */
 .k-meter { display: grid; grid-template-columns: 1fr auto; gap: var(--space-2); align-items: center; }
@@ -354,363 +361,21 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-dialog__body { padding: var(--space-4); font-size: 14px; display: grid; gap: var(--space-3); }
 .k-dialog__foot { display: flex; justify-content: flex-end; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-top: var(--line) solid var(--color-border); background: var(--color-base); }
 
-/* ══ 浮かぶ部品と、選ぶ・記録する部品 ═══════════════════ */
+/* ── ダイアログ: 中身が高いときは本文だけスクロール。足の左に離した操作 ─── */
+.k-dialog { max-height: calc(100dvh - 32px); }
+.k-dialog[open] { display: flex; flex-direction: column; }
+.k-dialog__body { overflow-y: auto; min-height: 0; }
+.k-dialog__foot { flex-wrap: wrap; }
+.k-dialog__foot > .k-dialog__aside { margin-right: auto; }
 
-/* ── ポップオーバー・メニュー ─────────────── */
-/* 押したボタンの下に浮かぶ箱。影はトーストと同じ 1 つの値だけ */
-.k-pop { position: relative; display: inline-flex; }
-.k-popover {
-  position: absolute; top: calc(100% + var(--space-1)); left: 0; z-index: 20;
-  display: grid; gap: var(--space-2); padding: var(--space-3);
-  width: max-content; min-width: 12rem; max-width: min(22rem, calc(100vw - 32px));
-  background: var(--color-surface); color: var(--color-text);
-  border: var(--line) solid var(--color-border-strong); border-radius: var(--radius); box-shadow: var(--shadow-float);
-  font-size: 14px; text-align: left;
-}
-.k-popover[hidden] { display: none; }
-.k-popover--end { left: auto; right: 0; }
-.k-menu { padding: var(--space-1); gap: 0; }
-.k-menu__sep { height: var(--line); margin: var(--space-1) 0; background: var(--color-border); border: 0; }
-.k-menu__group { padding: var(--space-2) var(--space-3) var(--space-1); }
-
-/* 選ぶ項目の行（メニュー・候補・選ぶダイアログで共通）。今指している行は反転して ▸ を出し、選んである値は右端に四角の印を出す */
-.k-option {
-  display: flex; align-items: center; gap: var(--space-2); width: 100%; min-height: 36px; padding: 6px var(--space-3) 6px var(--space-2);
-  font: 14px/1.4 var(--font-sans); color: inherit; text-align: left;
-  background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer;
-}
-.k-option::before { content: "▸"; font-family: var(--font-mono); width: 1ch; flex: none; visibility: hidden; }
-.k-option__main { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.k-option__meta { display: block; font-size: 12px; color: var(--color-muted); }
-.k-option__end { margin-left: auto; font: 12px/1 var(--font-mono); color: var(--color-muted); white-space: nowrap; }
-.k-option:hover, .k-option.is-active, .k-option:focus-visible { background: var(--color-selection-bg); color: var(--color-selection-text); outline: none; animation: none; }
-.k-option:hover::before, .k-option.is-active::before, .k-option:focus-visible::before { visibility: visible; }
-.k-option:focus-visible::before, .k-option.is-active::before { animation: k-blink 1.2s steps(1, end) infinite; }
-.k-option:hover .k-option__meta, .k-option.is-active .k-option__meta, .k-option:focus-visible .k-option__meta,
-.k-option:hover .k-option__end, .k-option.is-active .k-option__end, .k-option:focus-visible .k-option__end { color: inherit; opacity: .75; }
-.k-option[aria-checked="true"]::after, .k-option[aria-selected="true"]::after, .k-option[aria-current="true"]::after {
-  content: ""; width: 7px; height: 7px; margin-left: auto; flex: none; border-radius: 1px; background: currentColor;
-}
-.k-option--alert { color: var(--color-alert); }
-.k-option--quiet { color: var(--color-muted); }
-/* 反転した行では、薄い文字・ALERT の文字の行も反転の文字の色にする（地と重なって読めなくなるため） */
-.k-option.k-option--alert:is(:hover, .is-active, :focus-visible), .k-option.k-option--quiet:is(:hover, .is-active, :focus-visible) { color: var(--color-selection-text); }
-
-/* ── 選択肢のボタン（フォームの値を 2〜4 個から選ぶ） ─────────── */
-.k-choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr)); gap: var(--space-2); border: 0; margin: 0; padding: 0; min-width: 0; }
-.k-choice legend { font-size: 13px; font-weight: 500; padding: 0; margin-bottom: var(--space-1); }
-.k-choice label {
-  position: relative; display: flex; align-items: center; gap: var(--space-2); min-height: 36px; padding: 6px var(--space-3);
-  font-size: 14px; background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm); cursor: pointer;
-}
-.k-choice label:hover { background: var(--color-sunken); }
-.k-choice input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
-/* 先頭のひし形はラジオボタンと同じ印。選ぶと中を塗り、ボタン全体を反転させる */
-.k-choice label::before { content: ""; flex: none; width: 9px; height: 9px; border: var(--line) solid currentColor; border-radius: 1px; transform: rotate(45deg); margin-right: 2px; }
-.k-choice label:has(input:checked) { background: var(--color-text); border-color: var(--color-text); color: var(--color-base); }
-.k-choice label:has(input:checked)::before { background: currentColor; }
-.k-choice label:has(input:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 2px; animation: k-lock-on .18s steps(3, end), k-focus-blink 1.2s steps(1, end) .18s infinite; }
-.k-choice label:has(input:disabled) { cursor: not-allowed; color: var(--color-muted); border-style: dashed; background: var(--color-surface); }
-.k-choice .k-icon { width: 16px; height: 16px; }
 
 /* ── 押すたびに入と切が変わるボタン（行のピンなど） ───────────── */
 .k-btn[aria-pressed="true"] { background: var(--color-text); border-color: var(--color-text); color: var(--color-base); }
 .k-btn--ghost[aria-pressed="false"] { color: var(--color-muted); }
 
-/* ── 日付・時刻の入力 ─────────────────────── */
-.k-input[type="date"], .k-input[type="time"], .k-input[type="datetime-local"] { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: left; }
-.k-input::-webkit-date-and-time-value { text-align: left; }
-.k-input::-webkit-datetime-edit-fields-wrapper { padding: 0; }
-.k-input::-webkit-calendar-picker-indicator { cursor: pointer; }
-.k-range { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
-@media (max-width: 599px) { .k-range { grid-template-columns: minmax(0, 1fr); } }
-
-/* ── 選ぶ欄のボタン（段階的に絞る選択・項目を選ぶダイアログを開く） ── */
-.k-picker-btn {
-  display: flex; align-items: center; gap: var(--space-2); width: 100%; min-height: 36px; padding: 6px 32px 6px var(--space-3);
-  font: 15px/1.5 var(--font-sans); color: var(--color-text); text-align: left; cursor: pointer;
-  background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm);
-  background-image: linear-gradient(45deg, transparent 50%, var(--color-text) 50%), linear-gradient(-45deg, transparent 50%, var(--color-text) 50%);
-  background-size: 5px 5px; background-position: right 16px center, right 11px center; background-repeat: no-repeat;
-}
-.k-picker-btn__value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.k-picker-btn.is-empty .k-picker-btn__value { color: var(--color-muted); }
-.k-picker-btn .k-icon { width: 16px; height: 16px; }
-
 /* 分類の印: 分類の色の四角い点（名前の文字と並べる） */
 .k-swatch-dot { width: 8px; height: 8px; flex: none; border-radius: 1px; background: var(--extra-text, var(--color-muted)); }
 
-/* 段階的に絞る選択のポップオーバー */
-.k-cascade { width: min(28rem, calc(100vw - 32px)); max-width: none; padding: var(--space-2); gap: var(--space-2); }
-.k-cascade__list { display: grid; gap: 0; max-height: min(24rem, 50vh); overflow-y: auto; margin: 0; padding: 0; list-style: none; }
-.k-cascade__pinned { display: grid; padding-bottom: var(--space-2); border-bottom: var(--line) solid var(--color-border); margin: 0; list-style: none; padding-left: 0; }
-.k-cascade__head { position: sticky; top: 0; z-index: 1; background: var(--color-surface); padding: var(--space-2) var(--space-3) var(--space-1); }
-.k-cascade__note { font-size: 12px; color: var(--color-muted); padding: var(--space-1) var(--space-3); }
-.k-prompt--sm input { padding: 5px 0; font-size: 14px; }
-
-/* ── 色の選び手・アイコンの選び手 ─────────── */
-.k-swatch-btn { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 36px; padding: 0 var(--space-2); background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm); color: var(--color-text); cursor: pointer; font-size: 14px; }
-.k-swatch-btn:hover { background: var(--color-sunken); }
-/* 色の見本: 分類の色の地と枠、真ん中に文字の色の四角い点 */
-.k-swatch { width: 20px; height: 20px; flex: none; display: grid; place-items: center; background: var(--extra-bg); border: var(--line) solid var(--extra-border); border-radius: 2px; }
-.k-swatch::after { content: ""; width: 8px; height: 8px; border-radius: 1px; background: var(--extra-text); }
-/* 色なし: 点線の枠だけ（斜線は押せないボタンの印なので使わない） */
-.k-swatch--none { background: transparent; border: var(--line) dashed var(--color-border-strong); }
-.k-swatch--none::after { display: none; }
-.k-cells { display: grid; grid-template-columns: repeat(6, 32px); gap: var(--space-1); }
-.k-cells--icons { grid-template-columns: repeat(auto-fill, 32px); width: min(19rem, calc(100vw - 64px)); max-height: min(16rem, 45vh); overflow-y: auto; }
-.k-cell { width: 32px; height: 32px; display: grid; place-items: center; padding: 0; background: transparent; color: var(--color-text); border: var(--line) solid transparent; border-radius: var(--radius-sm); cursor: pointer; }
-.k-cell:hover { border-color: var(--color-border-strong); }
-.k-cell .k-icon { width: 20px; height: 20px; }
-/* 選んでいるマスは反転する。色のマスは地と点の色を入れ替える */
-.k-cell[aria-pressed="true"] { background: var(--color-text); color: var(--color-base); border-color: var(--color-text); }
-.k-cell[aria-pressed="true"] .k-swatch { background: var(--extra-text); border-color: var(--color-base); }
-.k-cell[aria-pressed="true"] .k-swatch::after { background: var(--extra-bg); }
-.k-cell--wide { width: 100%; grid-column: 1 / -1; display: flex; justify-content: flex-start; gap: var(--space-2); padding: 0 var(--space-2); font-size: 13px; }
-
-/* ── 開け閉めする欄 ───────────────────────── */
-.k-disclosure { border: var(--line) solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
-.k-disclosure__head { margin: 0; font-size: 14px; }
-.k-disclosure__btn {
-  display: flex; align-items: center; gap: var(--space-2); width: 100%; min-height: 36px; padding: 6px var(--space-3);
-  font: 600 14px/1.4 var(--font-sans); color: inherit; background: transparent; border: 0; border-radius: var(--radius); cursor: pointer; text-align: left;
-  --k-focus-offset: -2px;
-}
-.k-disclosure__btn:hover { background: var(--color-sunken); }
-.k-disclosure__btn .k-icon { width: 16px; height: 16px; color: var(--color-muted); transition: transform .12s steps(2, end); }
-.k-disclosure__btn[aria-expanded="true"] .k-icon { transform: rotate(90deg); }
-.k-disclosure__meta { margin-left: auto; font: 400 12px/1 var(--font-mono); color: var(--color-muted); }
-.k-disclosure__panel { padding: var(--space-1) var(--space-3) var(--space-3) calc(var(--space-3) + 24px); font-size: 14px; display: grid; gap: var(--space-2); }
-.k-disclosure__panel[hidden] { display: none; }
-.k-disclosure--quiet { border: 0; background: transparent; }
-.k-disclosure--quiet .k-disclosure__btn { width: fit-content; min-height: 28px; padding: 2px 0; font: 500 13px/1.4 var(--font-sans); color: var(--color-muted); --k-focus-offset: 2px; }
-.k-disclosure--quiet .k-disclosure__btn:hover { background: transparent; color: var(--color-text); }
-.k-disclosure--quiet .k-disclosure__panel { padding: var(--space-1) 0 0 24px; }
-.k-disclosures { display: grid; gap: var(--space-2); }
-
-/* ── 欄（見出し・件数・更新の時刻と、読み込み中・失敗・空） ─────── */
-.k-section { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); align-content: start; min-width: 0; }
-.k-section__head { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; padding-bottom: var(--space-2); border-bottom: var(--line) solid var(--color-border); }
-.k-section__head h3 { font-size: 16px; font-weight: 700; }
-.k-section__head > .k-icon { color: var(--color-muted); }
-.k-section__time { margin-left: auto; font: 12px/1 var(--font-mono); color: var(--color-muted); }
-.k-section__state { display: flex; align-items: center; gap: var(--space-2); font-size: 13px; color: var(--color-muted); padding: var(--space-2) 0; }
-.k-section .k-list { border-top: 0; }
-/* 欄の中の小さい空の表示（枠なし、ボタンなし） */
-.k-empty--sm { border: 0; padding: var(--space-5) var(--space-4); gap: var(--space-2); font-size: 13px; }
-.k-empty--sm .k-icon { width: 32px; height: 32px; }
-
-/* ── 分類の色のマスの行 ──────────────────── */
-/* 行の左のマスだけを分類の色で塗る。塗りは分類の色を反転させ（地が文字の色、文字が地の色）、比 4.5 以上を保つ */
-.k-cellrow { position: relative; display: flex; align-items: center; gap: var(--space-3); min-height: 44px; padding: 6px var(--space-3) 6px 0; background: var(--color-surface); border: var(--line) solid var(--extra-border, var(--color-border-strong)); border-radius: var(--radius); min-width: 0; }
-.k-cellrow__key {
-  align-self: stretch; display: inline-flex; align-items: center; gap: var(--space-1); margin: -6px 0; padding: 0 var(--space-3);
-  font: 600 13px/1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap;
-  background: var(--extra-text, transparent); color: var(--extra-bg, var(--color-text));
-  border-right: var(--line) solid var(--extra-text, var(--color-border));
-  border-radius: calc(var(--radius) - 1px) 0 0 calc(var(--radius) - 1px);
-}
-.k-cellrow__key .k-icon { width: 16px; height: 16px; }
-.k-cellrow__main { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.k-cellrow__title { font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.k-cellrow__meta { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; font-size: 12px; color: var(--color-muted); }
-.k-cellrow__actions { display: flex; align-items: center; gap: 2px; }
-.k-cellrows { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
-
-/* ── 期日の印 ─────────────────────────── */
-.k-due { display: inline-grid; gap: 2px; font: 13px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--k-role, var(--color-muted)); }
-.k-due__date { display: inline-flex; align-items: center; gap: var(--space-1); }
-.k-due__date .k-icon { width: 16px; height: 16px; }
-.k-due__rest { font: 12px/1.2 var(--font-sans); }
-.k-due.k-role-alert, .k-due.k-role-warning { font-weight: 600; }
-
-/* ── 列をそろえる一覧（subgrid） ─────────── */
-.k-gridlist { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto auto; row-gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
-.k-gridlist > li { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; }
-.k-gridlist .k-cellrow { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; column-gap: var(--space-3); }
-.k-gridlist .k-cellrow__actions { justify-self: stretch; justify-content: flex-end; }
-.k-gridlist__time { font: 13px/1 var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
-@media (max-width: 599px) {
-  .k-gridlist { grid-template-columns: minmax(0, 1fr); }
-  .k-gridlist .k-cellrow { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: auto auto; row-gap: var(--space-2); padding-block: var(--space-2); }
-  .k-gridlist .k-cellrow__key { grid-row: 1 / span 2; margin-block: calc(-1 * var(--space-2)); }
-  .k-gridlist .k-cellrow__main { grid-column: 2 / -1; }
-  .k-gridlist .k-cellrow > .k-due { grid-column: 2; grid-row: 2; }
-  .k-gridlist .k-gridlist__time { grid-column: 2; grid-row: 2; justify-self: end; align-self: center; }
-  .k-gridlist .k-cellrow__actions { grid-column: 3; grid-row: 2; }
-}
-
-/* 除外した行を今だけ出したもの: 点線の枠と薄い文字 */
-.k-cellrow.is-excluded { border-style: dashed; color: var(--color-muted); background: transparent; }
-.k-cellrow.is-excluded .k-cellrow__key { background: transparent; color: var(--color-muted); border-right: var(--line) dashed var(--color-border-strong); }
-
-/* 下書きの行: 枠を点線にし、[ DRAFT ] を添える（文字は薄めない） */
-.k-cellrow.is-draft { border-style: dashed; background: transparent; }
-.k-cellrow.is-draft .k-cellrow__key { background: transparent; color: var(--color-text); border-right: var(--line) dashed var(--color-border-strong); }
-/* 同じものをまとめた行: 題名の前の件数のボタンで、個別の行を 24px 下げて開く */
-.k-cellrow__title-row { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
-.k-cellrow__group { flex: none; gap: 2px; padding: 0 6px 0 2px; min-height: 22px; font-size: 12px; }
-.k-cellrow__group .k-icon { transition: transform .12s steps(2, end); }
-.k-cellrow__group[aria-expanded="true"] .k-icon { transform: rotate(90deg); }
-.k-gridlist > li.is-child { margin-left: 24px; }
-.k-gridlist > li.is-child .k-cellrow { border-style: dashed solid solid; }
-
-/* ── 並べ替え（ドラッグ） ─────────────────── */
-.k-reorder { position: relative; margin: 0; padding: 0; list-style: none; background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
-.k-reorder > li { display: flex; align-items: center; gap: var(--space-2); min-height: 52px; padding: 6px var(--space-2) 6px var(--space-1); }
-.k-reorder > li + li { border-top: var(--line) solid var(--color-border); }
-.k-reorder > li:first-child { border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0; }
-.k-reorder > li:last-child { border-radius: 0 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px); }
-.k-reorder__grip { cursor: grab; touch-action: none; color: var(--color-muted); }
-.k-reorder__name { flex: 1; min-width: 0; font-size: 14px; overflow-wrap: anywhere; }
-.k-reorder__meta { font: 12px/1 var(--font-mono); color: var(--color-muted); white-space: nowrap; }
-/* 引っ張っている行は点線の跡にし、持ち上げた行（キーボード）は反転する */
-.k-reorder > li.is-dragging { background: var(--color-sunken); color: var(--color-muted); outline: 1px dashed var(--color-border-strong); outline-offset: -1px; }
-.k-reorder > li.is-grabbed { background: var(--color-selection-bg); color: var(--color-selection-text); }
-.k-reorder > li.is-grabbed .k-reorder__meta, .k-reorder > li.is-grabbed .k-reorder__grip { color: inherit; }
-.k-reorder > li.is-grabbed .k-btn[aria-pressed="true"] { background: transparent; border-color: transparent; color: inherit; }
-/* 落とす位置の線: 文字の色の 2px に、両端の小さな四角 */
-.k-reorder__drop { position: absolute; left: var(--space-1); right: var(--space-1); height: 2px; background: var(--color-text); pointer-events: none; z-index: 2; }
-.k-reorder__drop::before, .k-reorder__drop::after { content: ""; position: absolute; top: -2px; width: 6px; height: 6px; background: var(--color-text); border-radius: 1px; }
-.k-reorder__drop::before { left: 0; }
-.k-reorder__drop::after { right: 0; }
-body.is-reordering, body.is-reordering * { cursor: grabbing !important; user-select: none; }
-
-/* ── 目標に対する横棒 ─────────────────── */
-.k-goals { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
-.k-goal { display: grid; gap: var(--space-2); font-size: 13px; }
-.k-goal__head { display: flex; align-items: center; gap: var(--space-2) var(--space-3); flex-wrap: wrap; }
-.k-goal__nums { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-.k-goal__rest { margin-left: auto; font-size: 12px; color: var(--color-muted); font-family: var(--font-mono); }
-.k-goal__rest.is-over { color: var(--color-alert); font-weight: 600; }
-/* 棒は角を立てた四角。目標までを塗り、超えた分は同じ色の斜めの縞、目標の位置に上下へはみ出す 2px の線 */
-.k-goal__bar { position: relative; height: 8px; display: flex; background: var(--color-border); border-radius: 1px; }
-.k-goal__fill { height: 100%; background: var(--extra-text, var(--color-muted)); }
-.k-goal__over { height: 100%; background: repeating-linear-gradient(135deg, var(--extra-text, var(--color-muted)) 0 2px, transparent 2px 5px); }
-.k-goal__mark { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; background: var(--color-text); }
-
-/* ── 値の一覧とコピー ─────────────────── */
-.k-copylist { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; counter-reset: copy; }
-.k-copylist li { display: flex; align-items: center; gap: var(--space-2); padding: 4px 4px 4px var(--space-3); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); counter-increment: copy; }
-.k-copylist li::before { content: counter(copy, decimal-leading-zero); font: 11px/1 var(--font-mono); color: var(--color-muted); }
-.k-copylist code { flex: 1; min-width: 0; font-size: 13.5px; overflow-wrap: anywhere; }
-.k-copy { font-size: 12px; color: var(--color-muted); }
-.k-copy .k-icon { width: 14px; height: 14px; }
-.k-copy.is-done { color: var(--color-success); }
-.k-copy.is-failed { color: var(--color-alert); }
-
-/* コマンドの早見表 */
-.k-cheats { margin: 0; padding: 0; list-style: none; background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
-.k-cheats > li { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--space-1) var(--space-4); padding: 10px var(--space-3); }
-.k-cheats > li + li { border-top: var(--line) solid var(--color-border); }
-.k-cheats__cmd { display: flex; align-items: flex-start; gap: var(--space-2); flex-wrap: wrap; }
-.k-cheats__cmd > code { font-size: 13.5px; overflow-wrap: anywhere; padding-top: 4px; }
-.k-cheats__desc { display: grid; gap: var(--space-1); font-size: 14px; }
-.k-cheats__eg { font-size: 13px; color: var(--color-muted); display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
-.k-code-inline { font: 0.92em var(--font-mono); padding: 0 4px; background: var(--color-sunken); border-radius: 3px; }
-.k-chip-before, .k-chip-after { font: 12px/1.6 var(--font-mono); padding: 0 6px; border-radius: 3px; white-space: pre-wrap; }
-.k-chip-before { background: var(--color-alert-bg); color: var(--color-alert); text-decoration: line-through; }
-.k-chip-after { background: var(--color-success-bg); color: var(--color-success); }
-.k-cheats mark { background: var(--color-warning-bg); color: var(--color-text); box-shadow: inset 0 -2px 0 var(--color-warning); }
-@media (max-width: 599px) { .k-cheats > li { grid-template-columns: minmax(0, 1fr); } }
-
-/* ── 時刻つきのタイムライン ─────────────── */
-.k-timeline { margin: 0; padding: 0; list-style: none; }
-.k-timeline > li { position: relative; display: grid; grid-template-columns: 5ch minmax(0, 1fr) auto; gap: 0 var(--space-4); align-items: start; padding: var(--space-2) 0; }
-/* 縦の線は行ごとに引き、先頭と末尾は点で止める。点は四角で、地の色のふちを付けて線を切る */
-.k-timeline > li::after { content: ""; position: absolute; left: calc(5ch + 7px); top: 0; bottom: 0; width: var(--line); background: var(--color-border-strong); }
-.k-timeline > li:first-child::after { top: 15px; }
-.k-timeline > li:last-child::after { bottom: calc(100% - 15px); }
-.k-timeline > li::before { content: ""; position: absolute; z-index: 1; left: calc(5ch + 4px); top: 12px; width: 7px; height: 7px; border-radius: 1px; background: var(--color-text); box-shadow: 0 0 0 2px var(--color-base); }
-.k-timeline time { font: 13px/1.6 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--color-muted); }
-.k-timeline__body { font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; padding-left: var(--space-2); display: grid; gap: var(--space-2); min-width: 0; }
-.k-timeline__actions { display: flex; gap: 2px; }
-.k-timeline__edit-foot { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
-.k-timeline__edit-foot .k-input { width: auto; min-height: 28px; padding: 2px var(--space-2); font-size: 13px; }
-.k-timeline__edit-foot .k-btn:first-of-type { margin-left: auto; }
-.k-composer { display: grid; gap: var(--space-2); }
-.k-composer__foot { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
-.k-composer__foot .k-field__hint { flex: 1 1 12rem; }
-
-/* ── 期間の送りの帯（日付の送り・カレンダーの上の帯） ──────── */
-.k-periodbar { display: flex; align-items: center; gap: var(--space-2) var(--space-3); flex-wrap: wrap; }
-.k-periodbar__title { display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; margin-right: auto; }
-.k-periodbar__title h3, .k-periodbar__title strong { font: 700 18px/1.3 var(--font-mono); font-variant-numeric: tabular-nums; }
-.k-periodbar__sub { font: 400 13px/1 var(--font-sans); color: var(--color-muted); }
-.k-periodbar__nav { display: flex; align-items: center; gap: var(--space-1); }
-
-/* ── 月のカレンダー ─────────────────── */
-.k-cal { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 2px; }
-.k-cal abbr { text-decoration: none; }
-.k-cal th { font: 500 11px/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); padding: var(--space-1) 0; text-align: left; padding-left: 6px; }
-.k-cal td { height: 4.25rem; vertical-align: top; padding: 4px 6px; background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); font-size: 14px; overflow: hidden; }
-/* 土日は地を沈め、日曜と祝日は数字を薄くする（赤にすると異常の色と見分けがつかないため） */
-.k-cal td.is-weekend { background: var(--color-sunken); }
-.k-cal td.is-sunday .k-cal__day, .k-cal td.is-holiday .k-cal__day { color: var(--color-muted); }
-.k-cal td.is-holiday { background: var(--color-sunken); }
-.k-cal td.is-outside { background: transparent; border-style: dashed; color: var(--color-muted); }
-.k-cal td.is-outside .k-cal__day { color: var(--color-muted); font-weight: 400; }
-.k-cal__day { display: inline-grid; place-items: center; min-width: 26px; height: 26px; font: 500 14px/1 var(--font-mono); font-variant-numeric: tabular-nums; border-radius: 3px; }
-/* 今日は数字を反転させる */
-.k-cal td[aria-current="date"] .k-cal__day { background: var(--color-text); color: var(--color-base); font-weight: 700; }
-.k-cal__name { display: flex; gap: 4px; align-items: baseline; font-size: 11px; line-height: 1.3; color: var(--color-muted); overflow-wrap: anywhere; }
-.k-cal__name::before { content: ""; flex: none; width: 5px; height: 5px; background: var(--color-muted); border-radius: 1px; transform: translateY(-1px); }
-@media (max-width: 599px) {
-  .k-cal td { height: 2.75rem; padding: 2px; text-align: center; vertical-align: middle; }
-  .k-cal th { text-align: center; padding-left: 0; letter-spacing: .04em; }
-  .k-cal__name { display: none; }
-  .k-cal td.is-holiday .k-cal__day { box-shadow: inset 0 -2px 0 var(--color-muted); }
-}
-.k-holidays { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 0 var(--space-4); margin: 0; padding: 0; list-style: none; font-size: 14px; }
-.k-holidays li { display: flex; gap: var(--space-2); padding: 6px 0; border-bottom: var(--line) solid var(--color-border); }
-.k-holidays time { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-.k-holidays li.is-past { color: var(--color-muted); }
-.k-holidays li[aria-current="date"] { font-weight: 700; }
-
-/* ── ヘッダーの状態の小ボタン ───────────── */
-.k-statusbtn {
-  display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 var(--space-2);
-  font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; font-variant-numeric: tabular-nums;
-  color: var(--k-role, var(--color-muted)); background: transparent; border: var(--line) solid transparent; border-radius: var(--radius-sm); cursor: pointer;
-}
-.k-statusbtn::before { content: ""; width: 7px; height: 7px; border-radius: 1px; background: currentColor; }
-.k-statusbtn:hover, .k-statusbtn[aria-expanded="true"] { background: var(--color-sunken); border-color: var(--color-border); }
-.k-statusbtn:not([class*="k-role-"]):hover, .k-statusbtn:not([class*="k-role-"])[aria-expanded="true"] { color: var(--color-text); }
-@media (max-width: 599px) { .k-statusbtn__text { display: none; } }
-.k-statuspop { width: min(360px, calc(100vw - 16px)); max-width: none; gap: var(--space-3); font-size: 13px; }
-.k-statuspop__item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px var(--space-3); align-items: center; padding: var(--space-2) var(--space-3); background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius-sm); }
-.k-statuspop__item strong { font-weight: 600; }
-.k-statuspop__item .k-btn { grid-row: 1 / span 3; grid-column: 2; }
-.k-statuspop__ok { color: var(--color-muted); font-family: var(--font-mono); font-size: 12px; }
-.k-statuspop__ng { color: var(--color-alert); font-size: 12px; }
-
-/* ── ダイアログの広い版・選ぶダイアログ ─────── */
-.k-dialog--wide { width: min(55rem, calc(100vw - 32px)); }
-.k-dialog--wide, .k-dialog--picker { max-height: calc(100dvh - 32px); }
-.k-dialog--wide[open] { display: flex; flex-direction: column; }
-.k-dialog--wide .k-dialog__body { overflow-y: auto; min-height: 0; }
-.k-dialog--wide .k-dialog__head h3 { overflow-wrap: anywhere; }
-.k-dialog--picker { margin-top: max(16px, 6vh); width: min(44rem, calc(100vw - 32px)); height: calc(100dvh - max(16px, 6vh) - 16px); }
-.k-dialog--picker[open] { display: flex; flex-direction: column; }
-.k-dialog--picker .k-dialog__body { flex: 1; min-height: 0; grid-template-rows: auto auto minmax(0, 1fr); }
-.k-picker__desc { font-size: 13px; color: var(--color-muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.k-picker__current { display: flex; align-items: baseline; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-sunken); border-radius: var(--radius-sm); font-size: 14px; }
-/* 段の中のフォーカスの輪（外へ 4px）が角のにじみまで欠けないよう、6px 内側に余白を取る */
-.k-picker__cols { display: grid; gap: var(--space-4); min-height: 0; padding: 6px; margin: -6px; grid-template-rows: auto minmax(0, 1fr); overflow-y: auto; }
-.k-picker__col { display: grid; gap: var(--space-2); align-content: start; min-height: 0; }
-.k-picker__list { display: grid; margin: 0; padding: 0; list-style: none; }
-@media (min-width: 900px) {
-  .k-dialog--picker { width: min(72rem, calc(100vw - 32px)); height: min(52rem, calc(100dvh - max(16px, 6vh) - 16px)); }
-  .k-picker__cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-rows: minmax(0, 1fr); overflow: hidden; }
-  .k-picker__col { overflow-y: auto; padding: 6px; }
-  .k-picker__col + .k-picker__col { border-left: var(--line) solid var(--color-border); padding-left: var(--space-4); }
-}
-@media (max-width: 599px) {
-  .k-dialog--picker { width: calc(100vw - 16px); margin-top: 8px; height: calc(100dvh - 16px); }
-  .k-dialog--picker .k-dialog__body { padding: var(--space-3); }
-}
-
-/* ══ ボタンと欄の変種・選ぶ欄・知らせ ═══════════════════ */
 
 /* ── ボタンの変種 ─────────────────────── */
 .k-btn--block { display: flex; width: 100%; }
@@ -756,114 +421,6 @@ body.is-reordering, body.is-reordering * { cursor: grabbing !important; user-sel
 .k-chip { flex: 0 1 auto; min-width: 0; max-width: 10em; height: 22px; padding: 0 8px; display: inline-flex; align-items: center; font-size: 12px; border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm); }
 .k-chip > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .k-chip--rest { flex: none; font: 500 12px/1 var(--font-mono); color: var(--color-muted); border-style: dashed; }
-
-/* ── 独自のセレクト・探して選ぶ欄 ─────────────── */
-.k-picker-btn:disabled { cursor: not-allowed; color: var(--color-muted); border-style: dashed; background-color: transparent; }
-.k-picker-btn[aria-expanded="true"] { border-color: var(--color-text); }
-.k-picker-btn .k-catbadge { flex: none; }
-/* 選択肢の箱: 幅は押すボタンに合わせ、高さ 320px を超えたら箱の中だけスクロール */
-.k-listbox { left: 0; right: 0; width: auto; min-width: 0; max-width: none; padding: var(--space-1); gap: 0; max-height: 320px; overflow-y: auto; }
-.k-listbox:focus-visible { outline: none; animation: none; }
-.k-option[aria-disabled="true"] { color: var(--color-muted); cursor: not-allowed; }
-.k-option[aria-disabled="true"]:hover:not(.is-active) { background: transparent; color: var(--color-muted); }
-.k-option[aria-disabled="true"]:hover::before { visibility: hidden; }
-.k-option__sub { display: block; font-size: 12px; opacity: .75; }
-.k-combo { width: min(28rem, calc(100vw - 32px)); max-width: none; padding: var(--space-2); gap: var(--space-2); }
-.k-combo__list { display: grid; max-height: min(24rem, 50vh); overflow-y: auto; }
-.k-combo__head { position: sticky; top: 0; z-index: 1; background: var(--color-surface); padding: var(--space-2) var(--space-3) var(--space-1); }
-.k-combo__note { display: flex; align-items: center; gap: var(--space-2); font-size: 12px; color: var(--color-muted); padding: var(--space-1) var(--space-3); }
-.k-combo__note:empty { display: none; }
-.k-combo__note.is-error { color: var(--color-alert); }
-/* 前の結果を残したまま読み込んでいる間は、一覧を薄くする代わりに地を点線で区切る */
-.k-combo__list[aria-busy="true"] .k-option { color: var(--color-muted); }
-
-/* ── タグで絞り込む（いくつでも選べる札）・タグを付ける ─────── */
-.k-tagfilter { display: flex; flex-wrap: wrap; gap: var(--space-2); border: 0; margin: 0; padding: 0; min-width: 0; }
-.k-tagfilter legend { font-size: 13px; font-weight: 500; padding: 0; margin-bottom: var(--space-1); }
-.k-tagfilter label { position: relative; display: inline-flex; align-items: center; gap: var(--space-2); min-height: 32px; padding: 0 var(--space-3); font-size: 13px; background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm); cursor: pointer; }
-.k-tagfilter label:hover { background: var(--color-sunken); }
-.k-tagfilter input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
-/* 先頭の四角はチェックボックスと同じ印。選ぶと中を塗り、札ごと反転させる */
-.k-tagfilter label::before { content: ""; flex: none; width: 9px; height: 9px; border: var(--line) solid currentColor; border-radius: 1px; }
-.k-tagfilter label:has(input:checked) { background: var(--color-text); border-color: var(--color-text); color: var(--color-base); }
-.k-tagfilter label:has(input:checked)::before { background: currentColor; }
-.k-tagfilter label:has(input:focus-visible) { outline: 2px solid var(--color-focus); outline-offset: 2px; animation: k-lock-on .18s steps(3, end), k-focus-blink 1.2s steps(1, end) .18s infinite; }
-.k-tagpick { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
-.k-tagpick:empty { display: none; }
-.k-tagpick li { display: inline-flex; align-items: center; gap: 2px; min-height: 32px; padding: 0 2px 0 var(--space-3); font-size: 13px; background: var(--color-surface); border: var(--line) solid var(--color-text); border-radius: var(--radius-sm); }
-.k-tagpick .k-btn { width: 26px; min-height: 26px; --k-focus-offset: -1px; }
-.k-tagpick .k-icon { width: 14px; height: 14px; }
-.k-tagcands { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
-
-/* ── トースト（種類・閉じる・補足・積み重ね）・画面の上の知らせ ─────── */
-.k-toasts { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 40; display: grid; gap: var(--space-2); justify-items: end; width: min(24rem, calc(100vw - 32px)); pointer-events: none; }
-.k-toasts > * { pointer-events: auto; width: 100%; max-width: none; }
-@media (max-width: 599px) { .k-toasts { left: 16px; right: 16px; width: auto; } }
-.k-toast--card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; gap: 2px var(--space-3); padding: 10px var(--space-2) 10px var(--space-4); }
-.k-toast--card > .k-icon { grid-row: 1 / span 2; margin-top: 1px; }
-.k-toast__title { font-weight: 600; overflow-wrap: anywhere; }
-.k-toast__detail { grid-column: 2; font-size: 13px; opacity: .8; overflow-wrap: anywhere; }
-.k-toast__tail { grid-column: 3; grid-row: 1 / span 2; display: flex; align-items: center; gap: var(--space-1); }
-.k-toast__tail .k-toast__action { margin-left: 0; }
-.k-toast__close { color: inherit; }
-.k-toast__close:hover { background: transparent; box-shadow: inset 0 0 0 1px currentColor; }
-.k-toast .k-label { color: inherit; opacity: .8; }
-/* 出るときは下から 2 段で、消えるときは 2 段で薄く（なめらかにしない） */
-.k-toast.is-in { animation: k-toast-in .16s steps(2, end); }
-.k-toast.is-out { animation: k-toast-out .16s steps(2, end) forwards; }
-@keyframes k-toast-in { from { transform: translateY(8px); opacity: .5; } }
-@keyframes k-toast-out { to { transform: translateY(8px); opacity: 0; } }
-/* 画面の上の知らせ: 利用者の操作なしに画面を書き直したことを伝えるだけ。押せない */
-.k-topnotice-region { position: fixed; top: calc(64px + env(safe-area-inset-top, 0px)); left: 0; right: 0; z-index: 40; display: flex; justify-content: center; pointer-events: none; padding: 0 16px; }
-.k-topnotice { display: inline-flex; align-items: center; gap: var(--space-2); width: max-content; max-width: calc(100vw - 32px); padding: 4px var(--space-3); font-size: 13px; color: var(--color-info); background: var(--color-info-bg); border: var(--line) solid var(--color-info-border); border-radius: var(--radius-sm); box-shadow: var(--shadow-float); }
-.k-topnotice .k-icon { width: 16px; height: 16px; }
-
-/* ── ダイアログ: 中身が高いときは本文だけスクロール。足の左に離した操作 ─── */
-.k-dialog { max-height: calc(100dvh - 32px); }
-.k-dialog[open] { display: flex; flex-direction: column; }
-.k-dialog__body { overflow-y: auto; min-height: 0; }
-.k-dialog__foot { flex-wrap: wrap; }
-.k-dialog__foot > .k-dialog__aside { margin-right: auto; }
-
-/* ── 差分（要約・行の中の文字単位の変化・変わっていない行の省略） ─────── */
-.k-diff { display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); min-width: 0; }
-.k-diff__summary { display: flex; gap: var(--space-3); font: 500 12px/1.4 var(--font-mono); }
-.k-diff__added { color: var(--color-success); }
-.k-diff__removed { color: var(--color-alert); }
-.k-diff__lines { display: grid; gap: 1px; font-size: 14px; line-height: 1.7; }
-.k-diff__lines--code { font: 13px/1.6 var(--font-mono); max-height: 50dvh; overflow-y: auto; }
-.k-diff__row { display: grid; grid-template-columns: 1.5em minmax(0, 1fr); margin: 0; padding: 0 var(--space-1); min-height: 1lh; border-radius: var(--radius-sm); white-space: pre-wrap; overflow-wrap: anywhere; }
-.k-diff__row.is-add { background: var(--color-success-bg); box-shadow: inset var(--bar) 0 0 var(--color-success); }
-.k-diff__row.is-del { background: var(--color-alert-bg); box-shadow: inset var(--bar) 0 0 var(--color-alert); }
-.k-diff__row ins, .k-diff__row del { text-decoration: none; }
-.k-diff__mark { font-family: var(--font-mono); text-align: center; }
-.k-diff__row.is-add .k-diff__mark { color: var(--color-success); }
-.k-diff__row.is-del .k-diff__mark { color: var(--color-alert); }
-/* 行の一部だけ変わったときは、変わった文字を -border で塗り、追加は下線・削除は取り消し線（2px） */
-.k-diff__chars--add { background: var(--color-success-border); text-decoration: underline 2px var(--color-success); text-underline-offset: .2em; border-radius: 2px; }
-.k-diff__chars--del { background: var(--color-alert-border); text-decoration: line-through 2px var(--color-alert); border-radius: 2px; }
-.k-diff__skip { margin: 0; text-align: center; font-size: 13px; color: var(--color-muted); padding: 2px 0; }
-.k-diff__skip::before, .k-diff__skip::after { content: "···"; font-family: var(--font-mono); margin: 0 var(--space-2); }
-/* 行番号つき: 元の番号・新しい番号・印・本文の 4 列。番号はコピーされず、読み上げない */
-.k-diff__lines--num .k-diff__row { grid-template-columns: 2.5em 2.5em 1.5em minmax(0, 1fr); }
-.k-diff__num { color: var(--color-muted); text-align: right; padding-right: 6px; font-variant-numeric: tabular-nums; user-select: none; }
-.k-diff__lines--num .k-diff__skip { padding-left: 5em; }
-
-/* ── 選択肢の一覧と中身を左右に並べる（版の履歴） ─────────── */
-.k-versions { display: grid; grid-template-columns: minmax(11rem, 13rem) minmax(0, 1fr); gap: var(--space-3) var(--space-4); align-items: start; }
-@media (max-width: 640px) { .k-versions { grid-template-columns: minmax(0, 1fr); } }
-.k-versions__list { display: grid; gap: 2px; padding: var(--space-1); background: var(--color-base); border: var(--line) solid var(--color-border); border-radius: var(--radius); --k-focus-offset: 2px; }
-.k-versions__item { display: grid; grid-template-columns: 1ch minmax(0, 1fr); gap: 0 var(--space-2); padding: 6px var(--space-3) 6px var(--space-2); border-radius: var(--radius-sm); cursor: pointer; }
-.k-versions__item::before { content: "▸"; font-family: var(--font-mono); grid-row: span 2; visibility: hidden; }
-.k-versions__item:hover { background: var(--color-sunken); }
-.k-versions__item[aria-selected="true"] { background: var(--color-selection-bg); color: var(--color-selection-text); }
-.k-versions__item[aria-selected="true"]::before { visibility: visible; }
-.k-versions__list:focus-visible .k-versions__item[aria-selected="true"]::before { animation: k-blink 1.2s steps(1, end) infinite; }
-.k-versions__when { font: 13px/1.5 var(--font-mono); font-variant-numeric: tabular-nums; }
-.k-versions__meta { font-size: 12px; color: var(--color-muted); }
-.k-versions__item[aria-selected="true"] .k-versions__meta { color: inherit; opacity: .75; }
-.k-versions__detail { display: grid; gap: var(--space-2); min-width: 0; }
-.k-versions__hint { font-size: 13px; color: var(--color-muted); }
 
 /* キー */
 kbd, .k-kbd { color: var(--color-text); display: inline-block; min-width: 1.8em; padding: 1px 6px; text-align: center; font: 500 11px/1.6 var(--font-mono); border: var(--line) solid var(--color-border-strong); border-bottom-width: 2px; background: var(--color-surface); border-radius: 3px; }

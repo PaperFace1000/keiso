@@ -1,0 +1,130 @@
+/* keiso の印と小さな操作（状態の 5 つの色合い・分類のベタ塗りの印・未読の印・なぞると出る操作・経過時間と開始停止・設定の横の見本・スピードダイヤル・期間の点・縦のタブ・動いている処理の札・簡易な絞り込み・すぐ出るツールチップ）の見本の CSS。
+   kit.css の後に読み込む。アプリへはこのファイルを配らず、docs/components.md・docs/patterns.md とこの見た目に合わせて各アプリで作ること。
+   色は tokens/themes.css の変数だけを使う。ここに色を直接書かない */
+
+/* ── 状態の 5 つ目の色合い（まだ始めていない・止めてある） ─────── */
+/* 役割の色を持たない状態は、点を塗らずに枠だけにして、形でも見分ける */
+.k-status--none::before, .k-badge--none::before { background: transparent; box-shadow: inset 0 0 0 1px currentColor; }
+
+/* ── 分類のベタ塗りの印 ─────────────────── */
+/* 分類の色を反転して塗った四角（地が --extra-text、中が --extra-bg）。比は分類の色の文字と地の組と同じ */
+.k-catmark { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: var(--radius-sm); background: var(--extra-text, transparent); color: var(--extra-bg, var(--color-text)); border: var(--line) solid var(--extra-text, var(--color-border-strong)); font: 600 13px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+.k-catmark .k-icon { width: 16px; height: 16px; }
+.k-catmark--lg { width: 32px; height: 32px; font-size: 14px; }
+/* 淡い版: 同じ画面に 10 個以上並ぶとき。地・枠・中を分類の色の淡い組にする */
+.k-catmark--soft { background: var(--extra-bg, transparent); color: var(--extra-text, var(--color-text)); border-color: var(--extra-border, var(--color-border-strong)); }
+
+/* ── 未読・新着の印 ─────────────────────── */
+/* 赤（差し色・ALERT）にせず、文字の色の四角で出す。点滅させない */
+.k-unread { position: relative; }
+.k-unread::after { content: ""; position: absolute; top: 3px; right: 3px; width: 9px; height: 9px; border-radius: 1px; background: var(--color-text); box-shadow: 0 0 0 2px var(--color-surface); pointer-events: none; }
+.k-unread-dot { display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 1px; background: var(--color-text); }
+.k-new { display: inline-flex; align-items: center; height: 18px; padding: 0 5px; font: 600 10px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; background: var(--color-text); color: var(--color-base); border-radius: 3px; }
+
+/* ── なぞると出る小さな操作・選んだ文字に添える操作 ─────── */
+.k-hoverable { position: relative; }
+.k-hoverbtn-slot { position: relative; height: 0; }
+.k-hoverbtn { position: absolute; top: 0; left: -34px; opacity: 0; transition: opacity .12s steps(2, end); }
+.k-hoverable:hover .k-hoverbtn, .k-hoverable:focus-within .k-hoverbtn { opacity: 1; }
+@media (hover: none) { .k-hoverbtn { opacity: 1; } }
+/* 浮かぶものなので影を付ける */
+.k-selbtn { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; font-size: 13px; color: var(--color-text); background: var(--color-surface); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius-sm); box-shadow: var(--shadow-float); cursor: pointer; }
+.k-selbtn .k-icon { width: 14px; height: 14px; }
+.k-selbtn:hover { background: var(--color-sunken); }
+
+/* ── 経過時間の欄と、開始・停止のボタン ─────────── */
+.k-timer { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-3) var(--space-4); padding: 10px var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+.k-timer.is-running { border-color: var(--color-text); }
+.k-timer__main { flex: 1 1 10rem; display: grid; gap: 4px; min-width: 0; }
+.k-timer__time { display: grid; justify-items: end; gap: 4px; min-width: 7.5rem; padding: 2px 6px; color: var(--color-text); background: transparent; border: var(--line) solid transparent; border-radius: var(--radius-sm); font: inherit; text-align: right; }
+button.k-timer__time { cursor: pointer; }
+button.k-timer__time:hover { border-color: var(--color-border); background: var(--color-base); }
+.k-timer__digits { font-size: 28px; }
+.k-timer__start { display: inline-flex; align-items: center; gap: 4px; font: 11px/1 var(--font-mono); color: var(--color-muted); }
+.k-timer__note { flex-basis: 100%; font-size: 12px; color: var(--color-muted); }
+/* 開始・停止の大きいボタン: 48px の四角。止まっている間は普通のボタン、動いている間は反転 */
+.k-bigbtn { width: 48px; height: 48px; padding: 0; flex: none; }
+.k-bigbtn .k-icon { width: 22px; height: 22px; }
+
+/* ── 設定の横にその場で変わる見本 ─────────── */
+.k-preview-pair { display: flex; flex-wrap: wrap; gap: var(--space-5); align-items: start; }
+.k-preview-pair > .k-preview-pair__form { flex: 1 1 16rem; display: grid; gap: var(--space-4); min-width: 0; }
+.k-preview-pair > .k-preview-pair__sample { flex: 1 1 14rem; display: grid; gap: var(--space-1); min-width: 0; }
+
+/* ── スピードダイヤルのタイル ─────────────── */
+.k-dial { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.k-dial li { position: relative; }
+.k-dial__link { display: grid; justify-items: center; gap: 6px; padding: 10px 4px 8px; border: var(--line) solid transparent; border-radius: var(--radius); color: var(--color-text); }
+.k-dial__link:hover, .k-dial__link:focus-visible { border-color: var(--color-border); background: var(--color-surface); text-decoration: none; }
+.k-dial__mark { display: grid; place-items: center; width: 52px; height: 52px; border: var(--line) solid var(--color-border); border-radius: var(--radius); background: var(--color-base); }
+.k-dial__mark .k-icon { width: 28px; height: 28px; }
+/* 頭文字: 反転の 32px の四角 */
+.k-dial__initial { display: grid; place-items: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--color-text); color: var(--color-base); font: 700 16px/1 var(--font-mono); }
+.k-dial__name { font-size: 12px; line-height: 1.35; text-align: center; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.k-dial__more { position: absolute; top: 2px; right: 2px; width: 26px; min-height: 26px; opacity: 0; }
+.k-dial li:hover .k-dial__more, .k-dial li:focus-within .k-dial__more, .k-dial__more[aria-expanded="true"] { opacity: 1; }
+@media (hover: none) { .k-dial__more { opacity: 1; } }
+
+/* ── 期間の進み具合を点で見せる表 ─────────── */
+/* 過ぎた日は塗り、今日は塗りに輪、これからは枠だけ、休みは ×。色だけでなく形で見分ける */
+.k-days { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4) var(--space-5); }
+.k-days__text { display: grid; gap: 4px; }
+.k-days__date { font-size: 24px; }
+.k-days__sub { font-size: 13px; color: var(--color-muted); }
+.k-days__grid { display: grid; grid-template-columns: repeat(7, 12px); gap: 8px; }
+.k-days__grid > span { width: 12px; height: 12px; border-radius: 2px; position: relative; }
+.k-days__wd { font: 10px/12px var(--font-mono); color: var(--color-muted); text-align: center; width: auto !important; height: auto !important; }
+.k-days__grid .is-past { background: var(--color-border-strong); }
+.k-days__grid .is-today { background: var(--color-text); box-shadow: 0 0 0 2px var(--color-base), 0 0 0 3px var(--color-text); }
+.k-days__grid .is-future { box-shadow: inset 0 0 0 1.5px var(--color-text); }
+.k-days__grid .is-off::before, .k-days__grid .is-off::after { content: ""; position: absolute; left: -1px; right: -1px; top: 5px; height: 2px; background: var(--color-text); transform: rotate(45deg); }
+.k-days__grid .is-off::after { transform: rotate(-45deg); }
+.k-days__grid .is-off.is-past { background: transparent; }
+.k-days__grid .is-off.is-past::before, .k-days__grid .is-off.is-past::after { background: var(--color-border-strong); }
+.k-days__legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); font-size: 12px; color: var(--color-muted); margin: 0; padding: 0; list-style: none; }
+.k-days__legend li { display: inline-flex; align-items: center; gap: 6px; }
+.k-days__legend .k-days__grid { display: inline-grid; grid-template-columns: 12px; }
+
+/* ── 縦のタブ ─────────────────────────── */
+.k-vtabs { display: grid; grid-template-columns: 13rem minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+.k-vtabs__list { position: sticky; top: 16px; display: grid; gap: 2px; padding: 4px; background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+.k-vtabs__list button { display: flex; align-items: center; gap: var(--space-2); min-height: 36px; padding: 6px var(--space-3) 6px var(--space-2); font: 14px/1.5 var(--font-sans); color: var(--color-muted); background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer; text-align: left; --k-focus-offset: -2px; }
+.k-vtabs__list button::before { content: "▸"; font-family: var(--font-mono); width: 1ch; flex: none; visibility: hidden; }
+.k-vtabs__list button .k-icon { width: 16px; height: 16px; }
+.k-vtabs__list button:hover { background: var(--color-sunken); color: var(--color-text); }
+/* 選んだタブは反転し、先頭に ▸ */
+.k-vtabs__list button[aria-selected="true"] { background: var(--color-selection-bg); color: var(--color-selection-text); }
+.k-vtabs__list button[aria-selected="true"]::before { visibility: visible; }
+.k-vtabs__panel { min-width: 0; font-size: 14px; display: grid; gap: var(--space-3); align-content: start; --k-focus-offset: 2px; }
+/* 899px 以下は上の横並び（タブと同じ下線の見た目）にし、並びの中だけ横に送る */
+@media (max-width: 899px) {
+  .k-vtabs { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+  .k-vtabs__list { position: static; display: flex; gap: var(--space-4); padding: 0; overflow-x: auto; scrollbar-width: none; background: transparent; border: 0; border-bottom: var(--line) solid var(--color-border); border-radius: 0; }
+  .k-vtabs__list button { flex: none; padding: 12px 0; min-height: 0; border-radius: 0; font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+  .k-vtabs__list button::before { display: none; }
+  .k-vtabs__list button:hover { background: transparent; }
+  .k-vtabs__list button[aria-selected="true"] { background: transparent; color: var(--color-text); box-shadow: inset 0 calc(-1 * var(--bar)) 0 var(--color-text); }
+}
+
+/* ── ヘッダーの動いている処理の札 ─────────── */
+.k-runchip { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 var(--space-2); font: 500 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--color-text); border: var(--line) solid var(--color-text); border-radius: var(--radius-sm); }
+.k-runchip:hover { background: var(--color-sunken); text-decoration: none; }
+.k-runchip::before { content: ""; width: 7px; height: 7px; border-radius: 1px; background: currentColor; animation: k-blink 1.2s steps(1) infinite; }
+
+/* ── 一覧の上の簡易な絞り込み ─────────────── */
+.k-quickfilter { display: flex; align-items: center; flex-wrap: wrap; gap: 6px var(--space-2); font-size: 14px; }
+.k-quickfilter .k-select { width: auto; }
+.k-quickfilter__search { position: relative; flex: 1 1 14rem; max-width: 24rem; min-width: 0; }
+.k-quickfilter__search .k-icon { position: absolute; left: 10px; top: 10px; width: 16px; height: 16px; color: var(--color-muted); pointer-events: none; }
+.k-quickfilter__search .k-input { padding-left: 32px; }
+.k-quickfilter__count { font: 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--color-muted); }
+
+/* ── すぐ出るツールチップ（title が出ない場面だけの例外） ───────── */
+/* 反転の小さな札。浮かぶものなので影を付ける。名前は aria-label に別に付ける */
+[data-tip] { position: relative; }
+[data-tip]:hover::after, [data-tip]:focus-visible::after {
+  content: attr(data-tip); position: absolute; top: calc(100% + 4px); right: 0; z-index: 50;
+  padding: 2px 6px; font: 400 11px/1.4 var(--font-sans); letter-spacing: 0; text-transform: none; white-space: nowrap;
+  color: var(--color-base); background: var(--color-text); border-radius: var(--radius-sm); box-shadow: var(--shadow-float); pointer-events: none;
+}
+[data-tip].k-tip--up:hover::after, [data-tip].k-tip--up:focus-visible::after { top: auto; bottom: calc(100% + 4px); }

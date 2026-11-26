@@ -1,0 +1,100 @@
+/* keiso の入力の部品（スライダー・Markdown を書く欄・入力できる表・自動の印・その場で直す・文の中の数・行の足し引き・一度だけ見せる値・作成の完了・その場の確認・中くらいのダイアログ）の見本の CSS。
+   kit.css・kit-float.css の後に読み込む。アプリへはこのファイルを配らず、docs/components.md とこの見た目に合わせて各アプリで作ること。
+   色は tokens/themes.css の変数だけを使う。ここに色を直接書かない */
+
+/* ── 範囲から数を選ぶスライダー ─────────────── */
+/* 溝は目盛り（.k-meter）と同じ区切った帯。値までを文字の色で塗り、つまみは四角 */
+.k-slider { display: grid; gap: 6px; min-width: 0; }
+.k-slider__head { display: flex; align-items: baseline; gap: var(--space-2); font-size: 13px; font-weight: 500; }
+.k-slider__value { margin-left: auto; font: 400 13px/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--color-muted); }
+.k-slider__input { --k-fill: 0%; appearance: none; -webkit-appearance: none; width: 100%; height: 24px; margin: 0; background: transparent; cursor: pointer; --k-focus-offset: 2px; }
+.k-slider__input::-webkit-slider-runnable-track {
+  height: 8px; border-radius: 1px;
+  background: repeating-linear-gradient(90deg, var(--color-text) 0 6px, transparent 6px 8px) 0 0 / var(--k-fill) 100% no-repeat,
+              repeating-linear-gradient(90deg, var(--color-border) 0 6px, transparent 6px 8px);
+}
+.k-slider__input::-moz-range-track {
+  height: 8px; border-radius: 1px;
+  background: repeating-linear-gradient(90deg, var(--color-text) 0 6px, transparent 6px 8px) 0 0 / var(--k-fill) 100% no-repeat,
+              repeating-linear-gradient(90deg, var(--color-border) 0 6px, transparent 6px 8px);
+}
+.k-slider__input::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 20px; margin-top: -6px; background: var(--color-base); border: 2px solid var(--color-text); border-radius: 2px; }
+.k-slider__input::-moz-range-thumb { width: 8px; height: 16px; background: var(--color-base); border: 2px solid var(--color-text); border-radius: 2px; }
+/* 動かしている間はつまみを反転させる */
+.k-slider__input:active::-webkit-slider-thumb { background: var(--color-text); }
+.k-slider__input:active::-moz-range-thumb { background: var(--color-text); }
+/* 押せないときは透明度で薄めず、溝を点線の枠・つまみを点線にする */
+.k-slider:has(.k-slider__input:disabled) { color: var(--color-muted); }
+.k-slider__input:disabled { cursor: not-allowed; }
+.k-slider__input:disabled::-webkit-slider-runnable-track { background: transparent; outline: 1px dashed var(--color-border-strong); }
+.k-slider__input:disabled::-webkit-slider-thumb { background: var(--color-surface); border-style: dashed; border-color: var(--color-border-strong); }
+.k-slider__input:disabled::-moz-range-track { background: transparent; outline: 1px dashed var(--color-border-strong); }
+.k-slider__input:disabled::-moz-range-thumb { background: var(--color-surface); border-style: dashed; border-color: var(--color-border-strong); }
+
+/* ── Markdown を書く欄 ─────────────────── */
+.k-mdedit { display: grid; gap: var(--space-2); min-width: 0; }
+.k-mdedit__bar { display: flex; align-items: center; gap: var(--space-2) var(--space-3); flex-wrap: wrap; }
+.k-mdedit__help { margin-left: auto; font-size: 12px; color: var(--color-muted); }
+.k-mdedit__input { min-height: 11rem; font-size: 14px; tab-size: 2; }
+.k-mdedit__preview { min-height: 11rem; padding: 6px var(--space-3); border: var(--line) dashed var(--color-border-strong); border-radius: var(--radius-sm); font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; display: grid; gap: var(--space-2); align-content: start; --k-focus-offset: 2px; }
+.k-mdedit__preview h3, .k-mdedit__preview h4, .k-mdedit__preview h5 { font-size: 15px; }
+.k-mdedit__preview ul { margin: 0; padding-left: 1.2em; list-style: square; }
+.k-mdedit__preview li::marker { color: var(--color-muted); }
+.k-mdedit__preview code { font-size: 13px; }
+.k-mdedit__foot { display: flex; gap: var(--space-2) var(--space-3); flex-wrap: wrap; font-size: 12px; color: var(--color-muted); }
+.k-mdedit__count { margin-left: auto; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.k-mdedit__count.is-over { color: var(--color-alert); font-weight: 600; }
+.k-textarea[aria-invalid="true"] { border-color: var(--color-alert); box-shadow: inset var(--bar) 0 0 var(--color-alert); }
+
+/* ── 入力できる表と「自動に戻す」 ───────────── */
+.k-cellinput { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.k-cellinput .k-input { min-height: 36px; padding: 6px 8px; font-size: 14px; }
+.k-cellinput .k-input.is-num { width: 6rem; flex: none; text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+/* 自動の値は文字を muted にし、人が直した値は本文の色にする */
+.k-cellinput .k-input.is-auto { color: var(--color-muted); }
+
+/* ── 自動で入った値の印 ─────────────────── */
+/* 人が決めていない値なので枠を点線にし、状態のバッジ（地を塗る）と形で見分ける */
+.k-auto { display: inline-flex; align-items: center; flex: none; height: 18px; padding: 0 5px; font: 500 10px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; color: var(--color-info); border: var(--line) dashed var(--color-info); border-radius: 3px; }
+
+/* ── 1 つの値をその場で直すポップオーバー ─────────── */
+.k-quickedit { width: min(20rem, calc(100vw - 16px)); max-width: none; gap: var(--space-2); font-size: 13px; }
+.k-quickedit h4 { font-size: 14px; }
+.k-quickedit__desc { color: var(--color-muted); font-size: 12px; }
+.k-quickedit__row { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.k-quickedit__row .k-input { width: 6rem; min-height: 28px; padding: 2px 8px; text-align: right; font: 14px/1.5 var(--font-mono); font-variant-numeric: tabular-nums; }
+.k-quickedit__row .k-btn--primary { margin-left: auto; }
+.k-quickedit__error { padding: 4px 8px; font-size: 12px; color: var(--color-alert); background: var(--color-alert-bg); border: var(--line) solid var(--color-alert-border); border-radius: var(--radius-sm); box-shadow: inset var(--bar) 0 0 var(--color-alert); }
+
+/* ── 文の中に置く数の入力欄 ───────────────── */
+.k-sentence { display: flex; align-items: center; flex-wrap: wrap; gap: 6px var(--space-2); font-size: 14px; }
+.k-sentence .k-input { width: 5em; text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; padding-inline: 8px; }
+.k-sentence .k-select { width: auto; }
+
+/* ── 行を足し引きできる入力の並び ─────────────── */
+.k-rowsedit { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.k-rowsedit li { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+.k-rowsedit li > .k-input { flex: 1 1 10rem; width: auto; min-width: 0; }
+.k-rowsedit__empty { font-size: 13px; color: var(--color-muted); }
+
+/* ── 一度だけ見せる値 ───────────────────── */
+.k-secret__value { font: 13px/1.5 var(--font-mono); }
+.k-secret__head { font: 13px/1 var(--font-mono); color: var(--color-muted); }
+
+/* ── 作成の完了と次の操作の欄・その場の確認 ─────────── */
+/* どちらも状態の欄なので、知らせの欄と同じく左に役割の色の帯を出す */
+.k-done, .k-confirm {
+  display: grid; gap: var(--space-3); padding: var(--space-3) var(--space-4); min-width: 0;
+  background: var(--k-role-bg); border: var(--line) solid var(--k-role-border); border-radius: var(--radius);
+  box-shadow: inset var(--bar) 0 0 var(--k-role); font-size: 14px;
+}
+.k-done__title { display: flex; align-items: center; gap: var(--space-2); font-size: 16px; font-weight: 600; }
+.k-done__title .k-icon { color: var(--k-role); }
+.k-done__item { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+.k-done__actions, .k-confirm__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.k-confirm { padding: 10px var(--space-3); gap: var(--space-2); }
+.k-confirm__actions { justify-content: flex-end; }
+.k-done [tabindex="-1"]:focus, .k-confirm [tabindex="-1"]:focus { outline: none; }
+
+/* ── 中くらいのダイアログ（日時の組を 2 列に並べるもの） ─────────── */
+.k-dialog--medium { width: min(40rem, calc(100vw - 32px)); }

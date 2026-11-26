@@ -58,6 +58,27 @@
     </div>
   </section>
 
+  <!-- パンくず -->
+  <section class="sample-section" aria-labelledby="crumb-title">
+    <div class="k-heading"><h2 id="crumb-title">パンくず</h2><span class="k-label">.k-crumbs</span></div>
+    <p>今のページがどの階層のどこかを、本文の先頭、ページの見出しの上に出します。区切りは右向きの線の矢印で、文字の <code>/</code> や <code>&gt;</code> は使いません。今いるページはリンクにせず太くし、<code>aria-current="page"</code> を付けます。折り返し、横には送りません。4 階層を超えたら、間を <code>…</code> にまとめて先頭と末尾の 2 つずつを残します。1 階層目でも出します（出したり消したりすると本文の位置が動くため）。</p>
+    <div class="k-panel sample-stack">
+      <nav class="k-crumbs" aria-label="パンくず"><ol>
+        <li><a href="#crumb-title"><span data-icon="line:house"></span>ホーム</a></li>
+        <li><a href="#crumb-title"><span class="k-crumbs__text">倉庫</span></a></li>
+        <li><a href="#crumb-title"><span class="k-crumbs__text">倉庫 B</span></a></li>
+        <li><span aria-current="page"><span class="k-crumbs__text">11 月の棚卸し</span></span></li>
+      </ol></nav>
+      <nav class="k-crumbs" aria-label="パンくず（長い例）"><ol>
+        <li><a href="#crumb-title"><span data-icon="line:house"></span>ホーム</a></li>
+        <li><a href="#crumb-title"><span class="k-crumbs__text">記録</span></a></li>
+        <li><span class="k-crumbs__gap" title="2026 年・11 月">…</span></li>
+        <li><a href="#crumb-title" title="倉庫 B の上の段の箱をすべて数え直した記録"><span class="k-crumbs__text">倉庫 B の上の段の箱をすべて数え直した記録</span></a></li>
+        <li><span aria-current="page" title="差が出た箱の写真"><span class="k-crumbs__text">差が出た箱の写真</span></span></li>
+      </ol></nav>
+    </div>
+  </section>
+
   <!-- サイドバー・引き出し・ツリー -->
   <section class="sample-section" aria-labelledby="side-title">
     <div class="k-heading"><h2 id="side-title">サイドバー・幅のつまみ・引き出し・ツリー</h2><span class="k-label">.k-shell / .k-tree</span></div>
