@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>keiso — Navigation</title>
+<link rel="stylesheet" href="../tokens/themes.css">
+<link rel="stylesheet" href="../tokens/extra-colors.css">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/shell.css">
+<link rel="stylesheet" href="assets/sample.css">
+<script src="assets/icons.js"></script>
+<script src="assets/sample.js"></script>
+<style>
+/* この見本だけで使う配置。部品の見た目は kit.css と shell.css に寄せること */
+.nx-frame { display: grid; grid-template-rows: auto minmax(0, 1fr); height: 30rem; overflow: hidden; background: var(--color-base); border: var(--line) solid var(--color-border-strong); border-radius: var(--radius); }
+.nx-bar { display: flex; align-items: center; gap: var(--space-3); min-height: 52px; padding: 0 var(--space-4); border-bottom: var(--line) solid var(--color-border); background: var(--color-base); min-width: 0; }
+.nx-bar .k-logo { font-size: 14px; flex: none; }
+.nx-header { border: var(--line) solid var(--color-border-strong); border-radius: var(--radius); overflow: hidden; }
+.nx-header .k-header__inner { padding-inline: var(--space-4); }
+.nx-tabs-narrow { max-width: 22rem; }
+.nx-tabs-wide { max-width: 36rem; }
+.nx-article { display: grid; gap: var(--space-3); font-size: 15px; line-height: 1.9; max-width: 40rem; }
+.nx-article h3 { font-size: 18px; padding-top: var(--space-3); border-bottom: var(--line) solid var(--color-border); scroll-margin-top: 72px; }
+.nx-article h4 { font-size: 15px; scroll-margin-top: 72px; }
+</style>
+</head>
+<body class="k-dotgrid">
+<header id="js-sample-header"></header>
+<main class="k-page">
+  <section class="sample-intro">
+    <span class="k-label k-bracket">Navigation</span>
+    <h1>行き来の仕組み</h1>
+    <p>ヘッダー、サイドバーと幅のつまみ、狭い画面の引き出し、ツリー、タブ、目次、検索のダイアログです。今いる場所・選んでいるものは反転して ▸ を出し、動きは段階的にします。決まりは <code>docs/patterns.md</code>。</p>
+  </section>
+
+  <!-- ヘッダー -->
+  <section class="sample-section" aria-labelledby="header-title">
+    <div class="k-heading"><h2 id="header-title">ヘッダー</h2><span class="k-label">.k-header / .k-nav--icons</span></div>
+    <p>リンクにアイコンを添えておき、599px 以下では文言を隠してアイコンだけにします（名前は <code>aria-label</code> と <code>title</code> に残します）。それでも入りきらないリンクは、右の操作に重ねず、リンクの並びの中だけ横にスクロールします。</p>
+    <div class="nx-header">
+      <div class="k-header__inner">
+        <a class="k-logo" href="#header-title"><span data-icon="solid:keiso"></span>keiso</a>
+        <nav class="k-nav k-nav--icons" aria-label="主なページ">
+          <a href="#header-title" aria-current="page" aria-label="概要" title="概要"><span data-icon="line:house"></span><span class="k-nav__text">Home</span></a>
+          <a href="#header-title" aria-label="作業の一覧" title="作業の一覧"><span data-icon="line:list"></span><span class="k-nav__text">Tasks</span></a>
+          <a href="#header-title" aria-label="予定" title="予定"><span data-icon="line:calendar"></span><span class="k-nav__text">Plan</span></a>
+          <a href="#header-title" aria-label="記録" title="記録"><span data-icon="line:file-text"></span><span class="k-nav__text">Notes</span></a>
+          <a href="#header-title" aria-label="在庫の台帳" title="在庫の台帳"><span data-icon="line:database"></span><span class="k-nav__text">Stock</span></a>
+          <a href="#header-title" aria-label="知らせ" title="知らせ"><span data-icon="line:bell"></span><span class="k-nav__text">Alerts</span></a>
+        </nav>
+        <div class="k-header__actions">
+          <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" aria-label="探す" title="探す"><span class="k-icon--16" data-icon="line:magnifying-glass"></span></button>
+          <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm" type="button" aria-label="ユーザーのメニュー" title="ユーザーのメニュー"><span class="k-icon--16" data-icon="line:user-circle"></span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- サイドバー・引き出し・ツリー -->
+  <section class="sample-section" aria-labelledby="side-title">
+    <div class="k-heading"><h2 id="side-title">サイドバー・幅のつまみ・引き出し・ツリー</h2><span class="k-label">.k-shell / .k-tree</span></div>
+    <p>サイドバーの右端のつまみをドラッグするか、フォーカスして ←→（Shift で 4 倍）・Home・End で幅を 200〜560px（枠の幅の半分まで）に変えます。ダブルクリックで 280px に戻し、幅は保存します。899px 以下では左から出る引き出しにし、幕・Esc・ページを選んだときに閉じます。ツリーの行は深さごとに 14px 下げ、ページは「ファイル名・最初の見出し」の 2 段、フォルダの「+」はなぞったときとフォーカスがあるときだけ出します。</p>
+    <div class="nx-frame">
+      <div class="nx-bar">
+        <button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-drawer-toggle" type="button" id="js-drawer-btn" aria-expanded="false" aria-controls="js-sidebar" aria-label="記録の一覧を開く"><span class="k-icon--16" data-icon="line:list"></span></button>
+        <span class="k-logo"><span data-icon="solid:keiso"></span>keiso</span>
+        <span class="k-label" style="margin-left: auto;" id="js-side-width"></span>
+      </div>
+      <div class="k-shell" id="js-shell">
+        <nav class="k-sidebar" id="js-sidebar" aria-label="記録">
+          <div class="k-sidebar__head"><span class="k-label">Notes</span></div>
+          <ul class="k-tree" id="js-tree"></ul>
+        </nav>
+        <div class="k-resizer" id="js-resizer" role="separator" aria-orientation="vertical" aria-label="記録の一覧の幅" aria-controls="js-sidebar" aria-valuemin="200" aria-valuemax="560" tabindex="0" title="ドラッグか ←→ で幅を変える（ダブルクリックで元の幅）"></div>
+        <div class="k-scrim" id="js-scrim" hidden></div>
+        <div class="k-shell__main" id="js-shell-main"></div>
+      </div>
+    </div>
+    <span class="k-muted" id="js-tree-result" role="status" style="font-size: 13px;"></span>
+  </section>
+
+  <!-- タブ -->
+  <section class="sample-section" aria-labelledby="tabs-title">
+    <div class="k-heading"><h2 id="tabs-title">タブ</h2><span class="k-label">.k-tabs / .k-tabs--sm</span></div>
+    <p>←→ で移り、Home・End で端へ（選んだタブだけが Tab で止まります）。選んだタブは URL に残し（<code>?tab=</code>）、読み込み直しても同じタブを開きます。小さいタブは横の欄の中の切り替えに使い、帯の幅が 480px 以下ならアイコンを外します。入りきらないときは帯の中だけ横にスクロールします。</p>
+    <div class="k-panel" style="display: grid;">
+      <div class="k-tabs" role="tablist" aria-label="点検の表示" data-tabs data-url-key="tab">
+        <button type="button" role="tab" id="js-tab-overview" aria-controls="js-tp-overview" data-key="overview"><span data-icon="line:house"></span>Overview</button>
+        <button type="button" role="tab" id="js-tab-tasks" aria-controls="js-tp-tasks" data-key="tasks"><span data-icon="line:list"></span>Tasks <span class="k-count">12</span></button>
+        <button type="button" role="tab" id="js-tab-history" aria-controls="js-tp-history" data-key="history"><span data-icon="line:clock-counter-clockwise"></span>History</button>
+        <button type="button" role="tab" id="js-tab-settings" aria-controls="js-tp-settings" data-key="settings"><span data-icon="line:gear-six"></span>Settings</button>
+      </div>
+      <div class="k-tabpanel" role="tabpanel" id="js-tp-overview" aria-labelledby="js-tab-overview" tabindex="0">週次の点検の概要。倉庫 B の在庫の確認は 3 件が残っています。</div>
+      <div class="k-tabpanel" role="tabpanel" id="js-tp-tasks" aria-labelledby="js-tab-tasks" tabindex="0" hidden>今週の作業は 12 件。期日を過ぎたものが 1 件あります。</div>
+      <div class="k-tabpanel" role="tabpanel" id="js-tp-history" aria-labelledby="js-tab-history" tabindex="0" hidden>11-26 09:40 に手順を書き直しました。前の版は 3 つあります。</div>
+      <div class="k-tabpanel" role="tabpanel" id="js-tp-settings" aria-labelledby="js-tab-settings" tabindex="0" hidden>点検の曜日と、知らせを送る時刻を変えられます。</div>
+    </div>
+    <div class="sample-grid" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));">
+      <div class="k-panel nx-tabs-wide" style="display: grid; padding-inline: var(--space-2);">
+        <span class="sample-caption" style="padding: 0 var(--space-2) var(--space-2);">小さいタブ（帯が広い）</span>
+        <div class="k-tabs k-tabs--sm" role="tablist" aria-label="倉庫 B の記録" data-tabs>
+          <button type="button" role="tab" id="js-tab-s1" aria-controls="js-tp-s1"><span data-icon="line:clipboard-text"></span>Notes</button>
+          <button type="button" role="tab" id="js-tab-s2" aria-controls="js-tp-s2"><span data-icon="line:image"></span>Photos</button>
+          <button type="button" role="tab" id="js-tab-s3" aria-controls="js-tp-s3"><span data-icon="line:chat-text"></span>Comments</button>
+          <button type="button" role="tab" id="js-tab-s4" aria-controls="js-tp-s4"><span data-icon="line:clock"></span>Log</button>
+        </div>
+        <div class="k-tabpanel" role="tabpanel" id="js-tp-s1" aria-labelledby="js-tab-s1" tabindex="0" style="padding-inline: var(--space-2);">帳簿との差は 2 件。</div>
+        <div class="k-tabpanel" role="tabpanel" id="js-tp-s2" aria-labelledby="js-tab-s2" tabindex="0" hidden style="padding-inline: var(--space-2);">写真は 4 枚。</div>
+        <div class="k-tabpanel" role="tabpanel" id="js-tp-s3" aria-labelledby="js-tab-s3" tabindex="0" hidden style="padding-inline: var(--space-2);">コメントは 1 件。</div>
+        <div class="k-tabpanel" role="tabpanel" id="js-tp-s4" aria-labelledby="js-tab-s4" tabindex="0" hidden style="padding-inline: var(--space-2);">最後の記録は 09:40。</div>
+      </div>
+      <div class="k-panel nx-tabs-narrow" style="display: grid; padding-inline: var(--space-2);">
+        <span class="sample-caption" style="padding: 0 var(--space-2) var(--space-2);">小さいタブ（480px 以下でアイコンを外す）</span>
+        <div class="k-tabs k-tabs--sm" role="tablist" aria-label="空調の記録" data-tabs>
+          <button type="button" role="tab" id="js-tab-n1" aria-controls="js-tp-n1"><span data-icon="line:clipboard-text"></span>Notes</button>
+          <button type="button" role="tab" id="js-tab-n2" aria-controls="js-tp-n2"><span data-icon="line:image"></span>Photos</button>
+          <button type="button" role="tab" id="js-tab-n3" aria-controls="js-tp-n3"><span data-icon="line:chat-text"></span>Comments</button>
+          <button type="button" role="tab" id="js-tab-n4" aria-controls="js-tp-n4"><span data-icon="line:clock"></span>Log</button>
+          <button type="button" role="tab" id="js-tab-n5" aria-controls="js-tp-n5"><span data-icon="line:gear-six"></span>Settings</button>
+        </div>
+        <div class="k-tabpanel" role="tabpanel" id="js-tp-n1" aria-labelledby="js-tab-n1" tabindex="0" style="padding-inline: var(--space-2);">風の音が少し大きい。</div>
+        <div class="k-tabpanel" role="tabpanel" id="js-tp-n2" aria-labelledby="js-tab-n2" tabindex="0" hidden style="padding-inline: var(--space-2);">写真は 1 枚。</div>
+        <div class="k-tabpanel" role="tabpanel" id="js-tp-n3" aria-labelledby="js-tab-n3" tabindex="0" hidden style="padding-inline: var(--space-2);">コメントはありません。</div>
+        <div class="k-tabpanel" role="tabpanel" id="js-tp-n4" aria-labelledby="js-tab-n4" tabindex="0" hidden style="padding-inline: var(--space-2);">最後の記録は 11-25。</div>
+        <div class="k-tabpanel" role="tabpanel" id="js-tp-n5" aria-labelledby="js-tab-n5" tabindex="0" hidden style="padding-inline: var(--space-2);">点検は週に 1 回。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 目次 -->
+  <section class="sample-section" aria-labelledby="toc-title">
+    <div class="k-heading"><h2 id="toc-title">目次</h2><span class="k-label">.k-toc</span></div>
+    <p>1200px 以上では本文の右の列に固定し、開け閉めを保存します。それより狭いと本文の上に閉じた箱で置き、毎回閉じた状態から始め、項目を押したら閉じてから見出しへ移ります。今読んでいる章は、画面の上を過ぎた最後の見出しにし、太字と差し色の帯で示します（フォーカスは動かしません）。</p>
+    <div class="k-doc">
+      <div class="k-doc__toc">
+        <nav class="k-toc k-toc--box" aria-label="目次">
+          <button class="k-toc__toggle" type="button" id="js-toc-btn" aria-expanded="false"><span data-icon="line:caret-right"></span>目次</button>
+          <ol class="k-toc__list" id="js-toc-list" hidden></ol>
+        </nav>
+      </div>
+      <article class="nx-article" id="js-article" aria-label="点検の手引き">
+        <h3 id="js-ch-1">点検の目的</h3>
+        <p>点検は、困ったことが起きる前に小さな変化に気付くために行います。毎回同じ順番で、同じ場所を見ることが一番の近道です。</p>
+        <h3 id="js-ch-2">見る場所と順番</h3>
+        <p>入口の扉から始め、棚を手前から奥へ、最後に空調と電源の盤を見ます。</p>
+        <h4 id="js-ch-2-1">棚の見方</h4>
+        <p>箱の数を数え、帳簿と違えば数と時刻を書きます。写真は 1 か所につき 1 枚までにします。</p>
+        <h4 id="js-ch-2-2">空調の見方</h4>
+        <p>音と風の強さを確かめます。いつもと違う音がしたら、止めずに記録を付けてから担当に知らせます。</p>
+        <h3 id="js-ch-3">記録の付け方</h3>
+        <p>記録は、次の人が読んで同じ場所に立てるように書きます。測った値には単位と時刻を添えます。</p>
+        <p>書き終えたら状態を Done にし、直すことが残ったときは Review のまま担当に回します。</p>
+        <h3 id="js-ch-4">異常があったとき</h3>
+        <p>すぐ直せないものは、その場で触らずに記録だけを付け、知らせの欄から担当に送ります。</p>
+        <p>夜間は送れないので、朝 7:00 にまとめて送られます。急ぐときは電話で伝えてください。</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- 検索のダイアログ -->
+  <section class="sample-section" aria-labelledby="search-title">
+    <div class="k-heading"><h2 id="search-title">検索のダイアログ</h2><span class="k-label">.k-search</span></div>
+    <p>上から 10vh に寄せて開き、結果が増えても入力欄が動かないようにします。状態の文に件数・「探しています」・「上位 5 件（全 9 件）」を出し、次の言葉を探している間は前の結果を薄い文字で残します。一致した語は <code>mark</code>。599px 以下では全画面にし、キーの説明を隠します。選ぶだけで消えて困る入力が無いので、外側を押しても閉じます。<kbd>/</kbd> か <kbd>Ctrl</kbd> + <kbd>K</kbd> でも開きます。</p>
+    <div class="sample-row"><button class="k-btn" type="button" id="js-search-open"><span data-icon="line:magnifying-glass"></span>記録を探す</button><span class="k-muted" id="js-search-result" role="status" style="font-size: 13px;"></span></div>
+    <dialog class="k-dialog k-search" id="js-search" aria-label="記録を探す">
+      <div class="k-search__input">
+        <label class="k-prompt"><input type="text" id="js-search-input" role="combobox" aria-expanded="true" aria-controls="js-search-list" aria-autocomplete="list" aria-describedby="js-search-status" placeholder="題名・本文から探す" aria-label="探す言葉" autocomplete="off"></label>
+        <button class="k-btn k-btn--ghost k-btn--icon" type="button" data-close aria-label="検索を閉じる"><span data-icon="line:x"></span></button>
+      </div>
+      <p class="k-search__status" id="js-search-status" role="status"></p>
+      <ul class="k-search__results" id="js-search-list" role="listbox" aria-label="探した結果"></ul>
+      <p class="k-search__help" aria-hidden="true"><span><kbd>↑</kbd> <kbd>↓</kbd> 選ぶ</span><span><kbd>Enter</kbd> 開く</span><span><kbd>Esc</kbd> 閉じる</span></p>
+    </dialog>
+  </section>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { icon_svg } = window.keiso_sample;
+  const svg = (name) => `<span class="k-icon" aria-hidden="true">${icon_svg(`line:${name}`)}</span>`;
+  const escape_html = (text) => text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const read_store = (key) => { try { return localStorage.getItem(key); } catch { return null; } };
+  const write_store = (key, value) => { try { localStorage.setItem(key, value); } catch { /* 保存できなくても、このページの中では効く */ } };
+
+  // ── ツリー ──
+  const TREE = [
+    { folder: '倉庫', open: true, children: [{ file: 'stock-a.md', title: '倉庫 A の棚卸し' }, { file: 'stock-b.md', title: '倉庫 B の棚卸しと、帳簿の数え直し' }] },
+    { folder: '設備', open: false, children: [{ file: 'aircon.md', title: '空調の点検' }, { folder: '照明', open: true, children: [{ file: 'lights.md', title: '照明の交換の手順' }] }] },
+    { file: 'README.md', title: '' },
+  ];
+  let current = 'stock-b.md';
+  const tree_html = (nodes, depth) => nodes.map((node) => {
+    if (node.folder) {
+      return `<li class="k-tree__item"><button class="k-tree__row" type="button" style="--depth: ${depth};" aria-expanded="${node.open}" data-folder="${node.folder}"><span class="k-tree__caret">${svg('caret-right')}</span>${svg(node.open ? 'folder-open' : 'folder')}<span class="k-tree__title">${node.folder}</span></button><button class="k-btn k-btn--ghost k-btn--icon k-btn--sm k-tree__add" type="button" data-add="${node.folder}" aria-label="${node.folder}に新しいページを作る" title="${node.folder}に新しいページを作る">${svg('plus')}</button>${node.open ? `<ul class="k-tree" role="group">${tree_html(node.children, depth + 1)}</ul>` : ''}</li>`;
+    }
+    const names = node.title ? `<span class="k-tree__names"><span class="k-tree__file">${node.file}</span><span class="k-tree__title">${node.title}</span></span>` : `<span class="k-tree__names"><span class="k-tree__title">${node.file}</span></span>`;
+    return `<li class="k-tree__item"><a class="k-tree__row" href="#side-title" style="--depth: ${depth};" data-file="${node.file}"${node.file === current ? ' aria-current="page"' : ''} aria-label="${node.title ? `${node.file} ${node.title}` : node.file}"><span class="k-tree__spacer"></span>${svg('file-text')}${names}</a></li>`;
+  }).join('');
+  const find_folder = (nodes, name) => { for (const n of nodes) { if (n.folder === name) return n; if (n.children) { const f = find_folder(n.children, name); if (f) return f; } } return null; };
+  const find_page = (nodes, file) => { for (const n of nodes) { if (n.file === file) return n; if (n.children) { const f = find_page(n.children, file); if (f) return f; } } return null; };
+  const tree = document.getElementById('js-tree');
+  const main = document.getElementById('js-shell-main');
+  const render_tree = (focus_selector = null) => {
+    tree.innerHTML = tree_html(TREE, 0);
+    const page = find_page(TREE, current);
+    main.innerHTML = `<span class="k-label">${page.file}</span><h3 style="font-size: 18px;">${page.title || page.file}</h3><p>左の一覧で選んだページの中身をここに出します。つまみで一覧の幅を変えても、本文は残りの幅に合わせて折り返します。</p><p class="k-muted" style="font-size: 13px;">899px 以下では、左上のボタンで一覧を引き出します。</p>`;
+    if (focus_selector) { const el = tree.querySelector(focus_selector); if (el) el.focus(); }
+  };
+  tree.addEventListener('click', (e) => {
+    const folder = e.target.closest('[data-folder]');
+    const add = e.target.closest('[data-add]');
+    const link = e.target.closest('[data-file]');
+    if (folder) { const node = find_folder(TREE, folder.dataset.folder); node.open = !node.open; render_tree(`[data-folder="${node.folder}"]`); }
+    if (add) document.getElementById('js-tree-result').textContent = `「${add.dataset.add}」に新しいページを作る（見本なので作りません）`;
+    if (link) { e.preventDefault(); current = link.dataset.file; render_tree(`[data-file="${current}"]`); close_drawer(); }
+  });
+
+  // ── 幅のつまみ: ドラッグ・←→（Shift で 4 倍）・Home・End、ダブルクリックで既定の幅。幅は保存する ──
+  const STORE_WIDTH = 'keiso.sample.sidebar-width';
+  const DEFAULT_WIDTH = 280;
+  const shell = document.getElementById('js-shell');
+  const resizer = document.getElementById('js-resizer');
+  const max_width = () => Math.max(200, Math.min(560, Math.floor(shell.clientWidth / 2)));
+  const set_width = (px, save = true) => {
+    const width = Math.round(Math.max(200, Math.min(max_width(), px)));
+    shell.style.setProperty('--sidebar-width', `${width}px`);
+    resizer.setAttribute('aria-valuenow', String(width));
+    resizer.setAttribute('aria-valuemax', String(max_width()));
+    resizer.setAttribute('aria-valuetext', `${width}px`);
+    document.getElementById('js-side-width').textContent = `Sidebar ${width}px`;
+    if (save) write_store(STORE_WIDTH, String(width));
+  };
+  set_width(Number(read_store(STORE_WIDTH)) || DEFAULT_WIDTH, false);
+  resizer.addEventListener('keydown', (e) => {
+    const now = Number(resizer.getAttribute('aria-valuenow'));
+    const step = e.shiftKey ? 64 : 16;
+    const moves = { ArrowLeft: now - step, ArrowRight: now + step, Home: 200, End: max_width() };
+    if (!(e.key in moves)) return;
+    e.preventDefault();
+    set_width(moves[e.key]);
+  });
+  resizer.addEventListener('dblclick', () => set_width(DEFAULT_WIDTH));
+  resizer.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    resizer.setPointerCapture(e.pointerId);
+    resizer.classList.add('is-dragging');
+    document.body.classList.add('is-resizing');
+    const left = shell.getBoundingClientRect().left;
+    const move = (ev) => set_width(ev.clientX - left, false);
+    const up = () => {
+      resizer.removeEventListener('pointermove', move);
+      resizer.removeEventListener('pointerup', up);
+      resizer.removeEventListener('pointercancel', up);
+      resizer.classList.remove('is-dragging');
+      document.body.classList.remove('is-resizing');
+      set_width(Number(resizer.getAttribute('aria-valuenow')));
+    };
+    resizer.addEventListener('pointermove', move);
+    resizer.addEventListener('pointerup', up);
+    resizer.addEventListener('pointercancel', up);
+  });
+  // ほかのタブで変えた幅も追う
+  window.addEventListener('storage', (e) => { if (e.key === STORE_WIDTH && e.newValue) set_width(Number(e.newValue), false); });
+
+  // ── 引き出し（899px 以下） ──
+  const drawer_btn = document.getElementById('js-drawer-btn');
+  const sidebar = document.getElementById('js-sidebar');
+  const scrim = document.getElementById('js-scrim');
+  const open_drawer = () => {
+    sidebar.classList.add('is-open');
+    scrim.hidden = false;
+    drawer_btn.setAttribute('aria-expanded', 'true');
+    drawer_btn.setAttribute('aria-label', '記録の一覧を閉じる');
+    drawer_btn.querySelector('[data-icon]').innerHTML = icon_svg('line:x');
+    const first = sidebar.querySelector('[aria-current="page"]') || sidebar.querySelector('.k-tree__row');
+    setTimeout(() => first.focus(), 0);
+  };
+  function close_drawer(return_focus = false) {
+    if (!sidebar.classList.contains('is-open')) return;
+    sidebar.classList.remove('is-open');
+    scrim.hidden = true;
+    drawer_btn.setAttribute('aria-expanded', 'false');
+    drawer_btn.setAttribute('aria-label', '記録の一覧を開く');
+    drawer_btn.querySelector('[data-icon]').innerHTML = icon_svg('line:list');
+    if (return_focus) drawer_btn.focus();
+  }
+  drawer_btn.addEventListener('click', () => (sidebar.classList.contains('is-open') ? close_drawer(true) : open_drawer()));
+  scrim.addEventListener('click', () => close_drawer(true));
+  sidebar.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); close_drawer(true); } });
+  matchMedia('(min-width: 900px)').addEventListener('change', () => close_drawer());
+  render_tree();
+
+  // ── タブ: ←→・Home・End で移る。data-url-key があれば選んだタブを URL に残す ──
+  document.querySelectorAll('[data-tabs]').forEach((list) => {
+    const tabs = [...list.querySelectorAll('[role="tab"]')];
+    const url_key = list.dataset.urlKey;
+    const select = (tab, focus = false) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+      if (focus) tab.focus();
+      tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      if (url_key) {
+        const params = new URLSearchParams(location.search);
+        params.set(url_key, tab.dataset.key);
+        history.replaceState(null, '', `${location.pathname}?${params}`);
+      }
+    };
+    const from_url = url_key ? tabs.find((t) => t.dataset.key === new URLSearchParams(location.search).get(url_key)) : null;
+    tabs.forEach((t) => { t.setAttribute('aria-selected', 'false'); t.tabIndex = -1; });
+    const first = from_url || tabs[0];
+    first.setAttribute('aria-selected', 'true'); first.tabIndex = 0;
+    tabs.forEach((t) => { document.getElementById(t.getAttribute('aria-controls')).hidden = t !== first; });
+    list.addEventListener('click', (e) => { const t = e.target.closest('[role="tab"]'); if (t) select(t); });
+    list.addEventListener('keydown', (e) => {
+      const i = tabs.indexOf(document.activeElement);
+      if (i < 0) return;
+      const moves = { ArrowRight: (i + 1) % tabs.length, ArrowLeft: (i - 1 + tabs.length) % tabs.length, Home: 0, End: tabs.length - 1 };
+      if (!(e.key in moves)) return;
+      e.preventDefault();
+      select(tabs[moves[e.key]], true);
+    });
+  });
+
+  // ── 目次 ──
+  const STORE_TOC = 'keiso.sample.toc-open';
+  const wide = matchMedia('(min-width: 1200px)');
+  const toc_btn = document.getElementById('js-toc-btn');
+  const toc_list = document.getElementById('js-toc-list');
+  const heads = [...document.querySelectorAll('#js-article h3, #js-article h4')];
+  let no = [0, 0];
+  toc_list.innerHTML = heads.map((h) => {
+    const depth = h.tagName === 'H4' ? 1 : 0;
+    if (depth === 0) no = [no[0] + 1, 0]; else no = [no[0], no[1] + 1];
+    const label = depth === 0 ? `${no[0]}.` : `${no[0]}.${no[1]}`;
+    return `<li style="--depth: ${depth};"><a href="#${h.id}" data-no="${label}">${h.textContent}</a></li>`;
+  }).join('');
+  const set_toc = (open, save) => {
+    toc_btn.setAttribute('aria-expanded', String(open));
+    toc_list.hidden = !open;
+    if (open) toc_btn.setAttribute('aria-controls', 'js-toc-list'); else toc_btn.removeAttribute('aria-controls');
+    if (save && wide.matches) write_store(STORE_TOC, open ? '1' : '0');
+  };
+  const reset_toc = () => set_toc(wide.matches ? read_store(STORE_TOC) !== '0' : false, false);
+  reset_toc();
+  wide.addEventListener('change', reset_toc);
+  toc_btn.addEventListener('click', () => set_toc(toc_btn.getAttribute('aria-expanded') !== 'true', true));
+  toc_list.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (!a || wide.matches) return;
+    // 狭い画面: 閉じてから見出しへ移る（閉じると本文の位置がずれるため）
+    e.preventDefault();
+    set_toc(false, false);
+    document.querySelector(a.getAttribute('href')).scrollIntoView();
+  });
+  const mark_current = () => {
+    const passed = heads.filter((h) => h.getBoundingClientRect().top < 80);
+    const now = passed.length ? passed[passed.length - 1] : heads[0];
+    toc_list.querySelectorAll('a').forEach((a) => { if (a.getAttribute('href') === `#${now.id}`) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
+  };
+  document.addEventListener('scroll', mark_current, { passive: true });
+  mark_current();
+
+  // ── 検索のダイアログ ──
+  const PAGES = [
+    ['倉庫 B の棚卸し', 'notes / 倉庫', '帳簿との差は 2 件。箱は B-04 の棚に移したまま。'],
+    ['倉庫 A の棚卸し', 'notes / 倉庫', '箱の数は帳簿と同じ。棚の札を付け直した。'],
+    ['空調の点検', 'notes / 設備', '倉庫 B の空調は風が弱い。フィルタを替える。'],
+    ['照明の交換の手順', 'notes / 設備 / 照明', '倉庫の照明は脚立を使わず、台車の上から替えない。'],
+    ['点検の手引き', 'README', '倉庫は入口から奥へ、最後に空調と電源の盤を見る。'],
+    ['発注の控え（11 月分）', 'notes', '倉庫 B 向けの箱を 20 個。'],
+    ['週次の点検の予定', 'notes / 点検', '木曜 10:00 から 30 分。倉庫 A と B。'],
+    ['温度の記録', 'notes / 点検', '倉庫 A は 18.2℃、倉庫 B は 19.0℃。'],
+    ['棚の札の作り方', 'notes / 倉庫', '札は倉庫ごとに色を変えない。番号で分ける。'],
+  ];
+  const LIMIT = 5;
+  const search = document.getElementById('js-search');
+  const search_open = document.getElementById('js-search-open');
+  const input = document.getElementById('js-search-input');
+  const list = document.getElementById('js-search-list');
+  const status = document.getElementById('js-search-status');
+  let hits = [];
+  let active = 0;
+  let timer = 0;
+  const highlight = (text, word) => {
+    const safe = escape_html(text);
+    if (word === '') return safe;
+    return safe.split(escape_html(word)).join(`<mark>${escape_html(word)}</mark>`);
+  };
+  const point = (i) => {
+    const items = [...list.children];
+    if (items.length === 0) { input.removeAttribute('aria-activedescendant'); return; }
+    active = Math.max(0, Math.min(items.length - 1, i));
+    items.forEach((item, j) => item.setAttribute('aria-selected', String(j === active)));
+    input.setAttribute('aria-activedescendant', items[active].id);
+    items[active].scrollIntoView({ block: 'nearest' });
+  };
+  const render = (word) => {
+    const all = PAGES.filter(([title, , body]) => word !== '' && (title.includes(word) || body.includes(word)));
+    hits = all.slice(0, LIMIT);
+    list.removeAttribute('aria-busy');
+    list.innerHTML = hits.map(([title, path, body], i) => `<li class="k-search__hit" role="option" id="js-hit-${i}" aria-selected="false"><span class="k-search__title">${highlight(title, word)}</span><span class="k-search__path">${escape_html(path)}</span><span class="k-search__snippet">${highlight(body, word)}</span></li>`).join('');
+    if (word === '') status.textContent = '言葉を入れると、題名と本文から探します。';
+    else if (all.length === 0) status.textContent = `「${word}」に合う記録はありません。言葉を短くしてください。`;
+    else if (all.length > LIMIT) status.textContent = `上位 ${LIMIT} 件（全 ${all.length} 件）`;
+    else status.textContent = `${all.length} 件`;
+    point(0);
+  };
+  const run = () => {
+    clearTimeout(timer);
+    const word = input.value.normalize('NFKC').trim();
+    timer = setTimeout(() => {
+      // 前の結果は残したまま、薄い文字にして探している間を示す
+      list.setAttribute('aria-busy', 'true');
+      status.innerHTML = '<span class="k-loader" aria-hidden="true"><i></i><i></i><i></i><i></i></span>探しています';
+      timer = setTimeout(() => render(word), 600);
+    }, 250);
+  };
+  const open_search = () => {
+    input.value = '';
+    render('');
+    search.showModal();
+    input.focus();
+  };
+  search_open.addEventListener('click', open_search);
+  document.addEventListener('keydown', (e) => {
+    const typing = e.target.closest('input, textarea, [contenteditable="true"]');
+    if (search.open || typing) return;
+    if (e.key === '/' || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) { e.preventDefault(); open_search(); }
+  });
+  input.addEventListener('input', run);
+  input.addEventListener('keydown', (e) => {
+    if (e.isComposing) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); point(active + 1); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); point(active - 1); }
+    if (e.key === 'Enter' && hits[active]) { e.preventDefault(); open_hit(active); }
+  });
+  const open_hit = (i) => {
+    document.getElementById('js-search-result').textContent = `「${hits[i][0]}」を開く（見本なので移りません）`;
+    search.close();
+  };
+  list.addEventListener('click', (e) => { const item = e.target.closest('[role="option"]'); if (item) open_hit([...list.children].indexOf(item)); });
+  // 外側（幕）を押したら閉じる。選ぶだけのダイアログなので、入力が消えても困らない
+  search.addEventListener('click', (e) => { if (e.target === search || e.target.closest('[data-close]')) search.close(); });
+  search.addEventListener('close', () => search_open.focus());
+});
+</script>
+</body>
+</html>

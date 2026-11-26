@@ -15,6 +15,7 @@
     { href: 'icons.html', label: 'Icons' },
     { href: 'ui-kit.html', label: 'UI Kit' },
     { href: 'patterns.html', label: 'Patterns' },
+    { href: 'navigation.html', label: 'Navigation' },
     { href: 'inputs.html', label: 'Inputs' },
     { href: 'overlays.html', label: 'Overlays' },
     { href: 'records.html', label: 'Records' },

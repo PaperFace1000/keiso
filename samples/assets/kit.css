@@ -265,6 +265,19 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-table tr:last-child td { border-bottom: 0; }
 .k-table .is-num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .k-table tbody tr:hover { background: var(--color-sunken); }
+/* 699px 以下で行ごとのカードに崩す表。セルには必ず data-label を書き、頭に項目名を出す */
+@media (max-width: 699px) {
+  .k-table-wrap--cards { border: 0; overflow: visible; border-radius: 0; }
+  .k-table--cards, .k-table--cards tbody, .k-table--cards tr, .k-table--cards td { display: block; }
+  .k-table--cards thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .k-table--cards tbody { display: grid; gap: var(--space-2); }
+  .k-table--cards tr { padding: 6px var(--space-3); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+  .k-table--cards tbody tr:hover { background: var(--color-surface); }
+  .k-table--cards td, .k-table--cards tr:last-child td { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: var(--space-2); align-items: baseline; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
+  .k-table--cards td + td { border-top: var(--line) dashed var(--color-border); }
+  .k-table--cards td::before { content: attr(data-label); font: 500 11px/1.6 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+  .k-table--cards td.is-num { text-align: left; }
+}
 
 /* 値の一覧（見出しと値の組） */
 .k-kv { display: grid; grid-template-columns: max-content 1fr; gap: var(--space-2) var(--space-5); margin: 0; font-size: 14px; }
@@ -312,6 +325,26 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-tabs { display: flex; gap: var(--space-4); border-bottom: var(--line) solid var(--color-border); overflow-x: auto; scrollbar-width: none; }
 .k-tabs button { font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; padding: 12px 0; border: 0; background: none; color: var(--color-muted); cursor: pointer; white-space: nowrap; box-shadow: inset 0 0 0 transparent; }
 .k-tabs button[aria-selected="true"] { color: var(--color-text); box-shadow: inset 0 calc(-1 * var(--bar)) 0 var(--color-text); }
+/* タブのアイコン・小さい版。フォーカスの輪は帯の中で欠けないよう内側に出す */
+.k-tabs button { display: inline-flex; align-items: center; gap: 6px; --k-focus-offset: -2px; }
+.k-tabs button:hover { color: var(--color-text); }
+.k-tabs .k-icon { width: 16px; height: 16px; }
+.k-tabs--sm { gap: var(--space-3); padding: 0 var(--space-2); container-type: inline-size; }
+.k-tabs--sm button { padding: 8px 0; font-size: 11px; gap: 4px; }
+/* 小さいタブは、帯の幅が 480px 以下ならアイコンを外して詰める */
+@container (max-width: 480px) { .k-tabs--sm .k-icon { display: none; } }
+.k-tabpanel { padding-top: var(--space-3); font-size: 14px; --k-focus-offset: 2px; }
+
+/* ヘッダーのアイコンつきのリンク: 599px 以下は文言を隠してアイコンだけにし、入りきらなければ並びだけ横にスクロール */
+.k-nav--icons { flex-wrap: nowrap; min-width: 0; overflow-x: auto; scrollbar-width: none; padding-block: 4px; }
+.k-nav--icons::-webkit-scrollbar { display: none; }
+.k-nav--icons a { display: inline-flex; align-items: center; gap: 6px; flex: none; --k-focus-offset: -2px; }
+.k-nav--icons .k-icon { width: 16px; height: 16px; }
+.k-header__actions { margin-left: auto; display: flex; align-items: center; gap: var(--space-1); flex: none; }
+@media (max-width: 599px) {
+  .k-nav--icons .k-nav__text, .k-header__actions .k-nav__text { display: none; }
+  .k-nav--icons a { padding: 8px; }
+}
 
 /* ダイアログ */
 .k-dialog { border: var(--line) solid var(--color-border-strong); background: var(--color-surface); color: var(--color-text); padding: 0; width: min(32rem, calc(100vw - 32px)); border-radius: var(--radius); overflow: hidden; }
@@ -456,7 +489,7 @@ code, kbd, .k-mono { font-family: var(--font-mono); font-size: 0.9em; }
 .k-disclosures { display: grid; gap: var(--space-2); }
 
 /* ── 欄（見出し・件数・更新の時刻と、読み込み中・失敗・空） ─────── */
-.k-section { display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
+.k-section { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); align-content: start; min-width: 0; }
 .k-section__head { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; padding-bottom: var(--space-2); border-bottom: var(--line) solid var(--color-border); }
 .k-section__head h3 { font-size: 16px; font-weight: 700; }
 .k-section__head > .k-icon { color: var(--color-muted); }

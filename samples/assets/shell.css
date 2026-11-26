@@ -1,0 +1,103 @@
+/* keiso の画面の骨組み（サイドバー・幅のつまみ・引き出し・ツリー・目次・検索のダイアログ）の見本の CSS。
+   アプリへはこのファイルを配らず、docs/patterns.md とこの見た目に合わせて各アプリで作ること。色は tokens/themes.css の変数だけを使う */
+
+/* ── サイドバー・幅のつまみ・引き出し ─────────────── */
+/* 見本では枠の中に画面を組む。アプリでは .k-shell を画面いっぱいにし、サイドバーをヘッダーの下に固定する */
+.k-shell { --sidebar-width: 280px; position: relative; display: grid; grid-template-columns: var(--sidebar-width) minmax(0, 1fr); min-height: 0; }
+.k-sidebar { position: relative; min-width: 0; overflow-y: auto; padding: var(--space-3) var(--space-2) var(--space-6); background: var(--color-surface); border-right: var(--line) solid var(--color-border); }
+.k-sidebar__head { display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--space-2) var(--space-2); }
+.k-sidebar__head .k-label { flex: 1; }
+.k-shell__main { min-width: 0; overflow-y: auto; padding: var(--space-5) var(--space-6) var(--space-7); display: grid; gap: var(--space-3); align-content: start; font-size: 14px; }
+/* 幅のつまみ: 線の真ん中に 6px の当たり。なぞる・フォーカス・ドラッグ中だけ、真ん中に 2px の線を出す */
+.k-resizer { position: absolute; top: 0; bottom: 0; left: calc(var(--sidebar-width) - 3px); width: 6px; z-index: 3; cursor: col-resize; touch-action: none; --k-focus-offset: -2px; }
+.k-resizer::after { content: ""; position: absolute; top: 0; bottom: 0; left: 2px; width: 2px; background: transparent; transition: background-color .12s steps(2, end); }
+.k-resizer:hover::after, .k-resizer:focus-visible::after, .k-resizer.is-dragging::after { background: var(--color-text); }
+.k-resizer:focus-visible { outline-offset: 0; }
+body.is-resizing, body.is-resizing * { cursor: col-resize !important; user-select: none; }
+.k-drawer-toggle { display: none; }
+.k-scrim { display: none; }
+/* 899px 以下: 左から出る引き出しにし、後ろに幕を出す。つまみは出さない */
+@media (max-width: 899px) {
+  .k-shell { grid-template-columns: minmax(0, 1fr); }
+  .k-drawer-toggle { display: inline-flex; }
+  .k-resizer { display: none; }
+  .k-sidebar { position: absolute; z-index: 15; top: 0; bottom: 0; left: 0; width: min(320px, 85%); border-right-color: var(--color-border-strong); transform: translateX(-100%); visibility: hidden; transition: transform .2s steps(4, end), visibility 0s linear .2s; }
+  .k-sidebar.is-open { transform: none; visibility: visible; transition: transform .2s steps(4, end), visibility 0s; }
+  .k-scrim { display: block; position: absolute; inset: 0; z-index: 14; background: rgba(0, 0, 0, .45); }
+  .k-scrim[hidden] { display: none; }
+  .k-shell__main { padding: var(--space-4) var(--space-4) var(--space-7); }
+}
+
+/* ── ツリー ───────────────────────── */
+.k-tree { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.k-tree__item { position: relative; }
+.k-tree__row { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 32px; padding: 4px var(--space-2) 4px calc(var(--space-2) + var(--depth, 0) * 14px); font: 14px/1.4 var(--font-sans); color: inherit; text-align: left; background: transparent; border: 0; border-radius: var(--radius-sm); cursor: pointer; --k-focus-offset: -2px; }
+.k-tree__row:hover { background: var(--color-sunken); text-decoration: none; }
+.k-tree__row .k-icon { width: 16px; height: 16px; color: var(--color-muted); }
+.k-tree__caret { transition: transform .12s steps(2, end); }
+.k-tree__row[aria-expanded="true"] .k-tree__caret { transform: rotate(90deg); }
+/* 矢印の無いページの行は、矢印の分の空きを入れて名前の位置をそろえる */
+.k-tree__spacer { width: 16px; flex: none; }
+.k-tree__names { display: grid; min-width: 0; }
+.k-tree__file { font: 12px/1.3 var(--font-mono); color: var(--color-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.k-tree__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 開いているページは反転し、▸ を出す。アイコンと 1 段目も反転の文字の色にする */
+.k-tree__row[aria-current="page"] { background: var(--color-selection-bg); color: var(--color-selection-text); }
+.k-tree__row[aria-current="page"] .k-icon, .k-tree__row[aria-current="page"] .k-tree__file { color: inherit; }
+.k-tree__row[aria-current="page"] .k-tree__file { opacity: .75; }
+/* フォルダの「+」: なぞったときとフォーカスがあるときだけ出す。なぞれない端末では常に出す */
+.k-tree__add { position: absolute; top: 2px; right: 2px; opacity: 0; }
+.k-tree__item:hover > .k-tree__add, .k-tree__add:focus-visible, .k-tree__item:focus-within > .k-tree__add { opacity: 1; }
+@media (hover: none) { .k-tree__add { opacity: 1; } }
+.k-tree__item:has(> .k-tree__add) > .k-tree__row { padding-right: 36px; }
+
+/* ── 目次 ─────────────────────────── */
+.k-doc { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
+.k-toc { font-size: 14px; }
+.k-toc__toggle { display: flex; align-items: center; gap: 6px; padding: 0; min-height: 28px; font: 600 13px/1 var(--font-sans); color: var(--color-muted); background: transparent; border: 0; cursor: pointer; }
+.k-toc__toggle:hover { color: var(--color-text); }
+.k-toc__toggle .k-icon { width: 16px; height: 16px; transition: transform .12s steps(2, end); }
+.k-toc__toggle[aria-expanded="true"] .k-icon { transform: rotate(90deg); }
+.k-toc__list { list-style: none; margin: var(--space-2) 0 0; padding: 0 0 0 var(--space-3); display: grid; gap: 6px; border-left: var(--line) solid var(--color-border); counter-reset: toc; }
+.k-toc__list li { padding-left: calc(var(--depth, 0) * 12px); }
+.k-toc__list a { display: grid; grid-template-columns: 3.2ch minmax(0, 1fr); gap: var(--space-1); color: var(--color-text); line-height: 1.5; overflow-wrap: anywhere; }
+.k-toc__list a::before { content: attr(data-no); font: 11px/1.9 var(--font-mono); color: var(--color-muted); }
+.k-toc__list li { position: relative; }
+/* 今読んでいる章: 太さ 600 と、一覧の左の線に重ねた差し色の 2px の帯 */
+.k-toc__list a[aria-current="location"] { font-weight: 600; }
+.k-toc__list li:has(> a[aria-current="location"])::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(-1 * var(--space-3) - 1px); width: var(--bar); margin-left: -0.5px; background: var(--color-accent); }
+/* 狭い画面: 本文の上に閉じた箱で置く */
+.k-toc--box { padding: 6px var(--space-3); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+.k-toc--box:has(.k-toc__toggle[aria-expanded="true"]) { padding-bottom: var(--space-3); }
+/* 1200px 以上: 本文の右の列（15rem）に固定し、高すぎれば中だけスクロール */
+@media (min-width: 1200px) {
+  .k-doc { grid-template-columns: minmax(0, 1fr) 15rem; gap: var(--space-6); align-items: start; }
+  .k-doc__toc { grid-column: 2; grid-row: 1; position: sticky; top: 72px; max-height: calc(100dvh - 96px); overflow-y: auto; padding: 4px; }
+  .k-doc__toc .k-toc--box { padding: 0; background: transparent; border: 0; }
+  .k-toc { font-size: 13px; }
+}
+
+/* ── 検索のダイアログ ─────────────────── */
+.k-search { margin-top: 10vh; width: min(40rem, calc(100vw - 32px)); max-height: 80dvh; }
+.k-search__input { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3); border-bottom: var(--line) solid var(--color-border); }
+.k-search__input .k-prompt { flex: 1; border: 0; padding-left: 0; }
+.k-search__input .k-prompt input { font-size: 16px; }
+.k-search__input .k-prompt:focus-within { outline: none; animation: none; }
+.k-search__status { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-4); font-size: 13px; color: var(--color-muted); }
+.k-search__results { display: grid; gap: 2px; margin: 0; padding: 0 var(--space-2) var(--space-2); list-style: none; overflow-y: auto; min-height: 0; }
+.k-search__results[aria-busy="true"] .k-search__hit { color: var(--color-muted); }
+.k-search__hit { display: grid; grid-template-columns: 1ch minmax(0, 1fr); gap: 2px var(--space-2); padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2); border-radius: var(--radius-sm); cursor: pointer; overflow-wrap: anywhere; }
+.k-search__hit::before { content: "▸"; font-family: var(--font-mono); grid-row: span 3; visibility: hidden; }
+.k-search__hit[aria-selected="true"] { background: var(--color-selection-bg); color: var(--color-selection-text); }
+.k-search__hit[aria-selected="true"]::before { visibility: visible; animation: k-blink 1.2s steps(1, end) infinite; }
+.k-search__title { font-size: 14px; font-weight: 600; }
+.k-search__path { font: 12px/1.4 var(--font-mono); color: var(--color-muted); }
+.k-search__snippet { font-size: 13px; line-height: 1.6; }
+.k-search__hit[aria-selected="true"] .k-search__path { color: inherit; opacity: .75; }
+.k-search mark { background: var(--color-warning-bg); color: var(--color-text); box-shadow: inset 0 -2px 0 var(--color-warning); border-radius: 2px; }
+.k-search__help { display: flex; gap: var(--space-4); flex-wrap: wrap; padding: var(--space-2) var(--space-4); border-top: var(--line) solid var(--color-border); background: var(--color-base); font-size: 12px; color: var(--color-muted); }
+/* 599px 以下は全画面にし、キーの説明を隠す */
+@media (max-width: 599px) {
+  .k-search { margin: 0; width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; border: 0; border-radius: 0; }
+  .k-search__help { display: none; }
+}

@@ -86,7 +86,7 @@ python3 tools/build.py
 ## 🧪 見本（samples/）
 
 - サーバー無しでファイルを直接開いて動くこと。`fetch()` でファイルを読まない（ファイルを直接開くと止められる）。フォントとアイコンは `tools/build.py` が JS / CSS に埋め込む
-- 見本の共通の CSS・JS は `samples/assets/` に置く（`kit.css`・`sample.js`）。これは見本のためのもので、アプリへは配らない
+- 見本の共通の CSS・JS は `samples/assets/` に置く（部品の `kit.css`、画面の骨組みの `shell.css`、`sample.js`）。これは見本のためのもので、アプリへは配らない
 - 見本で使う ID は `js-` で始める（`id="js-theme-switch"`）
 - 見本のダミーの文言は、実在のアプリ・サービス・人を指さない身近な言葉にする
 

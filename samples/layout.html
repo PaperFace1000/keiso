@@ -8,11 +8,12 @@
 <link rel="stylesheet" href="../tokens/extra-colors.css">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/kit.css">
+<link rel="stylesheet" href="assets/sample.css">
 <script src="assets/icons.js"></script>
 <script src="assets/sample.js"></script>
 <style>
 /* この見本だけで使う配置。部品の見た目は kit.css に寄せること */
-.sx { display: grid; gap: var(--space-4); min-width: 0; }
+.sx { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); min-width: 0; }
 .sx__lead { font-size: 13px; color: var(--color-muted); max-width: 48rem; }
 
 /* ダッシュボードの 2 列: 左は数字の欄を縦に、右は図と一覧 */
@@ -63,7 +64,7 @@
 .lx-space__bar { height: 12px; background: repeating-linear-gradient(90deg, var(--color-text) 0 2px, transparent 2px 4px); }
 
 /* 本文の幅 */
-.lx-widths { display: grid; gap: var(--space-2); }
+.lx-widths { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
 .lx-width { border: var(--line) dashed var(--color-border-strong); padding: var(--space-2) var(--space-3); display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; font-size: 13px; max-width: 100%; border-radius: var(--radius); }
 
 /* 360px の枠 */
@@ -75,6 +76,43 @@
 .lx-phone .k-stat__value { font-size: 36px; }
 .lx-phone__note { flex: 1; min-width: 16rem; display: grid; gap: var(--space-3); font-size: 14px; }
 .lx-phone__note ol { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-2); }
+
+/* ドーナツの 3 つの場合 */
+.lx-donuts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: var(--space-4); }
+.lx-donut__case { font-size: 12px; color: var(--color-muted); }
+.lx-donut g { transition: opacity .15s steps(2, end); }
+.lx-donut.is-focusing g[data-cat]:not(.is-on) { opacity: .25; }
+.lx-donut__label .k-num { font-size: 12px; color: var(--color-text); }
+.lx-donut__label .lx-donut__name { font-size: 12px; max-width: 6.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lx-legend-row { padding: 2px 6px; border-radius: var(--radius-sm); cursor: default; --k-focus-offset: 0px; }
+.lx-legend-row > span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.lx-donut.is-focusing .lx-legend-row:not(.is-on) { color: var(--color-muted); }
+.lx-donut .lx-legend-row.is-on { background: var(--color-sunken); }
+.lx-donut__slot { fill: var(--color-border); }
+
+/* 横幅いっぱいの画面: 3 : 2。899px 以下で 1 列にし、右の列の先頭の要約を全体の先頭に出す */
+.lx-wide { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--space-4); align-items: start; padding: var(--space-5) var(--space-5) var(--space-6); border: var(--line) dashed var(--color-border-strong); border-radius: var(--radius); }
+.lx-wide__col { display: grid; gap: var(--space-4); min-width: 0; }
+@media (max-width: 899px) {
+  .lx-wide { display: flex; flex-direction: column; align-items: stretch; padding: var(--space-4); }
+  .lx-wide__col { display: contents; }
+  .lx-wide__lead { order: -1; }
+  .lx-wide__col > * { min-width: 0; }
+}
+
+/* 置かれた枠の幅で形を変える部品 */
+.lx-fit-slots { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+@media (max-width: 699px) { .lx-fit-slots { grid-template-columns: minmax(0, 1fr); } }
+.lx-fit { container-type: inline-size; container-name: fit-card; }
+.lx-fit__body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(9rem, 14rem) auto; gap: var(--space-2) var(--space-4); align-items: center; padding: var(--space-3) var(--space-4); background: var(--color-surface); border: var(--line) solid var(--color-border); border-radius: var(--radius); }
+.lx-fit__main { display: grid; gap: 2px; min-width: 0; }
+.lx-fit__title { display: flex; align-items: center; gap: var(--space-2); font-size: 14px; font-weight: 600; }
+.lx-fit__title span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lx-fit__meta { font-size: 12px; color: var(--color-muted); }
+@container fit-card (max-width: 479px) {
+  .lx-fit__body { grid-template-columns: minmax(0, 1fr) auto; }
+  .lx-fit__main { grid-column: 1 / -1; }
+}
 </style>
 </head>
 <body class="k-dotgrid">
@@ -186,6 +224,57 @@
   </div>
 </section>
 
+<!-- ドーナツの場合 -->
+<section class="sx" aria-labelledby="h-donut">
+  <div class="k-heading"><h2 id="h-donut">ドーナツの 3 つの場合</h2><span class="k-label">Donut</span></div>
+  <p class="sx__lead">点 1 つを 10 分にし、1 周は「目安と合計の大きい方」にします。目安に満たない日は足りない分を下地の点で見せ、超えた日は合計を 1 周にして真ん中に超えた時間を出します。分類が 7 件以上なら上位 5 件を残し、残りを「その他」にまとめます。凡例の行（Tab で移れます）か点をなぞると、ほかの分類を薄くし、真ん中をその分類の時間と割合に替えます。</p>
+  <div class="lx-donuts" id="js-donuts"></div>
+</section>
+
+<!-- 横幅いっぱいの画面 -->
+<section class="sx" aria-labelledby="h-wide">
+  <div class="k-heading"><h2 id="h-wide">横幅いっぱいの画面</h2><span class="k-label">Full width</span></div>
+  <p class="sx__lead">一覧をたくさん並べる画面だけ、本文の幅の上限を外します（点線の枠が画面の幅のつもり）。列は項目の多い左を広く 3 : 2。899px 以下で 1 列にするときは、列の枠を <code>display: contents</code> で外し、右の列の先頭の「今日の要約」を全体の先頭に出します。</p>
+  <div class="lx-wide">
+    <div class="lx-wide__col">
+      <div class="k-panel k-section">
+        <div class="k-section__head"><span data-icon="line:list"></span><h3>今週の作業</h3><span class="k-count">5</span><span class="k-section__time">3 分前に更新</span></div>
+        <ul class="k-list">
+          <li><div class="k-row"><span class="k-row__main"><span class="k-row__title">倉庫 B の棚卸しと、帳簿の数え直し</span><span class="k-row__meta">倉庫・11-26</span></span><span class="k-status k-role-warning">Review</span></div></li>
+          <li><div class="k-row"><span class="k-row__main"><span class="k-row__title">空調の点検</span><span class="k-row__meta">設備・12-03</span></span><span class="k-status">Idle</span></div></li>
+          <li><div class="k-row"><span class="k-row__main"><span class="k-row__title">照明の交換の手順を書く</span><span class="k-row__meta">設備・期日なし</span></span><span class="k-status">Draft</span></div></li>
+          <li><div class="k-row"><span class="k-row__main"><span class="k-row__title">発注の控えの整理</span><span class="k-row__meta">分類なし・12-05</span></span><span class="k-status">Idle</span></div></li>
+          <li><div class="k-row"><span class="k-row__main"><span class="k-row__title">週次の点検</span><span class="k-row__meta">点検・12-03</span></span><span class="k-status k-role-success">Done</span></div></li>
+        </ul>
+      </div>
+      <div class="k-panel k-section">
+        <div class="k-section__head"><span data-icon="line:archive"></span><h3>済んだもの</h3><span class="k-count">2</span></div>
+        <ul class="k-list">
+          <li><div class="k-row"><span class="k-row__main"><span class="k-row__title">倉庫 A の棚卸し</span><span class="k-row__meta">11-24 に済んだ</span></span></div></li>
+          <li><div class="k-row"><span class="k-row__main"><span class="k-row__title">温度の記録</span><span class="k-row__meta">11-22 に済んだ</span></span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="lx-wide__col">
+      <div class="k-stat lx-wide__lead"><span class="k-label">Today</span><span class="k-stat__value k-dot">3<small>/ 5 件</small></span><span class="k-stat__delta">今日の要約: 残り 2 件。期日を過ぎたものはありません</span></div>
+      <div class="k-panel k-section">
+        <div class="k-section__head"><span data-icon="line:bell"></span><h3>知らせ</h3><span class="k-count">1</span></div>
+        <p style="font-size: 14px;">倉庫 B の湿度が上限に近い（58%）。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 置かれた枠の幅で形を変える部品 -->
+<section class="sx" aria-labelledby="h-fit">
+  <div class="k-heading"><h2 id="h-fit">置かれた枠の幅で形を変える部品</h2><span class="k-label">@container</span></div>
+  <p class="sx__lead">同じ部品を広い列にも狭い列にも置くときは、画面の幅ではなく部品の枠の幅で形を変えます。枠が 480px 未満になると、1 段目に名前、2 段目に進み具合とボタンの 2 段に崩れます。</p>
+  <div class="lx-fit-slots">
+    <div class="sample-stack"><span class="sample-caption">広い列</span><div class="lx-fit"><div class="lx-fit__body"><div class="lx-fit__main"><span class="lx-fit__title"><span class="k-icon--16" data-icon="line:clipboard-text"></span><span>冬の前の点検の準備</span></span><span class="lx-fit__meta">残り 3 件・次の期日 2026-12-02</span></div><div class="k-meter"><div class="k-meter__track" role="img" aria-label="8 件のうち 5 件が済み"><div class="k-meter__fill" style="width: 62.5%;"></div></div><span class="k-meter__value">5 / 8</span></div><a class="k-btn k-btn--sm" href="#h-fit">開く</a></div></div></div>
+    <div class="sample-stack"><span class="sample-caption">狭い列</span><div class="lx-fit"><div class="lx-fit__body"><div class="lx-fit__main"><span class="lx-fit__title"><span class="k-icon--16" data-icon="line:clipboard-text"></span><span>冬の前の点検の準備</span></span><span class="lx-fit__meta">残り 3 件・次の期日 2026-12-02</span></div><div class="k-meter"><div class="k-meter__track" role="img" aria-label="8 件のうち 5 件が済み"><div class="k-meter__fill" style="width: 62.5%;"></div></div><span class="k-meter__value">5 / 8</span></div><a class="k-btn k-btn--sm" href="#h-fit">開く</a></div></div></div>
+  </div>
+</section>
+
 <!-- 余白 -->
 <section class="sx" aria-labelledby="h-space">
   <div class="k-heading"><h2 id="h-space">余白の段階</h2><span class="k-label">Spacing</span></div>
@@ -250,5 +339,65 @@
 </section>
 
 </main>
+<script>
+// ドーナツ: 点 1 つを 10 分にし、分類の境目は 1 点分空ける
+document.addEventListener('DOMContentLoaded', () => {
+  const CASES = [
+    { title: '今日の時間の使い方（目安 8:00）', note: '目安に満たない日', target: 480, cats: [['点検', 'teal', 150], ['棚卸し', 'ochre', 120], ['記録', 'blue', 80], ['分類なし', '', 40]] },
+    { title: '今日の時間の使い方（目安 8:00）', note: '目安を超えた日', target: 480, cats: [['棚卸し', 'ochre', 260], ['点検', 'teal', 140], ['記録', 'blue', 120], ['打ち合わせ', 'violet', 40]] },
+    { title: '今週の時間の使い方（目安 40:00）', note: '分類が 7 件以上の週', target: 2400, unit: 60, cats: [['棚卸し', 'ochre', 720], ['点検', 'teal', 600], ['記録', 'blue', 420], ['発注', 'green', 300], ['打ち合わせ', 'violet', 240], ['掃除', 'olive', 120], ['移動', 'cyan', 60], ['分類なし', '', 60]] },
+  ];
+  const hm = (min) => `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`;
+  const root = document.getElementById('js-donuts');
+  CASES.forEach((c, n) => {
+    // 7 件以上なら、分類のある上位 5 件を残し、残りと「分類なし」を「その他」にまとめる
+    let cats = [...c.cats].sort((a, b) => b[2] - a[2]);
+    if (cats.length >= 7) {
+      const named = cats.filter((x) => x[1] !== '');
+      const keep = named.slice(0, 5);
+      const rest = cats.filter((x) => !keep.includes(x));
+      cats = [...keep, ['その他', '', rest.reduce((t, x) => t + x[2], 0), rest.map((x) => x[0]).join('・')]];
+    } else {
+      cats = [...cats.filter((x) => x[0] !== '分類なし'), ...cats.filter((x) => x[0] === '分類なし')];
+    }
+    const unit = c.unit || 10;
+    const total = cats.reduce((t, x) => t + x[2], 0);
+    const dots = cats.map((x) => Math.max(1, Math.round(x[2] / unit)));
+    const slots = Math.max(Math.round(c.target / unit), dots.reduce((t, d) => t + d, 0)) + cats.length;
+    const pos = (i) => { const a = (i / slots) * Math.PI * 2 - Math.PI / 2; return [(21 + 17.5 * Math.cos(a)).toFixed(2), (21 + 17.5 * Math.sin(a)).toFixed(2)]; };
+    const r = slots > 60 ? 0.7 : 0.85;
+    let at = 0;
+    const groups = cats.map((x, i) => {
+      const circles = Array.from({ length: dots[i] }, () => { const [cx, cy] = pos(at++); return `<circle cx="${cx}" cy="${cy}" r="${r}"/>`; }).join('');
+      at += 1;
+      const fill = x[1] ? 'var(--extra-text)' : 'color-mix(in srgb, var(--color-muted) 55%, var(--color-base))';
+      return `<g data-cat="${i}"${x[1] ? ` data-extra-color="${x[1]}"` : ''} style="fill: ${fill};">${circles}</g>`;
+    }).join('');
+    const rest_slots = Array.from({ length: slots - at }, () => { const [cx, cy] = pos(at++); return `<circle class="lx-donut__slot" cx="${cx}" cy="${cy}" r="0.45"/>`; }).join('');
+    const over = total - c.target;
+    const pct = (x) => Math.round((x[2] / total) * 100);
+    const summary = `${c.title}。合計 ${hm(total)}、${over > 0 ? `目安を ${hm(over)} 超えた` : `目安まであと ${hm(-over)}`}。${cats.map((x) => `${x[0]} ${hm(x[2])}（${pct(x)}%）`).join('、')}。点 1 つが ${unit} 分`;
+    const center_default = `<span class="k-dot" style="font-size: 26px;">${hm(total)}</span><span class="k-num">${over > 0 ? `(+${hm(over)})` : `/ ${hm(c.target)}`}</span>`;
+    const fig = document.createElement('figure');
+    fig.className = 'lx-chart';
+    fig.style.margin = '0';
+    fig.innerHTML = `<div class="lx-chart__head"><h3 id="js-donut-h-${n}">${c.title}</h3></div><p class="lx-donut__case">${c.note}</p>
+      <div class="lx-donut"><div class="lx-donut__center"><svg viewBox="0 0 42 42" role="img" aria-label="${summary}"><circle class="lx-donut__track" cx="21" cy="21" r="13.5"/>${groups}${rest_slots}</svg><div class="lx-donut__label" aria-hidden="true">${center_default}</div></div>
+      <ul aria-labelledby="js-donut-h-${n}">${cats.map((x, i) => `<li class="lx-legend-row" tabindex="0" data-cat="${i}"${x[1] ? ` data-extra-color="${x[1]}"` : ''}${x[3] ? ` title="その他: ${x[3]}"` : ''}><i style="background: ${x[1] ? 'var(--extra-text)' : 'color-mix(in srgb, var(--color-muted) 55%, var(--color-base))'};"></i><span>${x[0]}</span><span class="k-num">${hm(x[2])} · ${pct(x)}%</span></li>`).join('')}</ul></div>`;
+    root.append(fig);
+    const donut = fig.querySelector('.lx-donut');
+    const label = fig.querySelector('.lx-donut__label');
+    const focus_cat = (i) => {
+      donut.classList.toggle('is-focusing', i !== null);
+      donut.querySelectorAll('[data-cat]').forEach((el) => el.classList.toggle('is-on', i !== null && el.dataset.cat === String(i)));
+      label.innerHTML = i === null ? center_default : `<span class="k-dot" style="font-size: 26px;">${hm(cats[i][2])}</span><span class="lx-donut__name">${cats[i][0]}・${pct(cats[i])}%</span>`;
+    };
+    donut.addEventListener('pointerover', (e) => { const el = e.target.closest('[data-cat]'); if (el) focus_cat(Number(el.dataset.cat)); });
+    donut.addEventListener('pointerleave', () => focus_cat(null));
+    donut.addEventListener('focusin', (e) => { const el = e.target.closest('[data-cat]'); if (el) focus_cat(Number(el.dataset.cat)); });
+    donut.addEventListener('focusout', (e) => { if (!donut.contains(e.relatedTarget)) focus_cat(null); });
+  });
+});
+</script>
 </body>
 </html>
