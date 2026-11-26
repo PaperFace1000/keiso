@@ -8,7 +8,7 @@
 - 角は `--radius`（6px、箱）と `--radius-sm`（4px、小さな部品と箱の中で塗る行）の 2 段だけを使う。ほかの値を部品ごとに作らない（例外: チェックボックス・キー・件数など 16px 前後の小さな四角は 2〜3px）
 - CSS のフレームワーク（Bootstrap・Tailwind など）は使わない。独自の配色と部品の見本があるため
 - 外部の CDN・Web フォントを読み込まない。Doto を使うアプリは `fonts/doto-latin.woff2` を同梱する
-- リンクの既定の下線は土台で外し、下線はなぞったときだけ（`text-underline-offset: 0.2em`）
+- リンクの既定の下線は土台（`base.css`）で外し、下線はなぞったときだけ（`text-underline-offset: 0.2em`）。部品ごとに `text-decoration: none` を書き足す形にしない（書き忘れた部品だけ線が残るため）。長文の本文（Markdown を描くところ）のリンクだけは下線を残す
 - 影は浮かぶもの（トースト・画面の上の知らせ・メニュー・ポップオーバー）にだけ、1 つの値（`--shadow-float`）で付ける。欄・カード・ダイアログには付けない
 - スクロールバーは土台（`base.css`）でテーマの色にそろえ、部品ごとに上書きしない
 
@@ -86,7 +86,8 @@ python3 tools/build.py
 ## 🧪 見本（samples/）
 
 - サーバー無しでファイルを直接開いて動くこと。`fetch()` でファイルを読まない（ファイルを直接開くと止められる）。フォントとアイコンは `tools/build.py` が JS / CSS に埋め込む
-- 見本の共通の CSS・JS は `samples/assets/` に置く（部品の `kit.css`、画面の骨組みの `shell.css`、`sample.js`）。これは見本のためのもので、アプリへは配らない
+- 見本の共通の CSS・JS は `samples/assets/` に置く（部品の `kit.css` と役割ごとの `kit-*.css`、画面の骨組みの `shell.css`、大きな画面の `work.css`、`sample.js`）。これは見本のためのもので、アプリへは配らない
+- CSS は 1 ファイル 800 行までを目安に、役割で分ける。各見本は要るファイルだけを、`kit.css` → `kit-float.css` → `kit-pick.css` → `kit-records.css` → `kit-parts.css` → `kit-marks.css` → `shell.css`・`work.css` の順に読み込む（後のファイルが前の値を上書きするため）。見本のページも 800 行を超えるなら分ける
 - 見本で使う ID は `js-` で始める（`id="js-theme-switch"`）
 - 見本のダミーの文言は、実在のアプリ・サービス・人を指さない身近な言葉にする
 
