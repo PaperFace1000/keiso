@@ -40,14 +40,15 @@
 /* ドーナツ */
 .lx-donut { display: grid; grid-template-columns: 10rem 1fr; gap: var(--space-4); align-items: center; }
 .lx-donut svg { width: 10rem; height: 10rem; display: block; }
-/* 割合は点を円周に並べて見せる。点 1 つが 1 件で、項目の境目は 1 点分空ける。内側の細い点線の輪は目盛りの代わり */
-.lx-donut__track { fill: none; stroke: var(--color-border); stroke-width: 0.4; stroke-dasharray: 0.4 1.3; }
+/* 割合は太い輪を項目ごとの弧に分けて見せる。弧の端は四角のまま切り、境目は細く空ける */
+.lx-donut__track, .lx-donut__arc { fill: none; stroke-width: 6; }
+.lx-donut__track { stroke: var(--color-border); }
 .lx-donut__center { position: relative; }
 .lx-donut__label { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
 .lx-donut__label .k-dot { font-size: 34px; }
 .lx-donut ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
 .lx-donut li { display: grid; grid-template-columns: 10px 1fr auto; gap: var(--space-2); align-items: center; }
-.lx-donut li i { width: 8px; height: 8px; display: block; border-radius: 50%; }
+.lx-donut li i { width: 8px; height: 8px; display: block; }
 @media (max-width: 26rem) { .lx-donut { grid-template-columns: 1fr; justify-items: center; } .lx-donut ul { width: 100%; } }
 
 /* 余白の段階 */
@@ -72,15 +73,14 @@
 /* ドーナツの 3 つの場合 */
 .lx-donuts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: var(--space-4); }
 .lx-donut__case { font-size: 12px; color: var(--color-muted); }
-.lx-donut g { transition: opacity .15s steps(2, end); }
-.lx-donut.is-focusing g[data-cat]:not(.is-on) { opacity: .25; }
+.lx-donut__arc { transition: opacity .15s steps(2, end); }
+.lx-donut.is-focusing .lx-donut__arc:not(.is-on) { opacity: .25; }
 .lx-donut__label .k-num { font-size: 12px; color: var(--color-text); }
 .lx-donut__label .lx-donut__name { font-size: 12px; max-width: 6.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lx-legend-row { padding: 2px 6px; border-radius: var(--radius-sm); cursor: default; --k-focus-offset: 0px; }
 .lx-legend-row > span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .lx-donut.is-focusing .lx-legend-row:not(.is-on) { color: var(--color-muted); }
 .lx-donut .lx-legend-row.is-on { background: var(--color-sunken); }
-.lx-donut__slot { fill: var(--color-border); }
 
 /* 横幅いっぱいの画面: 3 : 2。899px 以下で 1 列にし、右の列の先頭の要約を全体の先頭に出す */
 .lx-wide { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--space-4); align-items: start; padding: var(--space-5) var(--space-5) var(--space-6); border: var(--line) dashed var(--color-border-strong); border-radius: var(--radius); }
@@ -185,12 +185,8 @@
           <div class="k-chart__head"><h3>状態の内訳</h3><span class="k-label">50 checks</span></div>
           <div class="lx-donut">
             <div class="lx-donut__center">
-              <svg viewBox="0 0 42 42" role="img" aria-label="50 件のうち 完了 43 件（86%）、確認待ち 3 件（6%）、進行中 2 件（4%）、異常 2 件（4%）。点 1 つが 1 件">
-                <circle class="lx-donut__track" cx="21" cy="21" r="13.5"/>
-                <g style="fill: var(--color-success);"><circle cx="22.02" cy="3.53" r="0.85"/><circle cx="24.04" cy="3.77" r="0.85"/><circle cx="26.02" cy="4.24" r="0.85"/><circle cx="27.93" cy="4.93" r="0.85"/><circle cx="29.75" cy="5.84" r="0.85"/><circle cx="31.45" cy="6.96" r="0.85"/><circle cx="33.01" cy="8.27" r="0.85"/><circle cx="34.41" cy="9.75" r="0.85"/><circle cx="35.62" cy="11.38" r="0.85"/><circle cx="36.64" cy="13.15" r="0.85"/><circle cx="37.44" cy="15.01" r="0.85"/><circle cx="38.03" cy="16.96" r="0.85"/><circle cx="38.38" cy="18.97" r="0.85"/><circle cx="38.50" cy="21.00" r="0.85"/><circle cx="38.38" cy="23.03" r="0.85"/><circle cx="38.03" cy="25.04" r="0.85"/><circle cx="37.44" cy="26.99" r="0.85"/><circle cx="36.64" cy="28.85" r="0.85"/><circle cx="35.62" cy="30.62" r="0.85"/><circle cx="34.41" cy="32.25" r="0.85"/><circle cx="33.01" cy="33.73" r="0.85"/><circle cx="31.45" cy="35.04" r="0.85"/><circle cx="29.75" cy="36.16" r="0.85"/><circle cx="27.93" cy="37.07" r="0.85"/><circle cx="26.02" cy="37.76" r="0.85"/><circle cx="24.04" cy="38.23" r="0.85"/><circle cx="22.02" cy="38.47" r="0.85"/><circle cx="19.98" cy="38.47" r="0.85"/><circle cx="17.96" cy="38.23" r="0.85"/><circle cx="15.98" cy="37.76" r="0.85"/><circle cx="14.07" cy="37.07" r="0.85"/><circle cx="12.25" cy="36.16" r="0.85"/><circle cx="10.55" cy="35.04" r="0.85"/><circle cx="8.99" cy="33.73" r="0.85"/><circle cx="7.59" cy="32.25" r="0.85"/><circle cx="6.38" cy="30.62" r="0.85"/><circle cx="5.36" cy="28.85" r="0.85"/><circle cx="4.56" cy="26.99" r="0.85"/><circle cx="3.97" cy="25.04" r="0.85"/><circle cx="3.62" cy="23.03" r="0.85"/><circle cx="3.50" cy="21.00" r="0.85"/><circle cx="3.62" cy="18.97" r="0.85"/><circle cx="3.97" cy="16.96" r="0.85"/></g>
-                <g style="fill: var(--color-warning);"><circle cx="5.36" cy="13.15" r="0.85"/><circle cx="6.38" cy="11.38" r="0.85"/><circle cx="7.59" cy="9.75" r="0.85"/></g>
-                <g style="fill: var(--color-info);"><circle cx="10.55" cy="6.96" r="0.85"/><circle cx="12.25" cy="5.84" r="0.85"/></g>
-                <g style="fill: var(--color-alert);"><circle cx="15.98" cy="4.24" r="0.85"/><circle cx="17.96" cy="3.77" r="0.85"/></g>
+              <svg viewBox="0 0 42 42" role="img" aria-label="50 件のうち 完了 43 件（86%）、確認待ち 3 件（6%）、進行中 2 件（4%）、異常 2 件（4%）">
+                <circle class="lx-donut__arc" cx="21" cy="21" r="16" pathLength="360" stroke-dasharray="307.09 360" stroke-dashoffset="-1.25" transform="rotate(-90 21 21)" style="stroke: var(--color-success);"/><circle class="lx-donut__arc" cx="21" cy="21" r="16" pathLength="360" stroke-dasharray="19.09 360" stroke-dashoffset="-310.85" transform="rotate(-90 21 21)" style="stroke: var(--color-warning);"/><circle class="lx-donut__arc" cx="21" cy="21" r="16" pathLength="360" stroke-dasharray="11.89 360" stroke-dashoffset="-332.45" transform="rotate(-90 21 21)" style="stroke: var(--color-info);"/><circle class="lx-donut__arc" cx="21" cy="21" r="16" pathLength="360" stroke-dasharray="11.89 360" stroke-dashoffset="-346.85" transform="rotate(-90 21 21)" style="stroke: var(--color-alert);"/>
               </svg>
               <div class="lx-donut__label"><span class="k-dot">86<small style="font-size: 13px;">%</small></span><span class="k-label">Done</span></div>
             </div>
@@ -231,7 +227,7 @@
 <!-- ドーナツの場合 -->
 <section class="sx" aria-labelledby="h-donut">
   <div class="k-heading"><h2 id="h-donut">ドーナツの 3 つの場合</h2><span class="k-label">Donut</span></div>
-  <p class="sx__lead">点 1 つを 10 分にし、1 周は「目安と合計の大きい方」にします。目安に満たない日は足りない分を下地の点で見せ、超えた日は合計を 1 周にして真ん中に超えた時間を出します。分類が 7 件以上なら上位 5 件を残し、残りを「その他」にまとめます。凡例の行（Tab で移れます）か点をなぞると、ほかの分類を薄くし、真ん中をその分類の時間と割合に替えます。</p>
+  <p class="sx__lead">太い輪を分類ごとの弧に分け、1 周は「目安と合計の大きい方」にします。目安に満たない日は足りない分を下地の輪で見せ、超えた日は合計を 1 周にして真ん中に超えた時間を出します。分類が 7 件以上なら上位 5 件を残し、残りを「その他」にまとめます。凡例の行（Tab で移れます）か弧をなぞると、ほかの分類を薄くし、真ん中をその分類の時間と割合に替えます。</p>
   <div class="lx-donuts" id="js-donuts"></div>
 </section>
 
@@ -344,12 +340,12 @@
 
 </main>
 <script>
-// ドーナツ: 点 1 つを 10 分にし、分類の境目は 1 点分空ける
+// ドーナツ: 太い輪を分類ごとの弧に分け、弧の境目は細く空ける。1 周は「目安と合計の大きい方」
 document.addEventListener('DOMContentLoaded', () => {
   const CASES = [
     { title: '今日の時間の使い方（目安 8:00）', note: '目安に満たない日', target: 480, cats: [['点検', 'teal', 150], ['棚卸し', 'ochre', 120], ['記録', 'blue', 80], ['分類なし', '', 40]] },
     { title: '今日の時間の使い方（目安 8:00）', note: '目安を超えた日', target: 480, cats: [['棚卸し', 'ochre', 260], ['点検', 'teal', 140], ['記録', 'blue', 120], ['打ち合わせ', 'violet', 40]] },
-    { title: '今週の時間の使い方（目安 40:00）', note: '分類が 7 件以上の週', target: 2400, unit: 60, cats: [['棚卸し', 'ochre', 720], ['点検', 'teal', 600], ['記録', 'blue', 420], ['発注', 'green', 300], ['打ち合わせ', 'violet', 240], ['掃除', 'olive', 120], ['移動', 'cyan', 60], ['分類なし', '', 60]] },
+    { title: '今週の時間の使い方（目安 40:00）', note: '分類が 7 件以上の週', target: 2400, cats: [['棚卸し', 'ochre', 720], ['点検', 'teal', 600], ['記録', 'blue', 420], ['発注', 'green', 300], ['打ち合わせ', 'violet', 240], ['掃除', 'olive', 120], ['移動', 'cyan', 60], ['分類なし', '', 60]] },
   ];
   const hm = (min) => `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`;
   const root = document.getElementById('js-donuts');
@@ -364,29 +360,28 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       cats = [...cats.filter((x) => x[0] !== '分類なし'), ...cats.filter((x) => x[0] === '分類なし')];
     }
-    const unit = c.unit || 10;
     const total = cats.reduce((t, x) => t + x[2], 0);
-    const dots = cats.map((x) => Math.max(1, Math.round(x[2] / unit)));
-    const slots = Math.max(Math.round(c.target / unit), dots.reduce((t, d) => t + d, 0)) + cats.length;
-    const pos = (i) => { const a = (i / slots) * Math.PI * 2 - Math.PI / 2; return [(21 + 17.5 * Math.cos(a)).toFixed(2), (21 + 17.5 * Math.sin(a)).toFixed(2)]; };
-    const r = slots > 60 ? 0.7 : 0.85;
+    const full = Math.max(c.target, total);
+    const GAP = (0.7 / (2 * Math.PI * 16)) * 360;
+    const arc = (from, deg, attrs) => `<circle class="${attrs.cls}" cx="21" cy="21" r="16" pathLength="360" stroke-dasharray="${Math.max(0.8, deg - GAP).toFixed(2)} 360" stroke-dashoffset="${(-(from + GAP / 2)).toFixed(2)}" transform="rotate(-90 21 21)"${attrs.extra}/>`;
     let at = 0;
     const groups = cats.map((x, i) => {
-      const circles = Array.from({ length: dots[i] }, () => { const [cx, cy] = pos(at++); return `<circle cx="${cx}" cy="${cy}" r="${r}"/>`; }).join('');
-      at += 1;
-      const fill = x[1] ? 'var(--extra-text)' : 'color-mix(in srgb, var(--color-muted) 55%, var(--color-base))';
-      return `<g data-cat="${i}"${x[1] ? ` data-extra-color="${x[1]}"` : ''} style="fill: ${fill};">${circles}</g>`;
+      const deg = (x[2] / full) * 360;
+      const stroke = x[1] ? 'var(--extra-text)' : 'color-mix(in srgb, var(--color-muted) 55%, var(--color-base))';
+      const el = arc(at, deg, { cls: 'lx-donut__arc', extra: ` data-cat="${i}"${x[1] ? ` data-extra-color="${x[1]}"` : ''} style="stroke: ${stroke};"` });
+      at += deg;
+      return el;
     }).join('');
-    const rest_slots = Array.from({ length: slots - at }, () => { const [cx, cy] = pos(at++); return `<circle class="lx-donut__slot" cx="${cx}" cy="${cy}" r="0.45"/>`; }).join('');
+    const rest_slots = at < 359.9 ? arc(at, 360 - at, { cls: 'lx-donut__track', extra: '' }) : '';
     const over = total - c.target;
     const pct = (x) => Math.round((x[2] / total) * 100);
-    const summary = `${c.title}。合計 ${hm(total)}、${over > 0 ? `目安を ${hm(over)} 超えた` : `目安まであと ${hm(-over)}`}。${cats.map((x) => `${x[0]} ${hm(x[2])}（${pct(x)}%）`).join('、')}。点 1 つが ${unit} 分`;
+    const summary = `${c.title}。合計 ${hm(total)}、${over > 0 ? `目安を ${hm(over)} 超えた` : `目安まであと ${hm(-over)}`}。${cats.map((x) => `${x[0]} ${hm(x[2])}（${pct(x)}%）`).join('、')}`;
     const center_default = `<span class="k-dot" style="font-size: 26px;">${hm(total)}</span><span class="k-num">${over > 0 ? `(+${hm(over)})` : `/ ${hm(c.target)}`}</span>`;
     const fig = document.createElement('figure');
     fig.className = 'k-chart';
     fig.style.margin = '0';
     fig.innerHTML = `<div class="k-chart__head"><h3 id="js-donut-h-${n}">${c.title}</h3></div><p class="lx-donut__case">${c.note}</p>
-      <div class="lx-donut"><div class="lx-donut__center"><svg viewBox="0 0 42 42" role="img" aria-label="${summary}"><circle class="lx-donut__track" cx="21" cy="21" r="13.5"/>${groups}${rest_slots}</svg><div class="lx-donut__label" aria-hidden="true">${center_default}</div></div>
+      <div class="lx-donut"><div class="lx-donut__center"><svg viewBox="0 0 42 42" role="img" aria-label="${summary}">${rest_slots}${groups}</svg><div class="lx-donut__label" aria-hidden="true">${center_default}</div></div>
       <ul aria-labelledby="js-donut-h-${n}">${cats.map((x, i) => `<li class="lx-legend-row" tabindex="0" data-cat="${i}"${x[1] ? ` data-extra-color="${x[1]}"` : ''}${x[3] ? ` title="その他: ${x[3]}"` : ''}><i style="background: ${x[1] ? 'var(--extra-text)' : 'color-mix(in srgb, var(--color-muted) 55%, var(--color-base))'};"></i><span>${x[0]}</span><span class="k-num">${hm(x[2])} · ${pct(x)}%</span></li>`).join('')}</ul></div>`;
     root.append(fig);
     const donut = fig.querySelector('.lx-donut');
