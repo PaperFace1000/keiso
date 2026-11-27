@@ -5,8 +5,8 @@
 :root,
 [data-theme="shiro"] {
   color-scheme: light;
-  --color-accent: #d71921;
-  --color-accent-strong: #b3121a;
+  --color-accent: #dd3a14;
+  --color-accent-strong: #b32c0c;
   --color-on-accent-strong: #ffffff;
   --color-base: #f5f5f2;
   --color-surface: #ffffff;
@@ -53,8 +53,8 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;
-    --color-accent: #e0262d;
-    --color-accent-strong: #ff5a5a;
+    --color-accent: #f04e23;
+    --color-accent-strong: #ff7d57;
     --color-on-accent-strong: #0b0b0b;
     --color-base: #0b0b0b;
     --color-surface: #161616;
@@ -192,11 +192,11 @@
   --shiki-token-changed: #573700;
 }
 
-/* 黒: ほぼ黒の地に明るい灰の文字。差し色は明るい赤 */
+/* 黒: ほぼ黒の地に明るい灰の文字。差し色は明るい朱 */
 [data-theme="kuro"] {
   color-scheme: dark;
-  --color-accent: #e0262d;
-  --color-accent-strong: #ff5a5a;
+  --color-accent: #f04e23;
+  --color-accent-strong: #ff7d57;
   --color-on-accent-strong: #0b0b0b;
   --color-base: #0b0b0b;
   --color-surface: #161616;
